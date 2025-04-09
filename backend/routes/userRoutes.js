@@ -42,8 +42,11 @@ router.put('/:id', async (req, res) => {
 });
 
 
+<<<<<<< HEAD
 
 module.exports = router;
 
 
+=======
+>>>>>>> 002f0a706c8046ad36501d38f4dc064ac9539ed4
 
