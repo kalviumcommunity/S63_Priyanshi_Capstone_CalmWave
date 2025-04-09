@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const MoodLog = require('../models/MoodLog');
+const MoodLog = require('../models/moodLog');
 
 // GET all mood logs
 router.get('/', async (req, res) => {
