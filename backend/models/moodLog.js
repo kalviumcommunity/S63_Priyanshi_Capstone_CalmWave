@@ -1,10 +1,20 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const moodLogSchema = new mongoose.Schema({
-  userId: String,
-  mood: String,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // 👈 Must match the model name of your user schema
+    required: true
+  },
+  mood: {
+    type: String,
+    required: true
+  },
   note: String,
-  date: String, // e.g., "2025-04-09"
+  date: {
+    type: Date,
+    required: true
+  }
 });
 
-module.exports = mongoose.model("MoodLog", moodLogSchema);
+module.exports = mongoose.model('MoodLog', moodLogSchema);
