@@ -86,3 +86,4 @@ To request an AI review, comment this on your PR:
 
 
 **BACKEND DEPLOYEMENT LINK** : https://s63-priyanshi-capstone-calmwave-8.onrender.com
+**FRONTEND DEPLOYMENT LINK** : https://admirable-granita-160f9f.netlify.app/
