@@ -12,6 +12,9 @@ Users take a quick mood-based quiz, receive curated soundscapes, track emotional
 - Let users track their mental wellness progress
 - Implement clean, responsive design with accessibility in mind
 
+
+
+
 ---
 
 ## 🛠 Tech Stack  
@@ -20,6 +23,8 @@ Users take a quick mood-based quiz, receive curated soundscapes, track emotional
 - **Database**: MongoDB or PostgreSQL  
 - **Authentication**: Firebase Auth / Custom Auth  
 - **Audio**: Tone.js / Howler.js  
+
+
 
 ---
 
