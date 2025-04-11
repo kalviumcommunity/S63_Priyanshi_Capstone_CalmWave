@@ -12,6 +12,8 @@ router.get('/', async (req, res) => {
   }
 });
 
+
+
 router.post('/', async (req, res) => {
     const { userId, mood, note, date } = req.body;
   
@@ -27,6 +29,9 @@ router.post('/', async (req, res) => {
       res.status(500).json({ message: 'Error saving mood log' });
     }
   });
+
+
+  
 
   // PUT - Update a mood log by ID
 router.put('/:id', async (req, res) => {
