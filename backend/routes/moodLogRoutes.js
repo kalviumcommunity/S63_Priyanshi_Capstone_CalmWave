@@ -5,12 +5,13 @@ const MoodLog = require('../models/moodLog');
 // GET all mood logs
 router.get('/', async (req, res) => {
   try {
-    const moods = await MoodLog.find();
+    const moods = await MoodLog.find().populate('userId', 'fullName email'); // 👈 show only specific fields
     res.json(moods);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching mood logs' });
   }
 });
+
 
 
 
@@ -31,7 +32,7 @@ router.post('/', async (req, res) => {
   });
 
 
-  
+
 
   // PUT - Update a mood log by ID
 router.put('/:id', async (req, res) => {
