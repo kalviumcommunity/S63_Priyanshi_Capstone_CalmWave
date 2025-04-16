@@ -4,7 +4,7 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-dotenv.config();
+dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET; 
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -21,7 +21,6 @@ const verifyToken = (req, res, next) => {
     res.status(401).json({ message: 'Invalid token' });
   }
 };
-
 
 router.post('/register', async (req, res) => {
   try {
