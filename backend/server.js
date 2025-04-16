@@ -1,6 +1,10 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
+const userRoutes = require("./routes/userRoutes");
+const moodLogRoutes = require("./routes/moodLogRoutes");
+const soundSessionRoutes = require("./routes/soundSessionRoutes");
+const quizResultRoutes = require("./routes/quizResultRoutes");
 
 dotenv.config();
 
@@ -9,11 +13,6 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 8000;
 
-// Routes
-const userRoutes = require("./routes/userRoutes");
-const moodLogRoutes = require("./routes/moodLogRoutes");
-const soundSessionRoutes = require("./routes/soundSessionRoutes");
-const quizResultRoutes = require("./routes/quizResultRoutes");
 
 app.use("/api/users", userRoutes);
 app.use('/api/moodlogs', moodLogRoutes);
