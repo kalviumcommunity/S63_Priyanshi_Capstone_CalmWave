@@ -1,7 +1,10 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import '../styles/Navbar.css';
 
 export default function Navbar() {
+  const location = useLocation();
+
   return (
     <nav className="navbar">
       <div className="logo-container">
@@ -9,10 +12,26 @@ export default function Navbar() {
       </div>
 
       <ul className="nav-links">
-        <li><a href="/home">Home</a></li>
-        <li><a href="/explore">Explore</a></li>
-        <li><a href="/quiz">Quiz</a></li>
-        <li><a href="/therapy">Therapy</a></li>
+        <li>
+          <Link to="/home" className={location.pathname === '/home' ? 'active' : ''}>
+            Home
+          </Link>
+        </li>
+        <li>
+          <Link to="/explore" className={location.pathname === '/explore' ? 'active' : ''}>
+            Explore
+          </Link>
+        </li>
+        <li>
+          <Link to="/quiz" className={location.pathname === '/quiz' ? 'active' : ''}>
+            Quiz
+          </Link>
+        </li>
+        <li>
+          <Link to="/therapy" className={location.pathname === '/therapy' ? 'active' : ''}>
+            Therapy
+          </Link>
+        </li>
       </ul>
 
       <div className="login-box">
