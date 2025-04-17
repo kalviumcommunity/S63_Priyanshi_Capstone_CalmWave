@@ -35,8 +35,10 @@ export default function Navbar() {
       </ul>
 
       <div className="login-box">
-        <button>Login</button>
-      </div>
+  <Link to="/login">
+  <button>Login</button>
+  </Link>
+  </div>
     </nav>
   );
 }
