@@ -1,185 +1,218 @@
 body {
-    background: linear-gradient(
-      to right,
-      #FFFFFF 11%,
-      #B9C5F5 41%,
-      #387BC9 91%
-    );
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-  }
+  /* background: linear-gradient(to right, #FFFFFF 10%, #B9C5F5 40%, #387BC9 90%); */
+  
+  margin: 0;
+  padding: 0;
+  font-family: 'Nunito Sans', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+}
+
 
 .login-container {
-    width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-   }
-   
-  
-   .login-container h2 {
-    text-align: center;
-    color: #000000;
-    margin-bottom: 20px;
-    font-family: 'Nunito Sans', sans-serif;
-    font-weight: 800; /* ExtraBold */
-    font-size: 40px;
-    line-height: 56px;
-    letter-spacing: 0;
+  width: 420px;
+  padding: 40px 24px 80px; /* Increased bottom padding */
+  background: transparent;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(3px);
+  animation: fadeInUp 1.2s ease-in-out;
+  min-height: 700px; /* Added this to increase height */
+}
+
+.login-container h2 {
+  text-align: center;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+  font-weight: 800;
+  font-size: 36px;
+}
+
+.login-container p {
+  text-align: center;
+  color: #444;
+  margin-bottom: 24px;
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  color: #1a1a1a;
+  margin-bottom: 6px;
+  display: block;
+  font-size: 15px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #ffffff;
+  transition: border 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #387BC9;
+  outline: none;
+}
+
+.forgot-password {
+  text-align: right;
+  margin: 6px 0 18px;
+  font-size: 14px;
+  color: #387BC9;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: #1a1a1a;
+}
+
+.login-button {
+  background: linear-gradient(to right, #387BC9, #5fa8f1);
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.login-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(56, 123, 201, 0.3);
+}
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.or-divider span {
+  padding: 0 12px;
+}
+
+.or-divider::before,
+.or-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+}
+
+.social-signup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.social-button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 15px;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.social-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.social-button.apple {
+  background-color: #3c5db6;
+}
+
+.social-button.google {
+  background-color: #1359b5;
+}
+
+.social-button.facebook {
+  background-color: #3b5998;
+}
+
+.social-logo {
+  height: 20px;
+  width: 20px;
+  margin-right: 10px;
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 15px;
+}
+
+.signup-link a {
+  color: #387BC9;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.signup-link a:hover {
+  color: #1a1a1a;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
-  
-   
-  .login-container p {
-    text-align: center;
-    color: #000000;
-    margin-bottom: 20px;
-    font-family: 'Lato', sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 26px;
-    letter-spacing: 0;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-   
-  
-   .login-form {
-    display: flex;
-    flex-direction: column;
-   
-   }
-   
-  
-   .form-group {
-    margin-bottom: 15px;
-   }
-   
-  
-   .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #000000;
-    font-family: 'Nunito Sans', sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 26px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 480px) {
+  .login-container {
+    width: 90%;
+    padding: 24px 16px;
   }
-  
-   
-  
-   .form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #000000;
-    border-radius: 4px;
-    box-sizing: border-box;
-   }
-   
-  
-   .login-button {
-    background-color: #000000;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-   }
-   
-  
-   .login-button:hover {
-    background-color: #000000;
-   }
-   
-  
-   .forgot-password {
-    text-align: right;
-    margin-bottom: 15px;
-    color: #000000;
-    text-decoration: none;
-    font-family: 'Nunito Sans', sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 26px;
-   }
-   
-  
-   .or-divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin-bottom: 20px;
-   }
-   
-  
-   .or-divider span {
-    padding: 0 10px;
-   }
-   
-  
-   .or-divider:before,
-   .or-divider:after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid #aaa;
-   }
-   
-  
-   .social-signup {
-    display: flex;
-    flex-direction: column;
+
+  .login-container h2 {
+    font-size: 28px;
   }
-  
-  .social-button {
-    padding: 10px 20px;
-    margin-bottom: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%; /* Make the button full width */
-    box-sizing: border-box; /* Include padding and border in the button's total width */
-  }
-  .social-button.apple {
-    background-color: #3c5db6;
-  }
-  
-  .social-button.google {
-    background-color: #1359b5;
-  }
-  
-  .social-button.facebook {
-    background-color: #3b5998;
-  }
-  
-  /* New CSS for the logo */
-  .social-logo {
-    height: 20px; /* Adjust size as needed */
-    width: 20px;  /* Adjust size as needed */
-    margin-right: 8px; /* Space between logo and text */
-  }
-   
-  
-  
-   .signup-link {
-    text-align: center;
-    margin-top: 20px;
+
+  .form-group input {
     font-size: 14px;
-   }
-   
-  
-   .signup-link a {
-    color: #000000;
-    text-decoration: none;
-    font-family: 'Nunito Sans', sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 26px;
-   }
-  
+  }
+
+  .login-button {
+    font-size: 15px;
+  }
+}
