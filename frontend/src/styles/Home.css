@@ -1,0 +1,279 @@
+/* src/styles/Home.css */
+
+.hero-section {
+  width: 100vw; /* Full width */
+  height: 100vh; /* Full height */
+  background-image: url('/src/assests/Home1.jpg'); /* Ensure correct path */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+
+/* Overlay content inside hero section */
+.hero-overlay {
+  background: rgba(255, 255, 255, 0.25); /* Soft white transparent box */
+  backdrop-filter: blur(10px); /* Adds the blur behind the box */
+  padding: 2rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  max-width: 600px;
+}
+
+/* Text styles */
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.hero-subtext {
+  font-size: 1.2rem;
+  color: #f0f0f0;
+  margin-bottom: 1.5rem;
+}
+
+/* Button */
+.custom-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 0.85rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  font-size: 1.05rem;
+  box-shadow: 0 8px 24px rgba(0, 255, 229, 0.2);
+  transition: all 0.3s ease;
+  text-shadow: 0 0 5px rgba(0, 255, 229, 0.2);
+}
+
+.custom-button:hover {
+  background: rgba(0, 255, 229, 0.15);
+  color: #00ffe5;
+  box-shadow: 0 10px 35px rgba(0, 255, 229, 0.35);
+  border-color: rgba(0, 255, 229, 0.4);
+  transform: scale(1.05);
+}
+
+/* General gradient background reused as utility */
+/* === Global Section Utility Classes === */
+.section {
+  padding: 4rem 1rem;
+  text-align: center;
+  border-radius: 1.5rem;
+  margin: 2rem 1rem;
+}
+
+/* .white-bg {
+  background-color: #ffffff;
+} */
+
+.gradient-bg {
+  background: linear-gradient(to bottom right, #e0f7fa, #f1f8ff);
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #003b5b;
+  margin-bottom: 1rem;
+}
+
+.section-subtext {
+  font-size: 1.125rem;
+  color: #455a64;
+  max-width: 700px;
+  margin: 0 auto 2rem;
+}
+
+.section-img {
+  width: 700px;
+  height: auto;
+  margin-top: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* === Assessment Section === */
+.assessment-section {
+  background: linear-gradient(to right, #dfefff, #f0faff);
+  padding: 4rem 1rem;
+  border-radius: 2rem;
+  margin: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.assessment-content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.assessment-text {
+  flex: 1;
+  min-width: 300px;
+}
+
+.assessment-text h2 {
+  font-size: 2rem;
+  color: #004d60;
+  margin-bottom: 1rem;
+}
+
+.assessment-text p {
+  font-size: 1.1rem;
+  color: #546e7a;
+  line-height: 1.6;
+}
+
+.assessment-image-glass {
+  flex: 1;
+  min-width: 280px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  border-radius: 1.5rem;
+  padding: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.assessment-img {
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+}
+
+/* === Card Sections (Mood & Knowledge) === */
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  max-width: 280px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card-img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.card-description {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+}
+
+
+
+/* === Responsive Media Queries === */
+@media (max-width: 768px) {
+  .assessment-content {
+    flex-direction: column;
+    padding: 2rem 1rem;
+  }
+
+  .section {
+    padding: 3rem 1rem;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+  }
+
+  .card {
+    max-width: 90%;
+  }
+}
+.flip-card {
+  background: transparent;
+  width: 290px;
+  height: 180px;
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.flip-card-front {
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flip-card-back {
+  background: #e3f2fd;
+  color: #0a3d62;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column; /* Add this */
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center; /* Optional: centers text within p tags */
+}
+

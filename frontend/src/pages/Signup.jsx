@@ -1,5 +1,7 @@
 import React from 'react';
-import '../styles/Signup.css'
+import '../styles/Signup.css';
+import googleLogo from '../assests/google.png';
+import facebookLogo from '../assests/facebook.png';
 
 
 function Signup() {
@@ -36,11 +38,11 @@ function Signup() {
  <span>Or</span>
  </div>
  <button className="social-button google">
-          <img src="/google.png" alt="Google Logo" className="social-logo" />
+          <img src={googleLogo} alt="Google Logo" className="social-logo" />
           Continue with Google
         </button>
         <button className="social-button facebook">
-          <img src="/facebook.png" alt="Facebook Logo" className="social-logo" />
+          <img src={facebookLogo} alt="Facebook Logo" className="social-logo" />
           Continue with Facebook
         </button>
         <button className="social-button apple">

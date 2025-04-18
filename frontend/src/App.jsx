@@ -1,9 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
+
+import ExplorePage from './pages/ExplorePage';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
+import Home from './pages/Home';
 // import Explore from './pages/Explore';
 // import Quiz from './pages/Quiz';
 // import Therapy from './pages/Therapy';
@@ -11,11 +13,16 @@ import Signup from './pages/Signup';
 const App = () => {
   return (
     <Router>
-      <Navbar />
+      {/* <Navbar /> */}
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/explore" element={<ExplorePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path='/home' element={<Home/>}/>
+
+        
+
         {/* <Route path="/explore" element={<Explore />} />
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/therapy" element={<Therapy />} /> */}
