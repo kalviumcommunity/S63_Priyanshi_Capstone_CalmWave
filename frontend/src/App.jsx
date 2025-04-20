@@ -15,7 +15,7 @@ const App = () => {
     <Router>
       {/* <Navbar /> */}
       <Routes>
-        <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/" element={<ExplorePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
