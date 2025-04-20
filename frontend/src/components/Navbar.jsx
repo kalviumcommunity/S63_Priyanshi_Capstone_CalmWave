@@ -1,10 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/Navbar.css';
 import logo from '../assests/logo.png';
+import defaultProfile from '../assests/defaultProfile.png';
 
 export default function Navbar() {
   const location = useLocation();
+  const [profilePic, setProfilePic] = useState(defaultProfile);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('profile', file);
+
+    try {
+      const res = await fetch('http://localhost:8000/api/upload-profile', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data?.filePath) {
+        setProfilePic(`http://localhost:8000/${data.filePath}`);
+      }
+    } catch (error) {
+      console.error('Upload failed:', error);
+    }
+  };
 
   return (
     <nav className="navbar">
@@ -14,7 +38,7 @@ export default function Navbar() {
 
       <ul className="nav-links">
         <li>
-          <Link to="/explore" className={location.pathname === '/explore' ? 'active' : ''}>
+          <Link to="/" className={location.pathname === '/explore' ? 'active' : ''}>
             Explore
           </Link>
         </li>
@@ -35,11 +59,18 @@ export default function Navbar() {
         </li>
       </ul>
 
-      <div className="login-box">
-  <Link to="/login">
-  <button>Login</button>
-  </Link>
-  </div>
+      <div className="profile-upload">
+        <label htmlFor="upload">
+          <img src={profilePic} alt="Profile" className="profile-pic" />
+        </label>
+        <input
+          type="file"
+          id="upload"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+          accept="image/*"
+        />
+      </div>
     </nav>
   );
 }
