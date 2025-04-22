@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import Home from './pages/Home';
+import Quiz from './pages/QuizPage';
 // import Explore from './pages/Explore';
 // import Quiz from './pages/Quiz';
 // import Therapy from './pages/Therapy';
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path='/home' element={<Home/>}/>
+        <Route path="/quiz" element={<Quiz />} />
 
         
 
