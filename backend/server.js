@@ -29,11 +29,14 @@ app.use(cors({
 app.use(express.json());
 
 // Session middleware (required for passport)
+require('dotenv').config();
+
 app.use(session({
-  secret: 'keyboard cat', // You can use something stronger in production
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
 }));
+
 
 // Initialize passport middleware
 app.use(passport.initialize());

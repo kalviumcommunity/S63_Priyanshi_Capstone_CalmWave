@@ -10,7 +10,8 @@ router.get('/google',
 router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/dashboard' }),
   (req, res) => {
-    res.redirect('http://localhost:5173/Home'); // frontend route after success
+    res.redirect(process.env.FRONTEND_URL || 'http://localhost:5173/Home');
+ // frontend route after success
   }
 );
 
