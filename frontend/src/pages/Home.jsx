@@ -27,7 +27,7 @@ const Home = () => {
         Discover the power of sound therapy to reduce anxiety and enhance your relaxation.
         Our tailored sessions are designed to meet your unique needs and help you achieve tranquility.
       </p>
-      <Link to="/get-started">
+      <Link to="/quiz">
         <button className="custom-button">Start Relaxation</button>
       </Link>
     </div>

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Added Link and useNavigate
-import axios from 'axios'; // Added axios import
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/Signup.css';
 import googleLogo from '../assests/google.png'; // Corrected typo 'assests'->'assets'
-import facebookLogo from '../assests/facebook.png'; // Corrected typo 'assests'->'assets'
+import facebookLogo from '../assests/facebook.png';
 
 function Signup() {
   const [formData, setFormData] = useState({
@@ -21,8 +21,6 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Added terms validation
     const termsCheckbox = e.target.terms;
     if (!termsCheckbox.checked) {
       setMessage("You must agree to the terms and conditions");
@@ -35,7 +33,7 @@ function Signup() {
     }
 
     try {
-      const res = await axios.post('http://localhost:8000/api/users/register', { // Port 8000
+      const res = await axios.post('http://localhost:8000/api/users/register', {
         fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
@@ -47,6 +45,10 @@ function Signup() {
     } catch (err) {
       setMessage(err.response?.data?.message || 'Signup failed');
     }
+  };
+
+  const handleGoogleSignup = () => {
+    window.location.href = 'http://localhost:8000/auth/google';
   };
 
   return (
@@ -121,7 +123,7 @@ function Signup() {
         <span>Or</span>
       </div>
       
-      <button className="social-button google">
+      <button className="social-button google" onClick={handleGoogleSignup}>
         <img src={googleLogo} alt="Google Logo" className="social-logo" />
         Continue with Google
       </button>
@@ -139,7 +141,7 @@ function Signup() {
       </button>
       
       <div className="login-link">
-        Already registered? <Link to="/login">Login</Link> {/* Changed to Link */}
+        Already registered? <Link to="/login">Login</Link>
       </div>
     </div>
   );
