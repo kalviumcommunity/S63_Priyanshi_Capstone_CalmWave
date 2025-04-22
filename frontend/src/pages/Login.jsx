@@ -26,6 +26,10 @@ function Login() {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = 'http://localhost:8000/auth/google';
+  };
+
   return (
     <div className="login-wrapper">
       <div className="login-container">
@@ -66,7 +70,7 @@ function Login() {
           <span>Or</span>
         </div>
 
-        <button className="social-button google">
+        <button className="social-button google" onClick={handleGoogleLogin}>
           <img src={googleLogo} alt="Google Logo" className="social-logo" />
           Continue with Google
         </button>
