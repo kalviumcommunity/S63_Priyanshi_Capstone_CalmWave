@@ -83,6 +83,7 @@
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
+    align-items:end ;
     /* border: 2px solid #2E616B; */
   }
   
