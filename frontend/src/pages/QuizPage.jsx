@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/QuizPage.css";
@@ -19,7 +20,7 @@ const QuizPage = () => {
     "If overthinking were a sport, we’d all be gold medalists😅.",
     "Is it anxiety or just caffeine? Let’s find out🫣.",
     "Every emotion is a message. Let’s see what yours is saying today💌.",
-     "We’re not saying you’re anxious, but let’s just check — for funsies🎲.",
+    "We’re not saying you’re anxious, but let’s just check — for funsies🎲.",
     "Let’s find out what your mind’s trying to tell you. No pressure🧠.",
     "Thought spiral in progress? No worries — we’ve got a parachute💙.",
     "You don’t need to feel okay to start. You just need to start🌤️.",
@@ -34,6 +35,8 @@ const QuizPage = () => {
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState("");
   const [randomQuote, setRandomQuote] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const quote = quotes[Math.floor(Math.random() * quotes.length)];
@@ -85,6 +88,10 @@ const QuizPage = () => {
     }
   };
 
+  const handleStartTherapy = () => {
+    navigate('/therapy', { state: { level } }); // 🚀 Pass anxiety level to therapy page
+  };
+
   if (showStartScreen) {
     return (
       <>
@@ -113,7 +120,10 @@ const QuizPage = () => {
             <p className="result-score">Your Score: <strong>{score}</strong></p>
             <p className="result-level">Anxiety Level: <strong>{level}</strong></p>
             <p className="result-msg">Remember, this is just a self-assessment. You're doing great just by being here 💙</p>
-            <button onClick={() => window.location.reload()}>Retake Quiz</button>
+            <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginTop: "24px" }}>
+              <button onClick={() => window.location.reload()}>Retake Quiz</button>
+              <button className="result-action-btn" onClick={handleStartTherapy}>Start Therapy</button>
+            </div>
           </div>
         </div>
         <Footer />

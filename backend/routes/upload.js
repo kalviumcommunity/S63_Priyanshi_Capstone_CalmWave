@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const User = require('../models/User'); // Make sure path is correct
 
 const router = express.Router();
 
@@ -44,18 +45,28 @@ const upload = multer({
 
 // POST /api/upload-profile
 router.post('/upload-profile', (req, res) => {
-  upload.single('profile')(req, res, function (err) {
+  upload.single('profile')(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: err.message });
     } else if (err) {
       return res.status(400).json({ message: err.message });
     }
+    console.log('File received:', req.file);
 
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    res.json({ filePath: req.file.path });
+    const userId = req.body.userId;
+    const imagePath = req.file.path;
+
+    try {
+      await User.findByIdAndUpdate(userId, { profileImage: imagePath });
+      res.json({ filePath: imagePath });
+    } catch (updateErr) {
+      console.error('Error saving to DB:', updateErr);
+      res.status(500).json({ message: 'Error saving image path to user profile' });
+    }
   });
 });
 

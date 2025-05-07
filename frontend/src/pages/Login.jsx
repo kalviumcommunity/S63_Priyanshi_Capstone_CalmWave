@@ -18,13 +18,22 @@ function Login() {
         email,
         password,
       });
+  
       console.log(res.data);
-      setMessage('Login successful!');
-      navigate('/home');
+  
+      // Check if user data and _id are returned
+      if (res.data?.user?._id) {
+        localStorage.setItem('userId', res.data.user._id); // Save to localStorage
+        setMessage('Login successful!');
+        navigate('/home');
+      } else {
+        setMessage('Invalid user data received from server.');
+      }
     } catch (err) {
       setMessage(err.response?.data?.message || 'Login failed');
     }
   };
+  
 
   const handleGoogleLogin = () => {
     window.location.href = 'http://localhost:8000/auth/google';

@@ -1,0 +1,139 @@
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #f9e2f9, #a2d9ff);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    overflow: hidden;
+  }
+  
+  .welcome-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #222;
+    text-align: center;
+    max-width: 700px;
+    margin-bottom: 40px;
+    animation: fadeIn 1.2s ease;
+  }
+  
+  .upload-box {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  
+  .upload-box:hover {
+    transform: scale(1.02);
+  }
+  
+  input[type="file"] {
+    display: none;
+  }
+  
+  .button-row {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .upload-label {
+    background: #007bff;
+    color: white;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .upload-label:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+  }
+  
+  .next-button {
+    background: linear-gradient(
+      
+    #ece1ee 11%,
+    #B9C5F5 41%,
+    #387BC9 91%
+  );
+    color: white;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .next-button:hover {
+    background: #1e7e34;
+    transform: scale(1.05);
+  }
+  
+  .next-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .profile-preview {
+    margin-top: 30px;
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid #4ad0e2;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 1s ease;
+  }
+  
+  .success-message {
+    color: #28a745;
+    font-weight: 600;
+    margin-top: 20px;
+    font-size: 18px;
+    animation: fadeIn 1s ease;
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade {
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  @keyframes slideup {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-slideup {
+    animation: slideup 0.8s ease-in-out;
+  }
+  

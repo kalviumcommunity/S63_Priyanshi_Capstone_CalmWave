@@ -7,9 +7,8 @@ import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import Home from './pages/Home';
 import Quiz from './pages/QuizPage';
-// import Explore from './pages/Explore';
-// import Quiz from './pages/Quiz';
-// import Therapy from './pages/Therapy';
+import Profile from './pages/Profile';
+import Therapy from './pages/TherapyPage';
 
 const App = () => {
   return (
@@ -22,7 +21,9 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path='/home' element={<Home/>}/>
         <Route path="/quiz" element={<Quiz />} />
-
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/therapy" element={<Therapy />} />
+        
         
 
         {/* <Route path="/explore" element={<Explore />} />

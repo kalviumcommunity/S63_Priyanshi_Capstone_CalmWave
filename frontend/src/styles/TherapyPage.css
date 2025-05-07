@@ -1,0 +1,236 @@
+/* Base setup */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(145deg, #e0f7fa, #dbeafe);
+  margin: 0;
+  padding: 0;
+  color: #1e293b;
+}
+
+/* Shared container */
+.therapy-container {
+  max-width: 700px;
+  margin: 3rem auto;
+  padding: 2rem;
+  border-radius: 2rem;
+  background: #ffffff;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+  min-height: 400px;
+}
+
+/* Headings */
+.therapy-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Info sections */
+.therapy-info {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.therapy-info p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.therapy-message {
+  background: #f0f9ff;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+/* Section card (for therapy options) */
+.section-card {
+  background: #f0f9ff;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  transition: 0.3s ease;
+  text-align: center;
+}
+
+.section-card:hover {
+  background: #e0f2fe;
+  transform: translateY(-3px);
+}
+
+.section-card h3 {
+  color: #2563eb;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(to right, #60a5fa, #3b82f6);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+}
+
+.button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+}
+
+.button.active {
+  background: linear-gradient(to right, #2563eb, #1d4ed8);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.primary-button {
+  background: linear-gradient(to right, #60a5fa, #3b82f6);
+}
+
+.secondary-button {
+  background: linear-gradient(to right, #a78bfa, #8b5cf6);
+}
+
+/* Mood Tracker Styling */
+.mood-tracker {
+  text-align: center;
+}
+
+.mood-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+
+.mood-button {
+  font-size: 1.25rem;
+  padding: 0.75rem 1.2rem;
+  border-radius: 30px;
+  background: #f0f9ff;
+  border: 2px solid #38bdf8;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.mood-button:hover {
+  background: #bae6fd;
+  transform: scale(1.05);
+}
+
+.mood-button.active {
+  background: #bae6fd;
+  border-color: #0ea5e9;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
+}
+
+.mood-submit {
+  margin-top: 1rem;
+}
+
+/* Breathing exercise */
+.breathing-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #60a5fa, #2563eb);
+  margin: 2rem auto;
+  animation: breathe 8s infinite ease-in-out;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(0.8);
+    box-shadow: 0 0 0 rgba(37, 99, 235, 0.1);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.4);
+  }
+}
+
+/* Audio options */
+.audio-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.select-dropdown {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 2px solid #38bdf8;
+  margin: 1rem 0;
+  width: 80%;
+  background: #f0f9ff;
+  font-family: 'Poppins', sans-serif;
+}
+
+.binaural-info {
+  margin-top: 1rem;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .therapy-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .button-group {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .mood-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}

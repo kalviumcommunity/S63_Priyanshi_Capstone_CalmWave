@@ -22,43 +22,29 @@ html, body, #root {
   .start-bg {
     min-height: 100vh;
     width: 100%;
-    /* background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); */ /* Removed the redundant gradient from here */
-    background: url('/src/assests/QuizPage.jpeg') center/cover no-repeat; /* Ensure your image path is correct */
+    background: url('/src/assests/QuizPage.jpeg') center/cover no-repeat;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     animation: fadeInBg 1.5s ease;
     overflow: hidden;
-  }
-  
-  @keyframes fadeInBg {
+}
+
+@keyframes fadeInBg {
     from { opacity: 0; }
     to { opacity: 1; }
-  }
-  
-  /* Animated Particle Effect */
-  .start-bg::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('path/to/your/particle-bg.svg'); /* Replace with your SVG */
-    opacity: 0.5;
-    animation: moveParticles 20s linear infinite;
-    z-index: 1;
-  }
-  
-  @keyframes moveParticles {
-    0% { background-position: 0 0; }
-    100% { background-position: 100% 100%; }
-  }
-  
-  .start-overlay {
-    background: rgba(161, 213, 228, 0.45); /* CornflowerBlue with opacity */
-    backdrop-filter: blur(10px) saturate(1.3);
+}
+
+/* Modern gradient overlay with glass morphism effect */
+.start-overlay {
+  background: linear-gradient(
+    to right,
+  #ece1ee 11%,
+  #B9C5F5 41%,
+  #387BC9 91%);
+    backdrop-filter: blur(12px) saturate(1.8);
+    -webkit-backdrop-filter: blur(12px) saturate(1.8);
     width: 100%;
     height: 100%;
     position: absolute;
@@ -68,115 +54,101 @@ html, body, #root {
     align-items: center;
     justify-content: center;
     z-index: 2;
-  }
-  
-  .start-content {
+}
+
+.start-content {
     max-width: 620px;
-    background: rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(14px);
-    color: #f0f8ff; /* AliceBlue text */
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #ffffff;
     padding: 3.5rem;
     border-radius: 32px;
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
     text-align: center;
     font-family: 'Nunito Sans', sans-serif;
     font-weight: 300;
     position: relative;
     z-index: 3;
     animation: zoomIn 1.1s ease-out;
-  }
-  
-  @keyframes zoomIn {
-    from {
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
-  .start-content h1 {
+}
+
+.start-content h1 {
     font-size: 3.4rem;
     font-weight: 800;
     margin-bottom: 1.5rem;
     letter-spacing: 1.4px;
-    color: #e6e6fa; /* Lavender for heading */
-    text-shadow: 0 0 16px #bb86fc;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     animation: fadeInHeading 2s ease-in-out;
-  }
-  
-  @keyframes fadeInHeading {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .start-content p.quote {
+}
+
+.start-content p.quote {
     font-family: 'Playfair Display', serif;
     font-size: 1.5rem;
     font-style: italic;
     line-height: 1.6;
     margin-bottom: 2.2rem;
-    color: #dcdcdc; /* Gainsboro */
+    color: #e6e6ff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     animation: fadeInQuote 2.2s ease;
-  }
-  
-  @keyframes fadeInQuote {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* Modern, animated gradient button */
-  .start-content button {
+}
+
+/* Neon gradient button with pulse animation */
+.start-content button {
     padding: 1.1rem 3.4rem;
     font-size: 1.4rem;
     font-weight: 700;
     color: #fff;
-    background: linear-gradient(120deg, #4facfe 0%, #00f2fe 100%); /* Vibrant gradient */
+    background: linear-gradient(135deg, #ff00cc 0%, #3333ff 100%);
     border: none;
     border-radius: 32px;
     cursor: pointer;
-    box-shadow: 0 5px 22px rgba(0, 242, 254, 0.3);
-    transition: transform 0.19s, box-shadow 0.19s, background 0.36s;
+    box-shadow: 0 0 15px rgba(255, 0, 204, 0.5), 
+                0 0 30px rgba(51, 51, 255, 0.3);
+    transition: all 0.3s ease;
     outline: none;
     position: relative;
     overflow: hidden;
-  }
-  
-  .start-content button::before {
+    animation: pulse 2s infinite;
+}
+
+.start-content button::before {
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
+    left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0.3) 0%, transparent 50%, rgba(255, 255, 255, 0.3) 100%);
-    transform: translateX(-100%);
-    transition: transform 0.4s ease-in-out;
-  }
-  
-  .start-content button:hover {
-    background: linear-gradient(120deg, #00f2fe 0%, #4facfe 100%);
-    transform: scale(1.1);
-    box-shadow: 0 14px 42px rgba(0, 242, 254, 0.4);
-  }
-  
-  .start-content button:hover::before {
-    transform: translateX(100%);
-  }
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.5s;
+}
+
+.start-content button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px rgba(255, 0, 204, 0.7), 
+                0 0 40px rgba(51, 51, 255, 0.5);
+}
+
+.start-content button:hover::before {
+    left: 100%;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 15px rgba(255, 0, 204, 0.5), 
+                    0 0 30px rgba(51, 51, 255, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 0, 204, 0.7), 
+                    0 0 40px rgba(51, 51, 255, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(255, 0, 204, 0.5), 
+                    0 0 30px rgba(51, 51, 255, 0.3);
+    }
+}
   
   
   
@@ -271,8 +243,8 @@ html, body, #root {
   
   .prev-button:hover:enabled,
   .next-button:hover:enabled {
-    background: #5f8af7;
-    color: #fff;
+    background: #1d47af;
+    color: #ffffff;
   }
   
   .prev-button:disabled {
@@ -403,4 +375,19 @@ html, body, #root {
   100% {
     transform: scale(1);
   }
+}
+
+.result-action-btn {
+  background: #3949ab;
+  color: #fff;
+  border: none;
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.result-action-btn:hover {
+  background: #283593;
 }

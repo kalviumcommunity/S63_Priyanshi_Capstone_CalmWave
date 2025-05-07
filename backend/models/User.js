@@ -5,7 +5,11 @@ const userSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String }, // ✅ Make optional for Google users
-  googleId: { type: String, unique: true, sparse: true } // ✅ New field
+  googleId: { type: String, unique: true, sparse: true }, // ✅ New field
+  profileImage: {
+    type: String,
+    default: ''
+  }
 });
 
 // Hash password before saving (only if password exists and modified)
