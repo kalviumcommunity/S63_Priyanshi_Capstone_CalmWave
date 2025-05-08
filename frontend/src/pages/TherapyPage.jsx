@@ -50,6 +50,7 @@ const TherapyPage = () => {
   const [breathingActive, setBreathingActive] = useState(false);
   const [currentMood, setCurrentMood] = useState(null);
   const [selectedAdditionalAudio, setSelectedAdditionalAudio] = useState(null);
+  const [additionalAudioPlaying, setAdditionalAudioPlaying] = useState(false);
 
   const audioRef = useRef(null);
   const binauralRef = useRef(null);
@@ -63,9 +64,18 @@ const TherapyPage = () => {
       if (audioRef.current) {
         audioRef.current.pause();
       }
+      
+      // Create new audio with error handling
       audioRef.current = new Audio(src);
       audioRef.current.loop = true;
+      
+      // Add event listeners for debugging
+      audioRef.current.addEventListener('error', (e) => {
+        console.error('Audio error:', e);
+        alert(`Error loading audio for ${state.level}. Please check if the file exists at ${src}`);
+      });
     }
+    
     return () => {
       stopAllAudio();
     };
@@ -74,8 +84,15 @@ const TherapyPage = () => {
 
   const stopAllAudio = () => {
     if (audioRef.current) audioRef.current.pause();
-    if (binauralRef.current) binauralRef.current.pause();
-    if (additionalAudioRef.current) additionalAudioRef.current.pause();
+    if (binauralRef.current) {
+      binauralRef.current.pause();
+      setBinauralPlaying(false);
+    }
+    if (additionalAudioRef.current) {
+      additionalAudioRef.current.pause();
+      setAdditionalAudioPlaying(false);
+      setSelectedAdditionalAudio(null);
+    }
   };
 
   // --- MAIN VIEW ---
@@ -90,11 +107,41 @@ const TherapyPage = () => {
         <p>{message}</p>
       </div>
       <div className="section-card" style={{textAlign: "center"}}>
-        <button className="button" onClick={() => audioRef.current && audioRef.current.play()}>
+        <button 
+          className="button" 
+          onClick={() => {
+            if (audioRef.current) {
+              audioRef.current.play()
+                .then(() => {
+                  console.log("Playing recommended audio successfully");
+                })
+                .catch(error => {
+                  console.error("Error playing recommended audio:", error);
+                  alert("Could not play the recommended audio. Please check if the audio file exists.");
+                });
+            }
+          }}
+        >
           ▶️ Play Recommended Audio
         </button>
-        <button className="button" onClick={() => audioRef.current && audioRef.current.pause()} style={{marginLeft: "1rem"}}>
+        <button 
+          className="button" 
+          onClick={() => audioRef.current && audioRef.current.pause()} 
+          style={{marginLeft: "1rem"}}
+        >
           ⏸️ Pause
+        </button>
+        <button 
+          className="button stop-button" 
+          onClick={() => {
+            if (audioRef.current) {
+              audioRef.current.pause();
+              audioRef.current.currentTime = 0;
+            }
+          }} 
+          style={{marginLeft: "1rem"}}
+        >
+          ⏹️ Stop
         </button>
       </div>
       <div className="button-group">
@@ -129,8 +176,17 @@ const TherapyPage = () => {
             if (binauralRef.current) binauralRef.current.pause();
             binauralRef.current = new Audio(binauralBeatsMap[selectedBinauralBeat]);
             binauralRef.current.loop = true;
-            binauralRef.current.play();
-            setBinauralPlaying(true);
+            
+            // Add error handling for binaural beats playback
+            binauralRef.current.play()
+              .then(() => {
+                setBinauralPlaying(true);
+                console.log(`Playing ${selectedBinauralBeat} successfully`);
+              })
+              .catch(error => {
+                console.error(`Error playing ${selectedBinauralBeat}:`, error);
+                alert(`Could not play ${selectedBinauralBeat}. Please check if the audio file exists.`);
+              });
           } else {
             if (binauralRef.current) binauralRef.current.pause();
             setBinauralPlaying(false);
@@ -165,16 +221,52 @@ const TherapyPage = () => {
               className={`button ${selectedAdditionalAudio === audio ? 'active' : ''}`}
               onClick={() => {
                 if (additionalAudioRef.current) additionalAudioRef.current.pause();
+                
+                // If clicking the same button that's already playing, stop it
+                if (selectedAdditionalAudio === audio && additionalAudioPlaying) {
+                  setSelectedAdditionalAudio(null);
+                  setAdditionalAudioPlaying(false);
+                  return;
+                }
+                
+                // Otherwise play the selected audio
                 setSelectedAdditionalAudio(audio);
                 additionalAudioRef.current = new Audio(additionalAudios[audio]);
                 additionalAudioRef.current.loop = true;
-                additionalAudioRef.current.play();
+                
+                // Add error handling for audio playback
+                additionalAudioRef.current.play()
+                  .then(() => {
+                    setAdditionalAudioPlaying(true);
+                    console.log(`Playing ${audio} successfully`);
+                  })
+                  .catch(error => {
+                    console.error(`Error playing ${audio}:`, error);
+                    alert(`Could not play ${audio}. Please check if the audio file exists.`);
+                    setSelectedAdditionalAudio(null);
+                  });
               }}
             >
               {audio}
             </button>
           ))}
         </div>
+        
+        {additionalAudioPlaying && (
+          <button 
+            className="button stop-button" 
+            onClick={() => {
+              if (additionalAudioRef.current) {
+                additionalAudioRef.current.pause();
+                setAdditionalAudioPlaying(false);
+                setSelectedAdditionalAudio(null);
+              }
+            }}
+            style={{marginTop: "1rem"}}
+          >
+            ⏹️ Stop {selectedAdditionalAudio}
+          </button>
+        )}
       </div>
       <div className="button-group">
         <button className="button" onClick={() => setCurrentView("main")}>
