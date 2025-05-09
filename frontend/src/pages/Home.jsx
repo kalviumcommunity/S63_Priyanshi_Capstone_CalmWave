@@ -1,9 +1,10 @@
 // src/components/Home.jsx
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
+import { updateProfilePicture } from '../utils/profileUtils';
 // import Home1 from '../assests/Home1.png'
 import Home2 from '../assests/Home2.jpg'
 import Home3 from '../assests/Home3.jpg'
@@ -15,6 +16,84 @@ import Home8 from '../assests/Home8.jpg'
 import Home9 from '../assests/Home9.jpg'
 
 const Home = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log('Home - useEffect triggered, search:', location.search);
+    
+    // Check for query parameters from Google OAuth callback
+    const queryParams = new URLSearchParams(location.search);
+    const token = queryParams.get('token');
+    const userId = queryParams.get('userId');
+    const fullName = queryParams.get('fullName');
+    const email = queryParams.get('email');
+    const profilePic = queryParams.get('profilePic');
+    
+    console.log('Home - Query params:', { token: !!token, userId, fullName, email, profilePic });
+
+    // If we have token and userId from OAuth, save them to localStorage
+    if (token && userId) {
+      console.log('Home - Saving OAuth data to localStorage');
+      localStorage.setItem('token', token);
+      localStorage.setItem('userId', userId);
+      
+      if (fullName) {
+        localStorage.setItem('fullName', fullName);
+      }
+      
+      if (email) {
+        localStorage.setItem('email', email);
+      }
+      
+      // If profile pic is provided in the URL, save it
+      if (profilePic) {
+        console.log('Home - Saving profile pic from URL:', profilePic);
+        updateProfilePicture(profilePic);
+      } else {
+        console.log('Home - No profile pic in URL, fetching from API');
+        // Fetch user profile data to get profile picture if not provided in URL
+        const fetchUserProfile = async () => {
+          console.log('Home - fetchUserProfile called');
+          try {
+            console.log('Home - Fetching user profile for ID:', userId);
+            const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+
+            if (response.ok) {
+              const userData = await response.json();
+              console.log('Home - User data received:', userData);
+              
+              // Prioritize Google profile image if available
+              if (userData.googleProfileImage) {
+                console.log('Home - Using Google profile image:', userData.googleProfileImage);
+                updateProfilePicture(userData.googleProfileImage);
+              } else if (userData.profileImage) {
+                const profilePicUrl = `http://localhost:8000/${userData.profileImage}`;
+                console.log('Home - Using uploaded profile image:', profilePicUrl);
+                updateProfilePicture(profilePicUrl);
+              } else {
+                console.log('Home - No profile image found in user data');
+              }
+            } else {
+              console.log('Home - Failed to fetch user profile, status:', response.status);
+            }
+          } catch (error) {
+            console.error('Error fetching user profile:', error);
+          }
+        };
+
+        fetchUserProfile();
+      }
+
+      // Remove query parameters from URL
+      navigate('/home', { replace: true });
+    }
+  }, [location, navigate]);
+
   return (
     <div className="fade-in">
     <Navbar/>

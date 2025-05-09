@@ -21,9 +21,19 @@ function Login() {
   
       console.log(res.data);
   
-      // Check if user data and _id are returned
-      if (res.data?.user?._id) {
-        localStorage.setItem('userId', res.data.user._id); // Save to localStorage
+      // Check if user data, _id, and token are returned
+      if (res.data?.user?._id && res.data?.token) {
+        // Save user data to localStorage
+        localStorage.setItem('userId', res.data.user._id);
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('fullName', res.data.user.fullName);
+        localStorage.setItem('email', res.data.user.email);
+        
+        // If profile image exists, save it too
+        if (res.data.user.profileImage) {
+          localStorage.setItem('profilePic', `http://localhost:8000/${res.data.user.profileImage}`);
+        }
+        
         setMessage('Login successful!');
         navigate('/home');
       } else {
