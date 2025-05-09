@@ -40,8 +40,22 @@ function Signup() {
       });
 
       console.log(res.data);
-      setMessage("Signup successful!");
-      navigate('/login');
+      
+      // Check if user data, _id, and token are returned
+      if (res.data?.user?._id && res.data?.token) {
+        // Save user data to localStorage
+        localStorage.setItem('userId', res.data.user._id);
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('fullName', res.data.user.fullName);
+        localStorage.setItem('email', res.data.user.email);
+        
+        setMessage("Signup successful!");
+        // Redirect to profile page to set up profile picture
+        navigate('/profile');
+      } else {
+        setMessage("Signup successful! Please log in.");
+        navigate('/login');
+      }
     } catch (err) {
       setMessage(err.response?.data?.message || 'Signup failed');
     }
