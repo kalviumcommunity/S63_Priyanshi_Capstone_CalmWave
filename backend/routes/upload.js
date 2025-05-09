@@ -2,9 +2,34 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User'); // Make sure path is correct
+const dotenv = require('dotenv');
+
+dotenv.config();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const router = express.Router();
+
+// Middleware to verify token
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    // Store the user ID in the request object
+    req.user = { id: decoded.id };
+    next();
+  } catch (err) {
+    console.error('Token verification error:', err);
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+};
 
 // Ensure 'uploads/' folder exists
 const uploadsDir = path.join(__dirname, '..', 'uploads');
@@ -44,7 +69,7 @@ const upload = multer({
 });
 
 // POST /api/upload-profile
-router.post('/upload-profile', (req, res) => {
+router.post('/upload-profile', verifyToken, (req, res) => {
   upload.single('profile')(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: err.message });
@@ -58,6 +83,12 @@ router.post('/upload-profile', (req, res) => {
     }
 
     const userId = req.body.userId;
+    
+    // Ensure the user can only update their own profile
+    if (req.user.id !== userId) {
+      return res.status(403).json({ message: 'Not authorized to update this user profile' });
+    }
+    
     const imagePath = req.file.path;
 
     try {

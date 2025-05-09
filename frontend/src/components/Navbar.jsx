@@ -3,25 +3,42 @@ import { Link, useLocation } from 'react-router-dom';
 import '../styles/Navbar.css';
 import logo from '../assests/logo.png';
 import defaultProfile from '../assests/defaultProfile.png';
+import { getProfilePicture } from '../utils/profileUtils';
 
 export default function Navbar() {
   const location = useLocation();
-  const userId = localStorage.getItem('userId');
+  const [userId, setUserId] = useState(localStorage.getItem('userId'));
   const [profilePic, setProfilePic] = useState(defaultProfile);
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
-  // ✅ Load profile image from localStorage on mount
   useEffect(() => {
-    const storedPic = localStorage.getItem('profilePic');
-    if (storedPic) {
-      setProfilePic(storedPic);
-    }
-  }, []);
+    const storedUserId = localStorage.getItem('userId');
+    const storedToken = localStorage.getItem('token');
+    const storedPic = getProfilePicture(defaultProfile);
+
+    setUserId(storedUserId);
+    setToken(storedToken);
+    setProfilePic(storedPic);
+
+    window.addEventListener('profilePicUpdated', updateProfilePic);
+    window.addEventListener('storage', updateProfilePic);
+
+    return () => {
+      window.removeEventListener('profilePicUpdated', updateProfilePic);
+      window.removeEventListener('storage', updateProfilePic);
+    };
+  }, [location.pathname]);
+
+  const updateProfilePic = () => {
+    const fallback = getProfilePicture(defaultProfile);
+    setProfilePic(fallback);
+  };
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
-
     if (!file) return alert('Please select an image.');
     if (!userId || userId === 'null') return alert('User not logged in.');
+    if (!token) return alert('Authentication token missing. Please log in again.');
 
     const formData = new FormData();
     formData.append('profile', file);
@@ -30,14 +47,18 @@ export default function Navbar() {
     try {
       const res = await fetch('http://localhost:8000/api/upload-profile', {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
 
       const data = await res.json();
       if (res.ok && data.filePath) {
         const fullPath = `http://localhost:8000/${data.filePath}`;
+        localStorage.setItem('profilePic', fullPath);
         setProfilePic(fullPath);
-        localStorage.setItem('profilePic', fullPath); // ✅ Store it for future use
+        window.dispatchEvent(new Event('profilePicUpdated'));
       } else {
         alert(data.message || 'Upload failed.');
       }
@@ -62,7 +83,14 @@ export default function Navbar() {
 
       <div className="profile-upload">
         <Link to="/profile">
-          <img src={profilePic} alt="Profile" className="profile-pic" />
+          <img
+            src={profilePic}
+            alt="Profile"
+            className="profile-pic"
+            onError={(e) => {
+              e.target.src = defaultProfile;
+            }}
+          />
         </Link>
         <label htmlFor="upload">
           <input
