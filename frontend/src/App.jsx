@@ -7,7 +7,7 @@ import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import Home from './pages/Home';
 import Quiz from './pages/QuizPage';
-import Profile from './pages/Profile';
+import ProfileNew from './pages/ProfileNew';
 import Therapy from './pages/TherapyPage';
 
 const App = () => {
@@ -21,7 +21,7 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path='/home' element={<Home/>}/>
         <Route path="/quiz" element={<Quiz />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<ProfileNew />} />
         <Route path="/therapy" element={<Therapy />} />
         
         
