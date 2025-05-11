@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Profile.css';
 import { updateProfilePicture, getProfilePicture } from '../utils/profileUtils';
+import { validatePassword } from '../utils/validationUtils';
+import ConfirmModal from '../components/ConfirmModal';
 
 export default function ProfileNew() {
   const [profilePic, setProfilePic] = useState('');
@@ -141,6 +143,13 @@ export default function ProfileNew() {
     
     // Validate passwords if the user is trying to change them
     if (userData.newPassword) {
+      // Check password strength
+      const passwordValidation = validatePassword(userData.newPassword);
+      if (!passwordValidation.isValid) {
+        setErrorMsg(passwordValidation.message);
+        return;
+      }
+      
       if (userData.newPassword !== userData.confirmPassword) {
         setErrorMsg('New passwords do not match');
         return;
@@ -153,6 +162,9 @@ export default function ProfileNew() {
     }
 
     setIsLoading(true);
+    setErrorMsg('');
+    setSuccessMsg('');
+    
     try {
       const updateData = {
         fullName: userData.fullName,
@@ -165,73 +177,176 @@ export default function ProfileNew() {
         updateData.newPassword = userData.newPassword;
       }
 
-      const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(updateData)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccessMsg('Profile updated successfully!');
-        setErrorMsg('');
-        setIsEditing(false);
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout
         
-        // Update local storage with new user data
-        localStorage.setItem('fullName', data.user.fullName);
-        
-        // Clear password fields
-        setUserData({
-          ...userData,
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
+        const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(updateData),
+          signal: controller.signal
         });
-      } else {
-        setErrorMsg(data.message || 'Failed to update profile');
+        
+        clearTimeout(timeoutId);
+        
+        // Handle different HTTP status codes
+        if (response.status === 401) {
+          setErrorMsg('Your session has expired. Please log in again.');
+          setTimeout(() => navigate('/login'), 2000);
+          return;
+        }
+        
+        if (response.status === 403) {
+          setErrorMsg('You are not authorized to update this profile.');
+          return;
+        }
+        
+        if (response.status === 404) {
+          setErrorMsg('User profile not found.');
+          return;
+        }
+        
+        if (response.status === 500) {
+          setErrorMsg('Server error. Please try again later.');
+          return;
+        }
+        
+        const data = await response.json();
+
+        if (response.ok) {
+          setSuccessMsg('Profile updated successfully!');
+          setErrorMsg('');
+          setIsEditing(false);
+          
+          // Update local storage with new user data
+          localStorage.setItem('fullName', data.user.fullName);
+          
+          // Clear password fields
+          setUserData({
+            ...userData,
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: ''
+          });
+        } else {
+          setErrorMsg(data.message || 'Failed to update profile');
+        }
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        
+        if (error.name === 'AbortError') {
+          setErrorMsg('Request timed out. Please check your internet connection and try again.');
+        } else if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+          setErrorMsg('Network error. Please check your internet connection.');
+        } else {
+          setErrorMsg('An error occurred while updating your profile. Please try again.');
+        }
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
-      setErrorMsg('An error occurred while updating your profile');
+      console.error('Error in update process:', error);
+      setErrorMsg('An unexpected error occurred. Please try again later.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  
+  const initiateDeleteAccount = () => {
+    setShowDeleteModal(true);
+  };
+  
   const handleDeleteAccount = async () => {
-    if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      return;
-    }
+    // Modal will handle the confirmation
 
     setIsLoading(true);
+    setErrorMsg('');
+    setSuccessMsg('');
+    
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout
+      
       const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
-        }
+        },
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
+      
+      // Handle different HTTP status codes
+      if (response.status === 401) {
+        setErrorMsg('Your session has expired. Please log in again.');
+        setTimeout(() => navigate('/login'), 2000);
+        return;
+      }
+      
+      if (response.status === 403) {
+        setErrorMsg('You are not authorized to delete this account.');
+        return;
+      }
+      
+      if (response.status === 404) {
+        setErrorMsg('User account not found.');
+        return;
+      }
+      
+      if (response.status === 500) {
+        setErrorMsg('Server error. Please try again later.');
+        return;
+      }
 
       if (response.ok) {
         // Clear all local storage
         localStorage.clear();
-        setSuccessMsg('Your account has been deleted successfully');
         
-        // Redirect to login page after a short delay
+        // Create a custom element for the success message with a friendly goodbye
+        const successElement = document.createElement('div');
+        successElement.className = 'success-message account-deleted-message';
+        successElement.innerHTML = `
+          <div style="font-size: 3rem; margin-bottom: 10px;">👋</div>
+          <div>Your account has been deleted successfully.</div>
+          <div style="margin-top: 10px;">We hope to see you again soon!</div>
+        `;
+        
+        // Replace any existing success message
+        const existingMsg = document.querySelector('.success-message');
+        if (existingMsg) {
+          existingMsg.replaceWith(successElement);
+        } else {
+          // If no existing message, use the state
+          setSuccessMsg('👋 Your account has been deleted successfully. We hope to see you again soon!');
+        }
+        
+        // Redirect to signup page after a short delay
         setTimeout(() => {
-          navigate('/login');
-        }, 2000);
+          navigate('/signup');
+        }, 3000);
       } else {
-        const data = await response.json();
-        setErrorMsg(data.message || 'Failed to delete account');
+        try {
+          const data = await response.json();
+          setErrorMsg(data.message || 'Failed to delete account');
+        } catch (jsonError) {
+          setErrorMsg('Failed to delete account. Please try again.');
+        }
       }
     } catch (error) {
       console.error('Error deleting account:', error);
-      setErrorMsg('An error occurred while trying to delete your account');
+      
+      if (error.name === 'AbortError') {
+        setErrorMsg('Request timed out. Please check your internet connection and try again.');
+      } else if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        setErrorMsg('Network error. Please check your internet connection.');
+      } else {
+        setErrorMsg('An error occurred while trying to delete your account. Please try again.');
+      }
     } finally {
       setIsLoading(false);
       setShowDeleteConfirm(false);
@@ -247,9 +362,9 @@ export default function ProfileNew() {
     return (
       <div className="profile-page">
         <div className="message-box">
-          <h2>Please log in to view your profile</h2>
-          <button onClick={() => navigate('/login')} className="action-button">
-            Go to Login
+          <h2>Please create an account to access this feature</h2>
+          <button onClick={() => navigate('/signup')} className="action-button">
+            Go to Signup
           </button>
         </div>
       </div>
@@ -385,7 +500,7 @@ export default function ProfileNew() {
                 </button>
                 <button 
                   className="delete-button" 
-                  onClick={() => setShowDeleteConfirm(true)}
+                  onClick={initiateDeleteAccount}
                 >
                   Delete Account
                 </button>
@@ -401,29 +516,19 @@ export default function ProfileNew() {
         </div>
       </div>
 
-      {showDeleteConfirm && (
-        <div className="delete-confirmation-modal">
-          <div className="modal-content">
-            <h2>Delete Account</h2>
-            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
-            <div className="modal-buttons">
-              <button 
-                className="cancel-button" 
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Cancel
-              </button>
-              <button 
-                className="delete-button" 
-                onClick={handleDeleteAccount}
-                disabled={isLoading}
-              >
-                {isLoading ? 'Deleting...' : 'Delete Account'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Secure confirmation modal for account deletion */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteAccount}
+        title="Delete Account"
+        message="WARNING: You are about to permanently delete your account. All your data will be lost and this action cannot be undone."
+        confirmText={isLoading ? "Deleting..." : "Delete My Account"}
+        cancelText="Cancel"
+        confirmButtonClass="danger"
+        requireTypedConfirmation={true}
+        confirmationWord="DELETE"
+      />
     </div>
   );
 }

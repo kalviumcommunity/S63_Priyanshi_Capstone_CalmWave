@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Signup.css';
+import { validatePassword, validateEmail } from '../utils/validationUtils';
 import googleLogo from '../assests/google.png'; // Corrected typo 'assests'->'assets'
 import facebookLogo from '../assests/facebook.png';
 
@@ -27,12 +28,28 @@ function Signup() {
       return;
     }
 
+    // Validate email
+    const emailValidation = validateEmail(formData.email);
+    if (!emailValidation.isValid) {
+      setMessage(emailValidation.message);
+      return;
+    }
+
+    // Validate password strength
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) {
+      setMessage(passwordValidation.message);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setMessage("Passwords do not match");
       return;
     }
 
     try {
+      setMessage("Creating your account...");
+      
       const res = await axios.post('http://localhost:8000/api/users/register', {
         fullName: formData.fullName,
         email: formData.email,
@@ -57,7 +74,8 @@ function Signup() {
         navigate('/login');
       }
     } catch (err) {
-      setMessage(err.response?.data?.message || 'Signup failed');
+      console.error('Signup error:', err);
+      setMessage(err.response?.data?.message || 'Signup failed. Please try again.');
     }
   };
 
