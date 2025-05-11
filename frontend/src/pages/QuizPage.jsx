@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/QuizPage.css";
@@ -35,13 +36,22 @@ const QuizPage = () => {
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState("");
   const [randomQuote, setRandomQuote] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login', { state: { message: 'Please log in to take the anxiety assessment' } });
+      return;
+    }
+    
     const quote = quotes[Math.floor(Math.random() * quotes.length)];
     setRandomQuote(quote);
-  }, []);
+  }, [navigate]);
 
   const handleAnswerClick = (option) => {
     const updatedAnswers = [...answers];
@@ -49,7 +59,7 @@ const QuizPage = () => {
     setAnswers(updatedAnswers);
   };
 
-  const calculateScore = () => {
+  const calculateScore = async () => {
     const scoreMap = {
       "Not at all": 0,
       "Several days": 1,
@@ -67,7 +77,42 @@ const QuizPage = () => {
 
     setScore(total);
     setLevel(levelText);
-    setShowResultScreen(true);
+    
+    // Save quiz result to backend
+    try {
+      setIsSubmitting(true);
+      setError(null);
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login', { state: { message: 'Please log in to save your quiz results' } });
+        return;
+      }
+      
+      // Create quiz result data
+      const quizData = {
+        score: total,
+        level: levelText,
+        date: new Date()
+      };
+      
+      // Send data to backend
+      await axios.post('http://localhost:8000/api/quizresults', quizData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      console.log('Quiz result saved successfully');
+      
+    } catch (err) {
+      console.error('Error saving quiz result:', err);
+      setError('Failed to save your quiz result, but you can still continue.');
+    } finally {
+      setIsSubmitting(false);
+      setShowResultScreen(true);
+    }
   };
 
   const handleNext = () => {
@@ -117,12 +162,30 @@ const QuizPage = () => {
         <div className="result-screen">
           <div className="result-box">
             <h1>🎉 Hurray! You Completed the Quiz</h1>
+            
+            {error && (
+              <div style={{ color: 'red', marginBottom: '1rem', padding: '0.5rem', backgroundColor: 'rgba(255,0,0,0.1)', borderRadius: '4px' }}>
+                {error}
+              </div>
+            )}
+            
             <p className="result-score">Your Score: <strong>{score}</strong></p>
             <p className="result-level">Anxiety Level: <strong>{level}</strong></p>
             <p className="result-msg">Remember, this is just a self-assessment. You're doing great just by being here 💙</p>
             <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginTop: "24px" }}>
-              <button onClick={() => window.location.reload()}>Retake Quiz</button>
-              <button className="result-action-btn" onClick={handleStartTherapy}>Start Therapy</button>
+              <button 
+                onClick={() => window.location.reload()}
+                disabled={isSubmitting}
+              >
+                Retake Quiz
+              </button>
+              <button 
+                className="result-action-btn" 
+                onClick={handleStartTherapy}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Saving..." : "Start Therapy"}
+              </button>
             </div>
           </div>
         </div>

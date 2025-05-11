@@ -10,7 +10,23 @@ const userSchema = new mongoose.Schema({
   profileImage: {
     type: String,
     default: ''
-  }
+  },
+  // Reference fields to related data
+  quizResults: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'QuizResult'
+  }],
+  moodLogs: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'MoodLog'
+  }],
+  soundSessions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'SoundSession'
+  }]
+}, {
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
 // Hash password before saving (only if password exists and modified)
@@ -28,4 +44,26 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-module.exports = mongoose.model('User', userSchema);
+// Virtual for quiz results
+userSchema.virtual('quizResultsData', {
+  ref: 'QuizResult',
+  localField: '_id',
+  foreignField: 'userId'
+});
+
+// Virtual for mood logs
+userSchema.virtual('moodLogsData', {
+  ref: 'MoodLog',
+  localField: '_id',
+  foreignField: 'userId'
+});
+
+// Virtual for sound sessions
+userSchema.virtual('soundSessionsData', {
+  ref: 'SoundSession',
+  localField: '_id',
+  foreignField: 'userId'
+});
+
+module.exports = mongoose.models.User || mongoose.model('User', userSchema);
+

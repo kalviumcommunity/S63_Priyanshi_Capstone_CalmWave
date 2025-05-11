@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Login.css';
-import googleLogo from '../assests/google.png'; // Corrected path
+import googleLogo from '../assests/google.png';
 import facebookLogo from '../assests/facebook.png';
 
 function Login() {
@@ -13,37 +13,36 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Attempting login with:', { email, password }); // Debugging line
+
     try {
       const res = await axios.post('http://localhost:8000/api/users/login', {
         email,
         password,
       });
-  
+
       console.log(res.data);
-  
-      // Check if user data, _id, and token are returned
+
       if (res.data?.user?._id && res.data?.token) {
-        // Save user data to localStorage
         localStorage.setItem('userId', res.data.user._id);
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('fullName', res.data.user.fullName);
         localStorage.setItem('email', res.data.user.email);
-        
-        // If profile image exists, save it too
+
         if (res.data.user.profileImage) {
           localStorage.setItem('profilePic', `http://localhost:8000/${res.data.user.profileImage}`);
         }
-        
+
         setMessage('Login successful!');
         navigate('/home');
       } else {
         setMessage('Invalid user data received from server.');
       }
     } catch (err) {
+      console.error('Login error:', err); // Debugging line
       setMessage(err.response?.data?.message || 'Login failed');
     }
   };
-  
 
   const handleGoogleLogin = () => {
     window.location.href = 'http://localhost:8000/auth/google';

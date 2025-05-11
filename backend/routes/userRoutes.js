@@ -2,32 +2,13 @@ const express = require('express');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User'); // Assuming User model is correct
+const User = require('../models/User');
+const { verifyToken, isResourceOwner } = require('../middleware/auth');
 const router = express.Router();
 
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
-
-// Middleware to verify token
-const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'No token provided' });
-  }
-
-  const token = authHeader.split(' ')[1];
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    // Store the user ID in the request object
-    req.user = { id: decoded.id };
-    next();
-  } catch (err) {
-    console.error('Token verification error:', err);
-    return res.status(401).json({ message: 'Invalid token' });
-  }
-};
 
 // Register Route
 router.post('/register', async (req, res) => {
@@ -42,7 +23,7 @@ router.post('/register', async (req, res) => {
     const newUser = new User({ fullName, email, password });
     await newUser.save();
 
-    const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.status(201).json({
       user: {
@@ -79,7 +60,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.status(200).json({
       user: {
@@ -105,10 +86,66 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
+// Get current user profile with quiz results, mood logs, and sound sessions (Protected)
+router.get('/profile/me', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    const user = await User.findById(userId)
+      .select('-password')
+      .populate({
+        path: 'quizResultsData',
+        options: { sort: { createdAt: -1 }, limit: 10 } // Get the 10 most recent quiz results
+      })
+      .populate({
+        path: 'moodLogsData',
+        options: { sort: { date: -1 }, limit: 10 } // Get the 10 most recent mood logs
+      })
+      .populate({
+        path: 'soundSessionsData',
+        options: { sort: { createdAt: -1 }, limit: 10 } // Get the 10 most recent sound sessions
+      });
+      
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    res.json({
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        profileImage: user.profileImage,
+        googleProfileImage: user.googleProfileImage || null
+      },
+      quizResults: user.quizResultsData || [],
+      moodLogs: user.moodLogsData || [],
+      soundSessions: user.soundSessionsData || []
+    });
+  } catch (err) {
+    console.error('Error fetching user profile:', err);
+    res.status(500).json({ message: 'Error fetching user profile', error: err.message });
+  }
+});
+
 // Get user by ID (Protected)
 router.get('/:id', verifyToken, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await User.findById(req.params.id)
+      .select('-password')
+      .populate({
+        path: 'quizResultsData',
+        options: { sort: { createdAt: -1 }, limit: 10 }
+      })
+      .populate({
+        path: 'moodLogsData',
+        options: { sort: { date: -1 }, limit: 10 }
+      })
+      .populate({
+        path: 'soundSessionsData',
+        options: { sort: { createdAt: -1 }, limit: 10 }
+      });
+      
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -129,12 +166,8 @@ router.get('/:id', verifyToken, async (req, res) => {
 });
 
 // Update user (Protected)
-router.put('/:id', verifyToken, async (req, res) => {
+router.put('/:id', verifyToken, isResourceOwner, async (req, res) => {
   try {
-    // Ensure the user can only update their own profile
-    if (req.user.id !== req.params.id) {
-      return res.status(403).json({ message: 'Not authorized to update this user' });
-    }
 
     const { fullName, email, currentPassword, newPassword } = req.body;
     const updateData = {};
@@ -195,12 +228,8 @@ router.put('/:id', verifyToken, async (req, res) => {
 });
 
 // Delete user (Protected)
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', verifyToken, isResourceOwner, async (req, res) => {
   try {
-    // Ensure the user can only delete their own account
-    if (req.user.id !== req.params.id) {
-      return res.status(403).json({ message: 'Not authorized to delete this user' });
-    }
 
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) {

@@ -22,77 +22,97 @@ const Home = () => {
   useEffect(() => {
     console.log('Home - useEffect triggered, search:', location.search);
     
-    // Check for query parameters from Google OAuth callback
+    // Check for session ID from Google OAuth callback
     const queryParams = new URLSearchParams(location.search);
-    const token = queryParams.get('token');
-    const userId = queryParams.get('userId');
-    const fullName = queryParams.get('fullName');
-    const email = queryParams.get('email');
-    const profilePic = queryParams.get('profilePic');
+    const sessionId = queryParams.get('session');
     
-    console.log('Home - Query params:', { token: !!token, userId, fullName, email, profilePic });
-
-    // If we have token and userId from OAuth, save them to localStorage
-    if (token && userId) {
-      console.log('Home - Saving OAuth data to localStorage');
-      localStorage.setItem('token', token);
-      localStorage.setItem('userId', userId);
+    if (sessionId) {
+      console.log('Home - Session ID found, retrieving auth data');
       
-      if (fullName) {
-        localStorage.setItem('fullName', fullName);
-      }
-      
-      if (email) {
-        localStorage.setItem('email', email);
-      }
-      
-      // If profile pic is provided in the URL, save it
-      if (profilePic) {
-        console.log('Home - Saving profile pic from URL:', profilePic);
-        updateProfilePicture(profilePic);
-      } else {
-        console.log('Home - No profile pic in URL, fetching from API');
-        // Fetch user profile data to get profile picture if not provided in URL
-        const fetchUserProfile = async () => {
-          console.log('Home - fetchUserProfile called');
-          try {
-            console.log('Home - Fetching user profile for ID:', userId);
-            const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
-              headers: {
-                'Authorization': `Bearer ${token}`
-              }
-            });
-
-            if (response.ok) {
-              const userData = await response.json();
-              console.log('Home - User data received:', userData);
-              
-              // Prioritize Google profile image if available
-              if (userData.googleProfileImage) {
-                console.log('Home - Using Google profile image:', userData.googleProfileImage);
-                updateProfilePicture(userData.googleProfileImage);
-              } else if (userData.profileImage) {
-                const profilePicUrl = `http://localhost:8000/${userData.profileImage}`;
-                console.log('Home - Using uploaded profile image:', profilePicUrl);
-                updateProfilePicture(profilePicUrl);
-              } else {
-                console.log('Home - No profile image found in user data');
-              }
-            } else {
-              console.log('Home - Failed to fetch user profile, status:', response.status);
-            }
-          } catch (error) {
-            console.error('Error fetching user profile:', error);
+      // Function to securely retrieve auth data
+      const fetchAuthData = async () => {
+        try {
+          const response = await fetch(`http://localhost:8000/auth/session/${sessionId}`);
+          
+          if (!response.ok) {
+            console.error('Failed to retrieve auth session:', response.status);
+            return;
           }
-        };
-
-        fetchUserProfile();
-      }
-
+          
+          const authData = await response.json();
+          console.log('Home - Auth data retrieved:', { 
+            userId: authData.userId,
+            hasToken: !!authData.token,
+            fullName: authData.fullName,
+            hasProfilePic: !!authData.profilePic
+          });
+          
+          // Save auth data to localStorage
+          localStorage.setItem('token', authData.token);
+          localStorage.setItem('userId', authData.userId);
+          
+          if (authData.fullName) {
+            localStorage.setItem('fullName', authData.fullName);
+          }
+          
+          if (authData.email) {
+            localStorage.setItem('email', authData.email);
+          }
+          
+          // Save profile picture if available
+          if (authData.profilePic) {
+            console.log('Home - Saving profile pic from auth data');
+            updateProfilePicture(authData.profilePic);
+          } else {
+            console.log('Home - No profile pic in auth data, fetching from API');
+            // Fetch user profile data to get profile picture
+            fetchUserProfile(authData.userId, authData.token);
+          }
+        } catch (error) {
+          console.error('Error retrieving auth data:', error);
+        }
+      };
+      
+      fetchAuthData();
+      
       // Remove query parameters from URL
       navigate('/home', { replace: true });
     }
   }, [location, navigate]);
+  
+  // Function to fetch user profile data
+  const fetchUserProfile = async (userId, token) => {
+    console.log('Home - fetchUserProfile called');
+    try {
+      console.log('Home - Fetching user profile for ID:', userId);
+      const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        console.log('Home - User data received:', userData);
+        
+        // Prioritize Google profile image if available
+        if (userData.googleProfileImage) {
+          console.log('Home - Using Google profile image:', userData.googleProfileImage);
+          updateProfilePicture(userData.googleProfileImage);
+        } else if (userData.profileImage) {
+          const profilePicUrl = `http://localhost:8000/${userData.profileImage}`;
+          console.log('Home - Using uploaded profile image:', profilePicUrl);
+          updateProfilePicture(profilePicUrl);
+        } else {
+          console.log('Home - No profile image found in user data');
+        }
+      } else {
+        console.log('Home - Failed to fetch user profile, status:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
 
   return (
     <div className="fade-in">
