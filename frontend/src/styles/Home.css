@@ -1,9 +1,43 @@
 /* src/styles/Home.css */
+/* Enhanced with animations and effects */
 
+/* Global Animation Classes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-out;
+}
+
+/* Hero Section with enhanced effects */
 .hero-section {
-  width: 100vw; /* Full width */
-  height: 100vh; /* Full height */
-  background-image: url('/src/assests/Home1.jpg'); /* Ensure correct path */
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/src/assests/Home1.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -16,112 +50,174 @@
   overflow: hidden;
 }
 
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0,59,91,0.3) 0%, rgba(0,255,229,0.2) 100%);
+  z-index: 1;
+}
 
 /* Overlay content inside hero section */
 .hero-overlay {
-  background: rgba(255, 255, 255, 0.25); /* Soft white transparent box */
-  backdrop-filter: blur(10px); /* Adds the blur behind the box */
-  padding: 2rem;
-  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  padding: 2.5rem;
+  border-radius: 1rem;
   text-align: center;
   max-width: 600px;
+  z-index: 2;
+  box-shadow: 0 8px 32px rgba(0, 59, 91, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  animation: floatUp 1.2s ease-out;
 }
 
 /* Text styles */
 .hero-title {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  text-shadow: 0 2px 10px rgba(0, 59, 91, 0.3);
+  animation: fadeIn 1.5s ease-out;
 }
 
 .hero-subtext {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: #f0f0f0;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.8rem;
+  line-height: 1.6;
+  text-shadow: 0 1px 8px rgba(0, 59, 91, 0.2);
+  animation: fadeIn 1.8s ease-out;
 }
 
-/* Button */
+/* Button with enhanced effects */
 .custom-button {
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(90deg, rgba(0, 255, 229, 0.1), rgba(0, 121, 145, 0.2), rgba(0, 255, 229, 0.1));
+  background-size: 200% auto;
   color: #ffffff;
-  padding: 0.85rem 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 1rem;
+  padding: 1rem 2.2rem;
+  border: 1px solid rgba(0, 255, 229, 0.3);
+  border-radius: 2rem;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   cursor: pointer;
   font-weight: 600;
-  letter-spacing: 0.8px;
-  font-size: 1.05rem;
+  letter-spacing: 1px;
+  font-size: 1.1rem;
   box-shadow: 0 8px 24px rgba(0, 255, 229, 0.2);
-  transition: all 0.3s ease;
-  text-shadow: 0 0 5px rgba(0, 255, 229, 0.2);
+  transition: all 0.4s ease;
+  text-shadow: 0 0 8px rgba(0, 255, 229, 0.3);
+  position: relative;
+  overflow: hidden;
+  animation: shimmer 3s infinite linear;
 }
 
 .custom-button:hover {
-  background: rgba(0, 255, 229, 0.15);
+  background: rgba(0, 255, 229, 0.2);
   color: #00ffe5;
-  box-shadow: 0 10px 35px rgba(0, 255, 229, 0.35);
-  border-color: rgba(0, 255, 229, 0.4);
-  transform: scale(1.05);
+  box-shadow: 0 10px 35px rgba(0, 255, 229, 0.4);
+  border-color: rgba(0, 255, 229, 0.5);
+  transform: scale(1.05) translateY(-3px);
+  letter-spacing: 1.2px;
 }
 
-/* General gradient background reused as utility */
-/* === Global Section Utility Classes === */
+.custom-button:active {
+  transform: scale(0.98);
+  box-shadow: 0 5px 15px rgba(0, 255, 229, 0.3);
+}
+
+/* General Section Utility Classes */
 .section {
-  padding: 4rem 1rem;
+  padding: 5rem 1.5rem;
   text-align: center;
-  border-radius: 1.5rem;
-  margin: 2rem 1rem;
+  border-radius: 2rem;
+  margin: 3rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.5s ease;
 }
 
-/* .white-bg {
+.section:hover {
+  transform: translateY(-5px);
+}
+
+.white-bg {
   background-color: #ffffff;
-} */
+  box-shadow: 0 10px 30px rgba(0, 59, 91, 0.08);
+}
 
 .gradient-bg {
-  background: linear-gradient(to bottom right, #e0f7fa, #f1f8ff);
+  background: linear-gradient(-45deg, #e0f7fa, #f1f8ff, #e3f2fd, #e0f7fa);
+  background-size: 400% 400%;
+  animation: gradientFlow 15s ease infinite;
+  box-shadow: 0 10px 30px rgba(0, 59, 91, 0.1);
 }
 
 .section-title {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 700;
   color: #003b5b;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  bottom: -10px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 229, 0.7), transparent);
+  border-radius: 50%;
 }
 
 .section-subtext {
-  font-size: 1.125rem;
+  font-size: 1.2rem;
   color: #455a64;
   max-width: 700px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
 }
 
 .section-img {
   width: 700px;
   height: auto;
-  margin-top: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 15px 35px rgba(0, 59, 91, 0.15);
+  transition: all 0.5s ease;
 }
 
-/* === Assessment Section === */
+.section-img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 59, 91, 0.2);
+}
+
+/* Assessment Section */
 .assessment-section {
-  background: linear-gradient(to right, #dfefff, #f0faff);
-  padding: 4rem 1rem;
+  background: linear-gradient(135deg, #dfefff, #f0faff, #e5f5ff);
+  background-size: 400% 400%;
+  animation: gradientFlow 15s ease infinite;
+  padding: 5rem 1.5rem;
   border-radius: 2rem;
-  margin: 2rem 1rem;
+  margin: 3rem 1.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 15px 35px rgba(0, 59, 91, 0.12);
 }
 
 .assessment-content {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 3rem;
   align-items: center;
   justify-content: center;
   max-width: 1200px;
@@ -131,106 +227,118 @@
 .assessment-text {
   flex: 1;
   min-width: 300px;
+  animation: fadeIn 1s ease-out;
 }
 
 .assessment-text h2 {
-  font-size: 2rem;
+  font-size: 2.2rem;
   color: #004d60;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+  display: inline-block;
+}
+
+.assessment-text h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 70%;
+  bottom: -10px;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(0, 255, 229, 0.7), transparent);
+  border-radius: 50%;
 }
 
 .assessment-text p {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: #546e7a;
   line-height: 1.6;
 }
 
 .assessment-image-glass {
   flex: 1;
-  min-width: 280px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(12px);
+  min-width: 300px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(15px);
   border-radius: 1.5rem;
-  padding: 1rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 1.2rem;
+  box-shadow: 0 15px 35px rgba(0, 59, 91, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.5s ease;
+  animation: floatUp 1s ease-out;
+}
+
+.assessment-image-glass:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 59, 91, 0.2);
 }
 
 .assessment-img {
   width: 100%;
   height: auto;
   border-radius: 1rem;
+  transition: all 0.5s ease;
 }
 
-/* === Card Sections (Mood & Knowledge) === */
+/* Card Sections (Mood & Knowledge) */
 .card-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 2rem;
-  margin-top: 2rem;
+  gap: 2.5rem;
+  margin-top: 3rem;
 }
 
 .card {
   background: white;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  max-width: 280px;
+  padding: 1.8rem;
+  border-radius: 1.2rem;
+  box-shadow: 0 15px 35px rgba(0, 59, 91, 0.1);
+  max-width: 290px;
   text-align: center;
-  transition: transform 0.3s ease;
+  transition: all 0.5s ease;
+  border: 1px solid rgba(231, 248, 255, 0.8);
 }
 
 .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 59, 91, 0.15);
 }
 
 .card-img {
   width: 100%;
   height: auto;
-  border-radius: 0.75rem;
-  margin-bottom: 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1.2rem;
+  transition: all 0.5s ease;
+}
+
+.card-img:hover {
+  transform: scale(1.03);
 }
 
 .card-title {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: bold;
-  color: #333;
-  margin-bottom: 8px;
+  color: #003b5b;
+  margin-bottom: 12px;
   text-align: center;
 }
 
 .card-description {
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 1rem;
+  color: #455a64;
   text-align: center;
+  line-height: 1.5;
 }
 
-
-
-/* === Responsive Media Queries === */
-@media (max-width: 768px) {
-  .assessment-content {
-    flex-direction: column;
-    padding: 2rem 1rem;
-  }
-
-  .section {
-    padding: 3rem 1rem;
-  }
-
-  .section-title {
-    font-size: 1.75rem;
-  }
-
-  .card {
-    max-width: 90%;
-  }
-}
+/* Enhanced flip card styles with better content fitting */
 .flip-card {
   background: transparent;
   width: 290px;
-  height: 180px;
+  height: 220px; /* Increased height for better content fit */
   perspective: 1000px;
+  margin: 1rem;
 }
 
 .flip-card-inner {
@@ -241,7 +349,7 @@
   transition: transform 0.8s;
   transform-style: preserve-3d;
   border-radius: 1rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 15px 35px rgba(0, 59, 91, 0.1);
 }
 
 .flip-card:hover .flip-card-inner {
@@ -255,25 +363,153 @@
   height: 100%;
   backface-visibility: hidden;
   border-radius: 1rem;
-  overflow: hidden;
+  overflow: auto; /* Changed from hidden to auto to allow scrolling if needed */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .flip-card-front {
-  
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: white;
+  padding: 1rem;
+}
+
+.flip-card-front img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
 }
 
 .flip-card-back {
-  background: #e3f2fd;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
   color: #0a3d62;
   transform: rotateY(180deg);
-  display: flex;
-  flex-direction: column; /* Add this */
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  text-align: center; /* Optional: centers text within p tags */
+  padding: 1.2rem;
+  text-align: center;
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
+.flip-card-back h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.flip-card-back p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  
+  .hero-subtext {
+    font-size: 1.1rem;
+  }
+  
+  .assessment-content {
+    flex-direction: column;
+    padding: 2rem 1rem;
+  }
+
+  .section {
+    padding: 3.5rem 1rem;
+    margin: 2rem 1rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .section-img {
+    width: 100%;
+    max-width: 500px;
+  }
+  
+  .assessment-text h2 {
+    font-size: 1.8rem;
+  }
+  
+  .assessment-text p {
+    font-size: 1.1rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .hero-overlay {
+    padding: 1.8rem;
+    width: 85%;
+  }
+  
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  
+  .hero-subtext {
+    font-size: 1rem;
+  }
+  
+  .custom-button {
+    padding: 0.8rem 1.8rem;
+    font-size: 1rem;
+  }
+  
+  .flip-card {
+    width: 280px;
+    height: 200px;
+    margin: 0.5rem;
+    
+    
+  }
+  
+  .flip-card-back {
+    padding: 1rem;
+  }
+  
+  .flip-card-back h3 {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+  }
+  
+  .flip-card-back p {
+    font-size: 0.85rem;
+    line-height: 1.3;
+  }
+}
+
+/* Additional Scroll Animation */
+@keyframes reveal {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  animation: reveal 0.8s forwards;
+}
+
+/* Add this script to your React component to enable scroll reveal animations */
+/* 
+useEffect(() => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('reveal');
+      }
+    });
+  }, { threshold: 0.1 });
+  
+  document.querySelectorAll('.section, .assessment-section').forEach(section => {
+    observer.observe(section);
+  });
+  
+  return () => observer.disconnect();
+}, []);
+*/
