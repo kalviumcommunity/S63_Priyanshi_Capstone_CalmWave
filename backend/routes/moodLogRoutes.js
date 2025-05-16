@@ -108,6 +108,36 @@ router.put('/:id', verifyToken, async (req, res) => {
   }
 });
 
+// DELETE - Delete a mood log by ID (Protected)
+router.delete('/:id', verifyToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const moodLog = await MoodLog.findById(req.params.id);
+    if (!moodLog) {
+      return res.status(404).json({ message: 'Mood log not found' });
+    }
+
+    // Only allow deletion if the mood log belongs to the current user
+    if (String(moodLog.userId) !== String(userId)) {
+      return res.status(403).json({ message: 'Not authorized to delete this mood log' });
+    }
+
+    await MoodLog.findByIdAndDelete(req.params.id);
+
+    // Optionally: Remove reference from User's moodLogs array
+    await User.findByIdAndUpdate(userId, {
+      $pull: { moodLogs: req.params.id }
+    });
+
+    res.json({ message: 'Mood log deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting mood log:', err);
+    res.status(500).json({ message: 'Error deleting mood log', error: err.message });
+  }
+});
+
+
 
 
 module.exports = router;
