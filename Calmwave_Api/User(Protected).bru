@@ -1,0 +1,15 @@
+meta {
+  name: User(Protected)
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:8000/api/users/
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjFjZTE4YTFjMzRmNmQyYmE1ZjUyNSIsImlhdCI6MTc0NzA0NjAyNywiZXhwIjoxNzQ3NjUwODI3fQ.QHkp20MNrphQS4MevS8-6tDERMMbMZzP_LUD47YoCTo
+}

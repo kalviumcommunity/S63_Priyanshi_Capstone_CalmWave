@@ -97,6 +97,30 @@ router.put('/:id', verifyToken, async (req, res) => {
   }
 });
 
+// DELETE - Remove a quiz result by ID (Protected)
+router.delete('/:id', verifyToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const quizResult = await QuizResult.findById(req.params.id);
+
+    if (!quizResult) {
+      return res.status(404).json({ message: 'Quiz result not found' });
+    }
+
+    // Ensure only the owner can delete their result
+    if (String(quizResult.userId) !== String(userId)) {
+      return res.status(403).json({ message: 'Not authorized to delete this quiz result' });
+    }
+
+    await QuizResult.findByIdAndDelete(req.params.id);
+
+    res.json({ message: 'Quiz result deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting quiz result', error: err.message });
+  }
+});
+
 
 
 module.exports = router;
