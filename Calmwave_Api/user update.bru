@@ -1,0 +1,25 @@
+meta {
+  name: user update
+  type: http
+  seq: 6
+}
+
+put {
+  url: http://localhost:8000/api/users/6821ce18a1c34f6d2ba5f525
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjFjZTE4YTFjMzRmNmQyYmE1ZjUyNSIsImlhdCI6MTc0NzA0NjAyNywiZXhwIjoxNzQ3NjUwODI3fQ.QHkp20MNrphQS4MevS8-6tDERMMbMZzP_LUD47YoCTo
+}
+
+body:json {
+  {
+    "fullName": "Johnathan Doe",
+    "email": "john.doe.updated@example.com",
+    "currentPassword": "password123",
+    "newPassword": "newpassword123"
+  }
+  
+}
