@@ -132,4 +132,34 @@ router.get('/user/:userId', verifyToken, async (req, res) => {
   }
 });
 
+// DELETE - Delete a sound session by ID (Protected)
+router.delete('/:id', verifyToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const session = await SoundSession.findById(req.params.id);
+
+    if (!session) {
+      return res.status(404).json({ message: 'Sound session not found' });
+    }
+
+    // Check if the session belongs to the current user
+    if (String(session.userId) !== String(userId)) {
+      return res.status(403).json({ message: 'Not authorized to delete this session' });
+    }
+
+    await SoundSession.findByIdAndDelete(req.params.id);
+
+    // Also remove it from the user's `soundSessions` array (optional)
+    const User = require('../models/User');
+    await User.findByIdAndUpdate(userId, {
+      $pull: { soundSessions: session._id }
+    });
+
+    res.json({ message: 'Sound session deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting sound session', error: err.message });
+  }
+});
+
 module.exports = router;
