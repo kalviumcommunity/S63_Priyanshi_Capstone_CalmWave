@@ -108,6 +108,10 @@ app.use('/api/quizresults', quizResultRoutes);
 app.use('/api', uploadRoutes);
 app.use('/auth', authRoutes); // ✅ Google OAuth route
 
+app.get('/', (req, res) => {
+  res.send('🎉 CalmWave backend is running!');
+});
+
 // Connect to DB and start server
 const PORT = process.env.PORT || 8000;
 connectDB().then(() => {
