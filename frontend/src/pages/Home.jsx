@@ -5,6 +5,7 @@ import React, { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
 import { updateProfilePicture } from '../utils/profileUtils';
+import { API_BASE_URL, fetchData, getFullResourceUrl } from '../utils/app';
 // import Home1 from '../assests/Home1.png'
 import Home2 from '../assests/Home2.jpg'
 import Home3 from '../assests/Home3.jpg'
@@ -32,7 +33,7 @@ const Home = () => {
       // Function to securely retrieve auth data
       const fetchAuthData = async () => {
         try {
-          const response = await fetch(`http://localhost:8000/auth/session/${sessionId}`);
+          const response = await fetch(`${API_BASE_URL}/auth/session/${sessionId}`);
           
           if (!response.ok) {
             console.error('Failed to retrieve auth session:', response.status);
@@ -85,7 +86,7 @@ const Home = () => {
     console.log('Home - fetchUserProfile called');
     try {
       console.log('Home - Fetching user profile for ID:', userId);
-      const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -100,7 +101,7 @@ const Home = () => {
           console.log('Home - Using Google profile image:', userData.googleProfileImage);
           updateProfilePicture(userData.googleProfileImage);
         } else if (userData.profileImage) {
-          const profilePicUrl = `http://localhost:8000/${userData.profileImage}`;
+          const profilePicUrl = getFullResourceUrl(userData.profileImage);
           console.log('Home - Using uploaded profile image:', profilePicUrl);
           updateProfilePicture(profilePicUrl);
         } else {

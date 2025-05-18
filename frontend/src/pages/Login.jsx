@@ -5,6 +5,9 @@ import '../styles/Login.css';
 import googleLogo from '../assests/google.png';
 import facebookLogo from '../assests/facebook.png';
 
+// Import the API base URL from environment variables
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +19,7 @@ function Login() {
     console.log('Attempting login with:', { email, password }); // Debugging line
 
     try {
-      const res = await axios.post('http://localhost:8000/api/users/login', {
+      const res = await axios.post(`${API_BASE_URL}/api/users/login`, {
         email,
         password,
       });
@@ -30,7 +33,7 @@ function Login() {
         localStorage.setItem('email', res.data.user.email);
 
         if (res.data.user.profileImage) {
-          localStorage.setItem('profilePic', `http://localhost:8000/${res.data.user.profileImage}`);
+          localStorage.setItem('profilePic', `${API_BASE_URL}/${res.data.user.profileImage}`);
         }
 
         setMessage('Login successful!');
@@ -45,7 +48,7 @@ function Login() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:8000/auth/google';
+    window.location.href = `${API_BASE_URL}/auth/google`;
   };
 
   return (
