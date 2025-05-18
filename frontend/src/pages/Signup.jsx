@@ -6,6 +6,9 @@ import { validatePassword, validateEmail } from '../utils/validationUtils';
 import googleLogo from '../assests/google.png'; // Corrected typo 'assests'->'assets'
 import facebookLogo from '../assests/facebook.png';
 
+// Import the API base URL from environment variables
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 function Signup() {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -50,7 +53,7 @@ function Signup() {
     try {
       setMessage("Creating your account...");
       
-      const res = await axios.post('http://localhost:8000/api/users/register', {
+      const res = await axios.post(`${API_BASE_URL}/api/users/register`, {
         fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
@@ -80,7 +83,7 @@ function Signup() {
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = 'http://localhost:8000/auth/google';
+    window.location.href = `${API_BASE_URL}/auth/google`;
   };
 
   return (

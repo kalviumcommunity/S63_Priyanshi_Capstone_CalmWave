@@ -55,7 +55,7 @@ router.get('/google/callback',
       fullName: req.user.fullName,
       email: req.user.email,
       profilePic: req.user.googleProfileImage || 
-                 (req.user.profileImage ? `http://localhost:8000/${req.user.profileImage}` : null),
+                 (req.user.profileImage ? `${process.env.BACKEND_URL || 'http://localhost:8000'}/${req.user.profileImage}` : null),
       expires: Date.now() + (5 * 60 * 1000) // 5 minutes
     };
     
