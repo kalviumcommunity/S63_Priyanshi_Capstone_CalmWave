@@ -1,0 +1,4 @@
+dir: cannot access '/b': No such file or directory
+c\:/Users/chitt/OneDrive/Desktop/S63_Priyanshi_Capstone_CalmWave/frontend:
+eslint.config.js  node_modules	package-lock.json  README.md  vite.config.js
+index.html	  package.json	public		   src
