@@ -1,0 +1,18 @@
+PASS tests/simple.test.js
+  Simple Tests
+    √ adds 1 + 2 to equal 3 (4 ms)
+    √ string concatenation works
+    √ boolean logic works (4 ms)
+    √ arrays can be manipulated (1 ms)
+    √ objects can be compared (2 ms)
+
+----------|---------|----------|---------|---------|-------------------
+File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+----------|---------|----------|---------|---------|-------------------
+All files |       0 |        0 |       0 |       0 |                   
+----------|---------|----------|---------|---------|-------------------
+Test Suites: 1 passed, 1 total
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        0.82 s
+Ran all test suites matching /tests\\simple.test.js/i.

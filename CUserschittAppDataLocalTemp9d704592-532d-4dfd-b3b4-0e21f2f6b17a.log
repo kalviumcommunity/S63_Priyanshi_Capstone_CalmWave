@@ -1,0 +1,8 @@
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In C:\Users\chitt\OneDrive\Desktop\S63_Priyanshi_Capstone_CalmWave\backend
+  21 files checked.
+  testMatch: **/tests/**/*.test.js - 1 match
+  testPathIgnorePatterns: \\node_modules\\ - 21 matches
+  testRegex:  - 0 matches
+Pattern: tests\\moodLogTests.js - 0 matches
