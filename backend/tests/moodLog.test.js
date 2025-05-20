@@ -1,17 +1,11 @@
 // Create a completely mocked version of the test file
 // This avoids any dependencies on the actual models
 
-// Mock MoodLog constructor and methods
-const MoodLog = jest.fn();
-MoodLog.find = jest.fn();
-MoodLog.findByIdAndUpdate = jest.fn();
-MoodLog.findByIdAndDelete = jest.fn();
+// We'll create fresh mocks in each test to ensure proper isolation
 
 describe('MoodLog Tests', () => {
-  // Reset mocks before each test
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+  // Create fresh mocks for each test
+  let MoodLog;
 
   // Test 1: Creating a new mood log
   test('should create a new mood log successfully', async () => {
@@ -28,8 +22,8 @@ describe('MoodLog Tests', () => {
       save: jest.fn().mockResolvedValue(true)
     };
     
-    // Mock the MoodLog constructor
-    MoodLog.mockImplementation(() => mockMoodLog);
+    // Create a fresh mock for this test
+    MoodLog = jest.fn().mockImplementation(() => mockMoodLog);
     
     // Create a new mood log
     const moodLog = new MoodLog({
@@ -73,7 +67,8 @@ describe('MoodLog Tests', () => {
       }
     ];
     
-    // Mock the find method
+    // Create a fresh mock for this test
+    MoodLog = jest.fn();
     MoodLog.find = jest.fn().mockReturnValue({
       sort: jest.fn().mockReturnThis(),
       exec: jest.fn().mockResolvedValue(mockMoodLogs)
@@ -104,7 +99,8 @@ describe('MoodLog Tests', () => {
       date: new Date('2023-06-15')
     };
     
-    // Mock the findByIdAndUpdate method
+    // Create a fresh mock for this test
+    MoodLog = jest.fn();
     MoodLog.findByIdAndUpdate = jest.fn().mockResolvedValue(updatedMoodLog);
     
     // Update data
@@ -145,7 +141,8 @@ describe('MoodLog Tests', () => {
       date: new Date('2023-06-15')
     };
     
-    // Mock the findByIdAndDelete method
+    // Create a fresh mock for this test
+    MoodLog = jest.fn();
     MoodLog.findByIdAndDelete = jest.fn().mockResolvedValue(deletedMoodLog);
     
     // Delete the mood log
@@ -157,7 +154,7 @@ describe('MoodLog Tests', () => {
   });
 
   // Test 5: Validating mood log data
-  test('should validate mood log data before saving', async () => {
+  test('should validate mood log data before saving', () => {
     // Create a mock user ID
     const mockUserId = 'user123';
     
@@ -177,8 +174,8 @@ describe('MoodLog Tests', () => {
       })
     };
     
-    // Mock the MoodLog constructor
-    MoodLog.mockImplementation(() => mockMoodLog);
+    // Create a fresh mock for this test
+    MoodLog = jest.fn().mockImplementation(() => mockMoodLog);
     
     // Create an invalid mood log (missing required fields)
     const invalidMoodLog = new MoodLog({
@@ -193,5 +190,13 @@ describe('MoodLog Tests', () => {
     expect(validationErrors.errors).toHaveProperty('userId');
     expect(validationErrors.errors).toHaveProperty('mood');
     expect(validationErrors.errors).toHaveProperty('date');
+    
+    // Test with null data
+    const nullDataTest = () => {
+      new MoodLog(null).validateSync();
+    };
+    
+    // This should not throw an error
+    expect(nullDataTest).not.toThrow();
   });
 });
