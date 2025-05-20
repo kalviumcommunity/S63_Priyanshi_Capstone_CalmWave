@@ -6,16 +6,8 @@ const passport = require("passport");
 const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 
-// Route imports
-const userRoutes = require("./routes/userRoutes");
-const moodLogRoutes = require("./routes/moodLogRoutes");
-const soundSessionRoutes = require("./routes/soundSessionRoutes");
-const quizResultRoutes = require("./routes/quizResultRoutes");
-const uploadRoutes = require("./routes/upload");
-const authRoutes = require("./routes/authRoutes"); // ✅ NEW
-
 dotenv.config();
-require("./config/passport"); // ✅ Load passport config
+require("./config/passport"); // ✅ Load Passport configuration
 
 const app = express();
 
@@ -27,11 +19,9 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl requests)
     if (!origin) return callback(null, true);
-    
     if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      const msg = 'The CORS policy does not allow access from the specified origin.';
       return callback(new Error(msg), false);
     }
     return callback(null, true);
@@ -43,37 +33,58 @@ app.use(cors({
 // Body parser
 app.use(express.json());
 
-// Session middleware (required for passport)
-require('dotenv').config();
-
+// Session middleware (Google OAuth)
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
+    sameSite: 'lax',
+  }
 }));
 
-
-// Initialize passport middleware
+// Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Static folder for uploaded images
 app.use('/uploads', express.static('uploads'));
 
-// Test route for MongoDB connection
+// Route imports
+const userRoutes = require("./routes/userRoutes");
+const moodLogRoutes = require("./routes/moodLogRoutes");
+const soundSessionRoutes = require("./routes/soundSessionRoutes");
+const quizResultRoutes = require("./routes/quizResultRoutes");
+const uploadRoutes = require("./routes/upload");
+const authRoutes = require("./routes/authRoutes"); // ✅ Google OAuth route
+
+// Routes
+app.use("/api/users", userRoutes);
+app.use("/api/moodlogs", moodLogRoutes);
+app.use("/api/soundsessions", soundSessionRoutes);
+app.use("/api/quizresults", quizResultRoutes);
+app.use("/api", uploadRoutes);
+app.use("/auth", authRoutes); // ✅ Google OAuth routes
+
+// Home route
+app.get('/', (req, res) => {
+  res.send('🎉 CalmWave backend is running!');
+});
+
+// Test DB connection route
 app.get('/api/test-db', async (req, res) => {
   try {
-    // Check if MongoDB is connected
     if (mongoose.connection.readyState === 1) {
-      res.json({ 
-        status: 'success', 
+      res.json({
+        status: 'success',
         message: 'MongoDB is connected',
         connectionState: mongoose.connection.readyState,
         dbName: mongoose.connection.db.databaseName
       });
     } else {
-      res.status(500).json({ 
-        status: 'error', 
+      res.status(500).json({
+        status: 'error',
         message: 'MongoDB is not connected',
         connectionState: mongoose.connection.readyState
       });
@@ -84,27 +95,21 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
-// Test route to create a sound session directly
+// Test route to create a dummy sound session
 app.get('/api/test-sound-session', async (req, res) => {
   try {
     const SoundSession = require('./models/SoundSession');
-    
-    // Create a test user ID (this should be a valid ObjectId in your database)
     const testUserId = new mongoose.Types.ObjectId();
-    
-    // Create a test sound session
     const testSession = new SoundSession({
       userId: testUserId,
       sessionType: 'Test',
       audioName: 'Test Audio',
       duration: 60
     });
-    
-    // Save to database
+
     const savedSession = await testSession.save();
-    
-    res.json({ 
-      status: 'success', 
+    res.json({
+      status: 'success',
       message: 'Test sound session created',
       session: savedSession
     });
@@ -112,18 +117,6 @@ app.get('/api/test-sound-session', async (req, res) => {
     console.error('Error creating test sound session:', err);
     res.status(500).json({ status: 'error', message: err.message });
   }
-});
-
-// Routes
-app.use("/api/users", userRoutes);
-app.use('/api/moodlogs', moodLogRoutes);
-app.use('/api/soundsessions', soundSessionRoutes);
-app.use('/api/quizresults', quizResultRoutes);
-app.use('/api', uploadRoutes);
-app.use('/auth', authRoutes); // ✅ Google OAuth route
-
-app.get('/', (req, res) => {
-  res.send('🎉 CalmWave backend is running!');
 });
 
 // Connect to DB and start server
