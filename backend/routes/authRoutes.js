@@ -68,7 +68,7 @@ router.get('/google/callback',
     });
     
     // Redirect to frontend with just the session ID (not sensitive data)
-    const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173/home'}?session=${sessionId}`;
+    const redirectUrl = `${process.env.FRONTEND_URL || 'https://admirable-granita-160f9f.netlify.app/home'}?session=${sessionId}`;
     console.log('Redirecting to:', redirectUrl);
     res.redirect(redirectUrl);
   }
