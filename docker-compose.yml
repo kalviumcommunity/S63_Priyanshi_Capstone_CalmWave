@@ -4,6 +4,7 @@ services:
     container_name: calmwave-backend
     restart: always
     ports:
+      # Maps host port 8001 to container port 8000
       - "8001:8000"
     environment:
       - PORT=8000
