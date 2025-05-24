@@ -1,82 +1,68 @@
 # Docker Setup for CalmWave Application
 
-This document provides instructions for running the CalmWave application using Docker.
+This document provides instructions for setting up and running the CalmWave application using Docker.
 
 ## Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/) installed on your machine
-- [Docker Compose](https://docs.docker.com/compose/install/) installed on your machine
+- Docker Desktop installed on your machine
+- Git repository cloned to your local machine
 
-## Running the Application with Docker
+## Environment Setup
 
-### Option 1: Using Docker Compose (Recommended)
+1. Create a `.env` file in the root directory with the following variables:
 
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd S63_Priyanshi_Capstone_CalmWave
-   ```
+```
+# Server Configuration
+PORT=8000
+NODE_ENV=development
 
-2. Create a `.env` file in the root directory with the following environment variables:
-   ```
-   MONGO_URI=mongodb+srv://chittorapriyanshi10:priyanshi11@capstone.xynopm1.mongodb.net/
-   JWT_SECRET=your_jwt_secret_key_here
-   SESSION_SECRET=your_session_secret_key_here
-   GOOGLE_CLIENT_ID=47887981736-s2pknb66l36ic7jobtdsh7osnh2g6kis.apps.googleusercontent.com
-   GOOGLE_CLIENT_SECRET=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
-   FRONTEND_URL=https://admirable-granita-160f9f.netlify.app/home
-   BACKEND_URL=https://s63-priyanshi-capstone-calmwave-9.onrender.com
-   ```
+# MongoDB Connection
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/your_database
 
-3. Build and start the containers:
-   ```bash
-   docker-compose up -d --build
-   ```
+# JWT Configuration
+JWT_SECRET=<your_jwt_secret_key_here>
 
-4. Access the application:
+# Session Configuration
+SESSION_SECRET=<your_session_secret_key_here>
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=<your_google_client_id_here>
+GOOGLE_CLIENT_SECRET=<your_google_client_secret_here>
+
+# URLs
+FRONTEND_URL=http://localhost
+BACKEND_URL=http://localhost:8001
+```
+
+**Important**: Replace all placeholder values with your actual credentials. Never commit the `.env` file with real credentials to the repository.
+
+## Building and Running with Docker Compose
+
+1. Build and start the containers:
+
+```bash
+docker compose up -d --build
+```
+
+2. Access the application:
    - Frontend: http://localhost
-   - Backend API: http://localhost:8000
+   - Backend API: http://localhost:8001
 
-5. To stop the containers:
-   ```bash
-   docker-compose down
-   ```
+3. Stop the containers:
 
-### Option 2: Building and Running Individual Containers
+```bash
+docker compose down
+```
 
-#### Backend
+## Container Information
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
+- **Frontend Container**: 
+  - Built with Node.js and served with Nginx
+  - Exposed on port 80
 
-2. Build the Docker image:
-   ```bash
-   docker build -t calmwave-backend .
-   ```
-
-3. Run the container:
-   ```bash
-   docker run -p 8000:8000 --env-file .env -d calmwave-backend
-   ```
-
-#### Frontend
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Build the Docker image:
-   ```bash
-   docker build -t calmwave-frontend .
-   ```
-
-3. Run the container:
-   ```bash
-   docker run -p 80:80 -d calmwave-frontend
-   ```
+- **Backend Container**:
+  - Built with Node.js
+  - Exposed on port 8001 (mapped to internal port 8000)
 
 ## Docker Commands Reference
 
@@ -100,14 +86,15 @@ This document provides instructions for running the CalmWave application using D
   docker rm <container-id>
   ```
 
-- Remove an image:
-  ```bash
-  docker rmi <image-id>
-  ```
-
 ## Troubleshooting
 
-- If you encounter connection issues between containers, ensure they are on the same Docker network.
+- If you encounter port conflicts, you can modify the port mappings in the `docker-compose.yml` file.
 - Check container logs for error messages: `docker logs <container-id>`
 - Verify that environment variables are correctly set in the `.env` file.
 - If the frontend cannot connect to the backend, ensure the BACKEND_URL environment variable is correctly set.
+
+## Security Notes
+
+- Never commit `.env` files with real credentials to the repository
+- Use `.env.example` as a template for required environment variables
+- Ensure `.env` is included in your `.gitignore` file
