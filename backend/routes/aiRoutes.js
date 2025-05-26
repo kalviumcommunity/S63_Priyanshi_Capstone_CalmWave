@@ -3,7 +3,15 @@ const router = express.Router();
 const OpenAI = require("openai");
 const { authenticateToken } = require("../middleware/authMiddleware");
 
-// Initialize OpenAI with API key if available
+/**
+ * Initialize OpenAI with API key if available
+ * 
+ * IMPORTANT: Never commit your actual API key to the repository!
+ * Instead, use environment variables:
+ * 1. Create a .env file (it's already in .gitignore)
+ * 2. Add your OpenAI API key: OPENAI_API_KEY=your_actual_key_here
+ * 3. The application will use mock responses if no valid key is provided
+ */
 let openai;
 try {
   if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
@@ -13,6 +21,7 @@ try {
     openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
+    console.log('OpenAI client initialized successfully');
   }
 } catch (error) {
   console.error('Error initializing OpenAI:', error);
