@@ -4,6 +4,7 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/TherapyPage.css";
+import { debounce } from "lodash"; // We'll use this to limit API calls
 // Import Chart.js components
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
@@ -67,10 +68,51 @@ const TherapyPage = () => {
   const [moodHistory, setMoodHistory] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [historyError, setHistoryError] = useState(null);
+  
+  // AI autocomplete states
+  const [aiSuggestion, setAiSuggestion] = useState("");
+  const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
+  const [aiError, setAiError] = useState(null);
 
   const audioRef = useRef(null);
   const binauralRef = useRef(null);
   const additionalAudioRef = useRef(null);
+  
+  // Create a debounced function for AI suggestions
+  const debouncedGetAiSuggestion = useRef(
+    debounce(async (text) => {
+      if (!text || text.length < 5) return; // Only get suggestions if there's enough text
+      
+      setIsLoadingSuggestion(true);
+      setAiError(null);
+      
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('No token found, cannot get AI suggestions');
+          return;
+        }
+        
+        const response = await axios.post(
+          'http://localhost:8000/api/ai/autocomplete', 
+          { prompt: text },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+        
+        setAiSuggestion(response.data.suggestion);
+      } catch (err) {
+        console.error('Error getting AI suggestion:', err);
+        setAiError(err.response?.data?.message || 'Failed to get AI suggestions');
+      } finally {
+        setIsLoadingSuggestion(false);
+      }
+    }, 1000) // Wait 1 second after typing stops before making API call
+  ).current;
 
   // Effect for initialization and cleanup
   useEffect(() => {
@@ -563,21 +605,103 @@ const TherapyPage = () => {
       </div>
       
       <div style={{ marginTop: '1rem' }}>
-        <label htmlFor="moodNote" style={{ display: 'block', marginBottom: '0.5rem' }}>
-          Add a note (optional):
-        </label>
-        <textarea
-          id="moodNote"
-          value={moodNote}
-          onChange={(e) => setMoodNote(e.target.value)}
-          placeholder="How are you feeling? What's on your mind?"
-          style={{ 
-            width: '100%', 
-            padding: '0.5rem', 
-            borderRadius: '4px',
-            minHeight: '80px'
-          }}
-        />
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+          <label htmlFor="moodNote">
+            Add a note (optional):
+          </label>
+          <span style={{ fontSize: '0.8rem', color: '#666' }}>
+            <span role="img" aria-label="AI">🤖</span> AI-powered suggestions enabled
+          </span>
+        </div>
+        <div style={{ position: 'relative' }}>
+          <textarea
+            id="moodNote"
+            value={moodNote}
+            onChange={(e) => {
+              const newText = e.target.value;
+              setMoodNote(newText);
+              
+              // Get AI suggestions when user types
+              if (newText.length > 5) {
+                debouncedGetAiSuggestion(newText);
+              } else {
+                setAiSuggestion("");
+              }
+            }}
+            onKeyDown={(e) => {
+              // Accept suggestion with Tab key
+              if (e.key === 'Tab' && aiSuggestion) {
+                e.preventDefault();
+                setMoodNote(moodNote + aiSuggestion.substring(moodNote.length));
+                setAiSuggestion("");
+              }
+            }}
+            placeholder="How are you feeling? What's on your mind? (Press Tab to accept suggestions)"
+            style={{ 
+              width: '100%', 
+              padding: '0.5rem', 
+              borderRadius: '4px',
+              minHeight: '80px',
+              position: 'relative',
+              zIndex: 1,
+              backgroundColor: 'transparent'
+            }}
+          />
+          
+          {/* AI suggestion text (displayed behind the user's input) */}
+          {aiSuggestion && (
+            <div 
+              style={{
+                position: 'absolute',
+                top: '0.5rem',
+                left: '0.5rem',
+                right: '0.5rem',
+                bottom: '0.5rem',
+                zIndex: 0,
+                color: '#aaa',
+                pointerEvents: 'none',
+                whiteSpace: 'pre-wrap',
+                overflowWrap: 'break-word'
+              }}
+            >
+              {moodNote}{aiSuggestion.substring(moodNote.length)}
+            </div>
+          )}
+        </div>
+        
+        {/* AI suggestion controls */}
+        {aiSuggestion && (
+          <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+            <button
+              className="button"
+              onClick={() => {
+                setMoodNote(moodNote + aiSuggestion.substring(moodNote.length));
+                setAiSuggestion("");
+              }}
+              disabled={isLoadingSuggestion}
+            >
+              Use Suggestion
+            </button>
+            <button
+              className="button secondary-button"
+              onClick={() => setAiSuggestion("")}
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+        
+        {isLoadingSuggestion && (
+          <div style={{ marginTop: '0.5rem', color: '#666' }}>
+            Getting suggestions...
+          </div>
+        )}
+        
+        {aiError && (
+          <div style={{ marginTop: '0.5rem', color: 'red' }}>
+            {aiError}
+          </div>
+        )}
       </div>
       
       <button

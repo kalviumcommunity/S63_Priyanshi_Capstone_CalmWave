@@ -9,32 +9,31 @@ This document provides instructions for setting up and running the CalmWave appl
 
 ## Environment Setup
 
-1. Create a `.env` file in the root directory with the following variables:
+1. Copy the `.env.example` file to create a new `.env` file in the root directory:
+
+```bash
+cp .env.example .env
+```
+
+2. Edit the `.env` file and replace the placeholder values with your actual credentials:
 
 ```
-# Server Configuration
-PORT=8000
-NODE_ENV=development
-
 # MongoDB Connection
-MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/your_database
+MONGO_URI=mongodb+srv://<your_username>:<your_password>@<your_cluster>.mongodb.net/<your_database>
 
-# JWT Configuration
+# JWT and Session Secrets (use strong random strings)
 JWT_SECRET=<your_jwt_secret_key_here>
-
-# Session Configuration
 SESSION_SECRET=<your_session_secret_key_here>
 
 # Google OAuth Configuration
 GOOGLE_CLIENT_ID=<your_google_client_id_here>
 GOOGLE_CLIENT_SECRET=<your_google_client_secret_here>
-
-# URLs
-FRONTEND_URL=http://localhost
-BACKEND_URL=http://localhost:8001
 ```
 
-**Important**: Replace all placeholder values with your actual credentials. Never commit the `.env` file with real credentials to the repository.
+**Important Security Notes**: 
+- Never commit the `.env` file with real credentials to the repository
+- The `.env` file is already included in `.gitignore` to prevent accidental commits
+- For production deployment, use environment variables in your deployment platform instead of files
 
 ## Building and Running with Docker Compose
 
@@ -59,10 +58,15 @@ docker compose down
 - **Frontend Container**: 
   - Built with Node.js and served with Nginx
   - Exposed on port 80
+  - Access at: http://localhost
 
 - **Backend Container**:
   - Built with Node.js
-  - Exposed on port 8001 (mapped to internal port 8000)
+  - Runs on port 8000 inside the container
+  - Mapped to port 8001 on your host machine
+  - Access at: http://localhost:8001
+  
+**Note about port mapping**: The backend runs on port 8000 inside the Docker container, but we map it to port 8001 on your host machine to avoid conflicts with any existing services. This is why you access it via http://localhost:8001 even though the application itself runs on port 8000.
 
 ## Docker Commands Reference
 
