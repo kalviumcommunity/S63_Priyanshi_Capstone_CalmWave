@@ -59,6 +59,7 @@ const quizResultRoutes = require("./routes/quizResultRoutes");
 const uploadRoutes = require("./routes/upload");
 const authRoutes = require("./routes/authRoutes"); // ✅ Google OAuth route
 
+
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/moodlogs", moodLogRoutes);
@@ -66,6 +67,7 @@ app.use("/api/soundsessions", soundSessionRoutes);
 app.use("/api/quizresults", quizResultRoutes);
 app.use("/api", uploadRoutes);
 app.use("/auth", authRoutes); // ✅ Google OAuth routes
+
 
 // Home route
 app.get('/', (req, res) => {

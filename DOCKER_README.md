@@ -9,32 +9,11 @@ This document provides instructions for setting up and running the CalmWave appl
 
 ## Environment Setup
 
-1. Create a `.env` file in the root directory with the following variables:
-
-```
-# Server Configuration
-PORT=8000
-NODE_ENV=development
-
-# MongoDB Connection
-MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/your_database
-
-# JWT Configuration
-JWT_SECRET=<your_jwt_secret_key_here>
-
-# Session Configuration
-SESSION_SECRET=<your_session_secret_key_here>
-
+<<
 # Google OAuth Configuration
 GOOGLE_CLIENT_ID=<your_google_client_id_here>
 GOOGLE_CLIENT_SECRET=<your_google_client_secret_here>
 
-# URLs
-FRONTEND_URL=http://localhost
-BACKEND_URL=http://localhost:8001
-```
-
-**Important**: Replace all placeholder values with your actual credentials. Never commit the `.env` file with real credentials to the repository.
 
 ## Building and Running with Docker Compose
 
@@ -60,9 +39,6 @@ docker compose down
   - Built with Node.js and served with Nginx
   - Exposed on port 80
 
-- **Backend Container**:
-  - Built with Node.js
-  - Exposed on port 8001 (mapped to internal port 8000)
 
 ## Docker Commands Reference
 

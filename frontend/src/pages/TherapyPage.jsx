@@ -4,6 +4,7 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/TherapyPage.css";
+
 // Import Chart.js components
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
@@ -68,9 +69,11 @@ const TherapyPage = () => {
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [historyError, setHistoryError] = useState(null);
 
+
   const audioRef = useRef(null);
   const binauralRef = useRef(null);
   const additionalAudioRef = useRef(null);
+
 
   // Effect for initialization and cleanup
   useEffect(() => {
@@ -563,21 +566,7 @@ const TherapyPage = () => {
       </div>
       
       <div style={{ marginTop: '1rem' }}>
-        <label htmlFor="moodNote" style={{ display: 'block', marginBottom: '0.5rem' }}>
-          Add a note (optional):
-        </label>
-        <textarea
-          id="moodNote"
-          value={moodNote}
-          onChange={(e) => setMoodNote(e.target.value)}
-          placeholder="How are you feeling? What's on your mind?"
-          style={{ 
-            width: '100%', 
-            padding: '0.5rem', 
-            borderRadius: '4px',
-            minHeight: '80px'
-          }}
-        />
+
       </div>
       
       <button

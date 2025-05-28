@@ -79,10 +79,14 @@ Users take a quick mood-based quiz, receive curated soundscapes, track emotional
 
 ## 📦 How to Run Locally  
 1. Clone this repo  
-2. Run `npm install` in both `/client` and `/server` folders  
-3. Create `.env` file with necessary secrets (API keys, DB URI)  
-4. Run frontend: `npm run dev`  
-5. Run backend: `npm run start`  
+2. Run `npm install` in both `frontend` and `backend` folders  
+3. Create `.env` files based on the `.env.example` files in both folders
+4. For AI autocomplete functionality, add your OpenAI API key to `backend/.env`:
+   ```
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+5. Run frontend: `npm run dev`  
+6. Run backend: `npm run start`  
 
 ---
 
