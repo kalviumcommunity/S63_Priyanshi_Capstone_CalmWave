@@ -4,9 +4,12 @@ import '../styles/Navbar.css';
 import logo from '../assests/logo.png';
 import defaultProfile from '../assests/defaultProfile.png';
 import { getProfilePicture } from '../utils/profileUtils';
+import { useTheme } from '../utils/ThemeContext'; // ⬅ Import the theme context
 
 export default function Navbar() {
   const location = useLocation();
+  const { darkMode, toggleTheme } = useTheme(); // ⬅ Access theme and toggler
+
   const [userId, setUserId] = useState(localStorage.getItem('userId'));
   const [profilePic, setProfilePic] = useState(defaultProfile);
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -69,7 +72,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${darkMode ? 'dark' : ''}`}>
       <div className="logo-container">
         <img className="logo-img" src={logo} alt="CalmWave Logo" />
       </div>
@@ -81,26 +84,30 @@ export default function Navbar() {
         <li><Link to="/therapy" className={location.pathname === '/therapy' ? 'active' : ''}>Therapy</Link></li>
       </ul>
 
-      <div className="profile-upload">
-        <Link to="/profile">
-          <img
-            src={profilePic}
-            alt="Profile"
-            className="profile-pic"
-            onError={(e) => {
-              e.target.src = defaultProfile;
-            }}
-          />
-        </Link>
-        <label htmlFor="upload">
-          <input
-            type="file"
-            id="upload"
-            style={{ display: 'none' }}
-            onChange={handleFileChange}
-            accept="image/*"
-          />
-        </label>
+      <div className="navbar-right">
+        <button className="theme-toggle-btn" onClick={toggleTheme}>
+          {darkMode ? '🌞' : '🌙'}
+        </button>
+
+        <div className="profile-upload">
+          <Link to="/profile">
+            <img
+              src={profilePic}
+              alt="Profile"
+              className="profile-pic"
+              onError={(e) => { e.target.src = defaultProfile; }}
+            />
+          </Link>
+          <label htmlFor="upload">
+            <input
+              type="file"
+              id="upload"
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+              accept="image/*"
+            />
+          </label>
+        </div>
       </div>
     </nav>
   );

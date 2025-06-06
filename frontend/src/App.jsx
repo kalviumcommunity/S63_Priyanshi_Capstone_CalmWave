@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppContent from './AppContent';
-
+import { ThemeProvider } from "./utils/ThemeContext";
 import { stopAllAudio } from './utils/audioContext';
 
-// Add event listener to stop all audio when the page is unloaded
+// Stop audio on page unload
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', stopAllAudio);
 }
@@ -12,9 +12,13 @@ if (typeof window !== 'undefined') {
 const App = () => {
   return (
     <Router>
-      <AppContent />
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </Router>
   );
 };
 
 export default App;
+
+App.jsx

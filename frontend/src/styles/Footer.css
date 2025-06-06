@@ -37,4 +37,18 @@
     font-size: 0.9rem;
     opacity: 0.9;
   }
+  body.dark .home-footer {
+  border-top: solid #888 2px;
+  background: linear-gradient(
+    to right,
+    #2a2a2a 11%,
+    #3a3a3a 41%,
+    #1a1a1a 91%
+  );
+  color: #f0f0f0;
+}
   
+/* 🌙 Dark mode link color */
+body.dark .footer-nav a {
+  color: #cccccc;
+}
