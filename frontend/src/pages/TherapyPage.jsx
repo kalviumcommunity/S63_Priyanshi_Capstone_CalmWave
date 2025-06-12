@@ -4,6 +4,8 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/TherapyPage.css";
+import quotes from "../utils/quotes"; // add this line
+
 
 // Import Chart.js components
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js';
@@ -68,6 +70,8 @@ const TherapyPage = () => {
   const [moodHistory, setMoodHistory] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [historyError, setHistoryError] = useState(null);
+  const [quote, setQuote] = useState("");
+
 
 
   const audioRef = useRef(null);
@@ -90,6 +94,9 @@ const TherapyPage = () => {
       const src = audioMap[state.level];
       setAudioSrc(src);
       setMessage(messages[state.level]);
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      setQuote(randomQuote);
+
       
       // We don't automatically play the audio, but we prepare the reference
       // The audio will be played when the user clicks the play button
@@ -260,6 +267,7 @@ const TherapyPage = () => {
 
   // --- MAIN VIEW ---
   const renderMainView = () => (
+
     <div className="therapy-main animate-fadeIn">
       <h2 className="therapy-title">Therapy Session</h2>
       <div className="therapy-info">
@@ -268,6 +276,10 @@ const TherapyPage = () => {
       </div>
       <div className="therapy-message">
         <p>{message}</p>
+          <div className="daily-quote" style={{ marginTop: "1rem", fontStyle: "italic", color: "#444" }}>
+    🧘 Relaxation Tip: “{quote}”
+
+  </div>
       </div>
       <div className="section-card" style={{textAlign: "center"}}>
         <button 
@@ -294,7 +306,7 @@ const TherapyPage = () => {
             }
           }}
         >
-          ▶️ Play Recommended Audio
+          ▶ Play Recommended Audio
         </button>
         <button 
           className="button" 
@@ -325,7 +337,7 @@ const TherapyPage = () => {
           }} 
           style={{marginLeft: "1rem"}}
         >
-          ⏸️ Pause
+          ⏸ Pause
         </button>
         <button 
           className="button stop-button" 
@@ -349,7 +361,7 @@ const TherapyPage = () => {
           }} 
           style={{marginLeft: "1rem"}}
         >
-          ⏹️ Stop
+          ⏹ Stop
         </button>
       </div>
       <div className="button-group">
@@ -518,7 +530,7 @@ const TherapyPage = () => {
             }}
             style={{marginTop: "1rem"}}
           >
-            ⏹️ Stop {selectedAdditionalAudio}
+            ⏹ Stop {selectedAdditionalAudio}
           </button>
         )}
       </div>
