@@ -54,7 +54,6 @@ const recommendedFrequency = {
 const TherapyPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const [audioSrc, setAudioSrc] = useState(null);
   const [message, setMessage] = useState("");
   const [currentView, setCurrentView] = useState("main"); // main, additional, mood, history
   const [binauralPlaying, setBinauralPlaying] = useState(false);
@@ -92,11 +91,9 @@ const TherapyPage = () => {
 
     if (state?.level) {
       const src = audioMap[state.level];
-      setAudioSrc(src);
       setMessage(messages[state.level]);
       const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
       setQuote(randomQuote);
-
       
       // We don't automatically play the audio, but we prepare the reference
       // The audio will be played when the user clicks the play button
@@ -111,7 +108,6 @@ const TherapyPage = () => {
       console.log('TherapyPage unmounting - stopping all audio');
       handleStopAllAudio();
     };
-    // eslint-disable-next-line
   }, [state, navigate]);
   
   // Fetch mood history when the history view is shown
@@ -578,8 +574,24 @@ const TherapyPage = () => {
       </div>
       
       <div style={{ marginTop: '1rem' }}>
+  <label htmlFor="moodNote" style={{ display: 'block', marginBottom: '0.5rem' }}>
+    ✏ Journal Entry (optional):
+  </label>
+  <textarea
+    id="moodNote"
+    rows={4}
+    placeholder="Write about your feelings..."
+    value={moodNote}
+    onChange={(e) => setMoodNote(e.target.value)}
+    style={{
+      width: "100%",
+      padding: "0.5rem",
+      borderRadius: "8px",
+      border: "1px solid #ccc"
+    }}
+  />
+</div>
 
-      </div>
       
       <button
         className="button mood-submit"
