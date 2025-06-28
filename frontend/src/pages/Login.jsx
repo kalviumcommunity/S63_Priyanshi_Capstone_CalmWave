@@ -48,7 +48,7 @@ function Login() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${API_BASE_URL}/auth/google`;
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
   };
 
   return (
