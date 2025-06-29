@@ -66,7 +66,7 @@ app.use("/api/moodlogs", moodLogRoutes);
 app.use("/api/soundsessions", soundSessionRoutes);
 app.use("/api/quizresults", quizResultRoutes);
 app.use("/api", uploadRoutes);
-app.use("/auth", authRoutes); // ✅ Google OAuth routes
+app.use("/api/auth", authRoutes); // ✅ Google OAuth routes
 
 
 // Home route
