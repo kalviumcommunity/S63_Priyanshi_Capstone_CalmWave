@@ -43,7 +43,8 @@ router.get('/google/callback',
       maxAge: 5 * 60 * 1000,
     });
 
-    const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173/home'}?session=${sessionId}`;
+    const redirectUrl = `${process.env.FRONTEND_URL}/home?session=${sessionId}`;
+
     console.log('➡️ Redirecting to frontend:', redirectUrl);
     res.redirect(redirectUrl);
   }

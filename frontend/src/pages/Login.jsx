@@ -7,7 +7,7 @@ import facebookLogo from '../assests/facebook.png';
 
 // Import the API base URL from environment variables
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-console.log("🧪 VITE_BACKEND_URL (Live Build):", API_BASE_URL);
+console.log("🧪 Backend URL:", API_BASE_URL);
 
 function Login() {
   const [email, setEmail] = useState('');
