@@ -57,7 +57,10 @@ function Signup() {
         fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
-      });
+      }, {
+      withCredentials: true
+     });
+
 
       console.log(res.data);
       

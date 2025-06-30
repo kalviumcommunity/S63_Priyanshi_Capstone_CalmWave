@@ -6,28 +6,29 @@ const passport = require("passport");
 const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 
+
+
 dotenv.config();
 require("./config/passport"); // ✅ Load Passport configuration
 
 const app = express();
 
 // Enable CORS for frontend
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://admirable-granita-160f9f.netlify.app'
-];
+const allowedOrigin = 'https://deluxe-pony-f64836.netlify.app';
 
 app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy does not allow access from the specified origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: allowedOrigin,
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// Handle preflight OPTIONS requests
+app.options('*', cors({
+  origin: allowedOrigin,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // Body parser
@@ -47,6 +48,8 @@ app.use(session({
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+
+
 
 // Static folder for uploaded images
 app.use('/uploads', express.static('uploads'));
