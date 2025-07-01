@@ -48,11 +48,10 @@ app.use(session({
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
-
-
-
-// Static folder for uploaded images
 app.use('/uploads', express.static('uploads'));
+
+
+
 
 // Route imports
 const userRoutes = require("./routes/userRoutes");

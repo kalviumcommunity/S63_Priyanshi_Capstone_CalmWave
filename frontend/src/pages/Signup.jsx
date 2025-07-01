@@ -85,9 +85,10 @@ function Signup() {
     }
   };
 
-  const handleGoogleSignup = () => {
-    window.location.href = `${API_BASE_URL}/auth/google`;
-  };
+const handleGoogleSignup = () => {
+  window.location.href = `${API_BASE_URL}/api/auth/google`; // ✅ Add /api
+};
+
 
   return (
     <div className="signup-container">
