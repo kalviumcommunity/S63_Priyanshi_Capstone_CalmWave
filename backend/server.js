@@ -14,25 +14,78 @@ require("./config/passport"); // ✅ Load Passport configuration
 const app = express();
 
 // Enable CORS for frontend
-const allowedOrigin = 'https://deluxe-pony-f64836.netlify.app';
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'https://deluxe-pony-f64836.netlify.app',
+  'http://localhost:3000',
+  'http://localhost:5173'
+];
 
-app.use(cors({
-  origin: allowedOrigin,
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With',
+    'Accept',
+    'Origin'
+  ],
+  exposedHeaders: ['Authorization'],
+  preflightContinue: false,
+  optionsSuccessStatus: 200
+};
 
-// Handle preflight OPTIONS requests
-app.options('*', cors({
-  origin: allowedOrigin,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(cors(corsOptions));
+
+// Handle preflight OPTIONS requests explicitly
+app.options('*', cors(corsOptions));
+
+// Additional CORS headers middleware (fallback)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  
+  // Log CORS requests for debugging
+  console.log(`CORS Request - Method: ${req.method}, Origin: ${origin}, URL: ${req.url}`);
+  
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    console.log(`✅ CORS allowed for origin: ${origin}`);
+  } else {
+    console.log(`❌ CORS blocked for origin: ${origin}`);
+    console.log(`Allowed origins:`, allowedOrigins);
+  }
+  
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  res.setHeader('Access-Control-Expose-Headers', 'Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    console.log(`✅ Handling OPTIONS preflight request for ${req.url}`);
+    res.status(200).end();
+    return;
+  }
+  next();
+});
 
 // Body parser
 app.use(express.json());
+
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`📨 ${req.method} ${req.url} - Origin: ${req.headers.origin || 'No origin'}`);
+  next();
+});
 
 // Session middleware (Google OAuth)
 app.use(session({
@@ -74,6 +127,15 @@ app.use("/api/auth", authRoutes); // ✅ Google OAuth routes
 // Home route
 app.get('/', (req, res) => {
   res.send('🎉 CalmWave backend is running!');
+});
+
+// CORS test route
+app.get('/api/cors-test', (req, res) => {
+  res.json({
+    message: 'CORS is working!',
+    origin: req.headers.origin,
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Test DB connection route

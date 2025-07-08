@@ -2,11 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
 
-// Optional: Override tokenParams for debugging
-GoogleStrategy.prototype.tokenParams = function () {
-  console.log('🚨 DEBUG: Sending token exchange with redirect_uri =', this._callbackURL);
-  return {};
-};
+// Google OAuth Strategy configuration
 
 passport.use(new GoogleStrategy(
   {
@@ -17,14 +13,17 @@ passport.use(new GoogleStrategy(
   },
   async (req, accessToken, refreshToken, profile, done) => {
     try {
-      console.log('✅ Google OAuth Callback');
-      console.log('Access Token:', accessToken);
-      console.log('Profile:', JSON.stringify(profile, null, 2));
+      console.log('✅ Google OAuth Callback for:', profile?.emails?.[0]?.value);
 
       const profileImage = profile?.photos?.[0]?.value || '';
       const email = profile?.emails?.[0]?.value;
 
-      // Check if user exists
+      if (!email) {
+        console.error('❌ No email provided by Google');
+        return done(new Error('No email provided by Google'), null);
+      }
+
+      // Check if user exists by Google ID
       let user = await User.findOne({ googleId: profile.id });
 
       if (user) {
@@ -34,7 +33,19 @@ passport.use(new GoogleStrategy(
           await user.save();
           console.log('🔄 Updated user profile image');
         }
-        console.log('🔎 Existing user:', user.email);
+        console.log('🔎 Existing user found by Google ID:', user.email);
+        return done(null, user);
+      }
+
+      // Check if user exists by email (from regular registration)
+      user = await User.findOne({ email });
+
+      if (user) {
+        // Link Google account to existing user
+        user.googleId = profile.id;
+        user.googleProfileImage = profileImage;
+        await user.save();
+        console.log('🔗 Linked Google account to existing user:', user.email);
         return done(null, user);
       }
 
@@ -47,7 +58,7 @@ passport.use(new GoogleStrategy(
       });
 
       await user.save();
-      console.log('🆕 New user created:', user.email);
+      console.log('🆕 New user created via Google OAuth:', user.email);
       return done(null, user);
     } catch (err) {
       console.error('❌ Passport Google OAuth error:', err);
@@ -58,7 +69,6 @@ passport.use(new GoogleStrategy(
 
 // Serialize user to store in session
 passport.serializeUser((user, done) => {
-  console.log('🔐 Serializing user:', user.id);
   done(null, user.id);
 });
 
@@ -66,9 +76,9 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
-    console.log('🔓 Deserialized user:', user?.email || 'Not found');
     done(null, user);
   } catch (err) {
+    console.error('Error deserializing user:', err);
     done(err, null);
   }
 });
