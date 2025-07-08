@@ -21,62 +21,41 @@ const allowedOrigins = [
 ];
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true, // Temporarily allow all origins for debugging
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: [
     'Content-Type', 
     'Authorization', 
     'X-Requested-With',
     'Accept',
-    'Origin'
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers'
   ],
   exposedHeaders: ['Authorization'],
   preflightContinue: false,
   optionsSuccessStatus: 200
 };
 
-app.use(cors(corsOptions));
-
-// Handle preflight OPTIONS requests explicitly
-app.options('*', cors(corsOptions));
-
-// Additional CORS headers middleware (fallback)
+// Emergency CORS fix - allow all origins temporarily
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
+  console.log(`🌐 ${req.method} ${req.url} from ${req.headers.origin || 'unknown origin'}`);
   
-  // Log CORS requests for debugging
-  console.log(`CORS Request - Method: ${req.method}, Origin: ${origin}, URL: ${req.url}`);
-  
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    console.log(`✅ CORS allowed for origin: ${origin}`);
-  } else {
-    console.log(`❌ CORS blocked for origin: ${origin}`);
-    console.log(`Allowed origins:`, allowedOrigins);
-  }
-  
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-  res.setHeader('Access-Control-Expose-Headers', 'Authorization');
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization');
   
   if (req.method === 'OPTIONS') {
-    console.log(`✅ Handling OPTIONS preflight request for ${req.url}`);
-    res.status(200).end();
-    return;
+    console.log(`✅ OPTIONS preflight handled for ${req.url}`);
+    res.sendStatus(200);
+  } else {
+    next();
   }
-  next();
 });
+
+app.use(cors(corsOptions));
 
 // Body parser
 app.use(express.json());
@@ -114,6 +93,26 @@ const quizResultRoutes = require("./routes/quizResultRoutes");
 const uploadRoutes = require("./routes/upload");
 const authRoutes = require("./routes/authRoutes"); // ✅ Google OAuth route
 
+
+// Specific CORS middleware for user routes
+app.use("/api/users", (req, res, next) => {
+  console.log(`🔐 User route accessed: ${req.method} ${req.url}`);
+  console.log(`Origin: ${req.headers.origin}`);
+  console.log(`Headers:`, req.headers);
+  
+  // Ensure CORS headers are set
+  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  
+  if (req.method === 'OPTIONS') {
+    console.log(`✅ Preflight for user route: ${req.url}`);
+    return res.status(200).end();
+  }
+  
+  next();
+});
 
 // Routes
 app.use("/api/users", userRoutes);
@@ -190,5 +189,9 @@ const PORT = process.env.PORT || 8000;
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
+    console.log(`🔗 Backend URL: ${process.env.BACKEND_URL}`);
+    console.log(`🔒 CORS enabled for origins:`, allowedOrigins);
+    console.log(`📝 Environment: ${process.env.NODE_ENV}`);
   });
 });
