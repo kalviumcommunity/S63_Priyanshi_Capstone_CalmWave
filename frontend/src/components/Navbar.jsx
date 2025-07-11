@@ -4,15 +4,16 @@ import '../styles/Navbar.css';
 import logo from '../assests/logo.png';
 import defaultProfile from '../assests/defaultProfile.png';
 import { getProfilePicture } from '../utils/profileUtils';
-import { useTheme } from '../utils/ThemeContext'; // ⬅ Import the theme context
+import { useTheme } from '../utils/ThemeContext';
 
 export default function Navbar() {
   const location = useLocation();
-  const { darkMode, toggleTheme } = useTheme(); // ⬅ Access theme and toggler
+  const { darkMode, toggleTheme } = useTheme();
 
   const [userId, setUserId] = useState(localStorage.getItem('userId'));
   const [profilePic, setProfilePic] = useState(defaultProfile);
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // ✅ Responsive toggle
 
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId');
@@ -71,17 +72,25 @@ export default function Navbar() {
     }
   };
 
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
     <nav className={`navbar ${darkMode ? 'dark' : ''}`}>
-      <div className="logo-container">
-        <img className="logo-img" src={logo} alt="CalmWave Logo" />
+      <div className="navbar-left">
+        <div className="logo-container">
+          <img className="logo-img" src={logo} alt="CalmWave Logo" />
+        </div>
+
+        <button className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          ☰
+        </button>
       </div>
 
-      <ul className="nav-links">
-        <li><Link to="/" className={location.pathname === '/' ? 'active' : ''}>Explore</Link></li>
-        <li><Link to="/home" className={location.pathname === '/home' ? 'active' : ''}>Home</Link></li>
-        <li><Link to="/quiz" className={location.pathname === '/quiz' ? 'active' : ''}>Quiz</Link></li>
-        <li><Link to="/therapy" className={location.pathname === '/therapy' ? 'active' : ''}>Therapy</Link></li>
+      <ul className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
+        <li><Link to="/" className={location.pathname === '/' ? 'active' : ''} onClick={closeMenu}>Explore</Link></li>
+        <li><Link to="/home" className={location.pathname === '/home' ? 'active' : ''} onClick={closeMenu}>Home</Link></li>
+        <li><Link to="/quiz" className={location.pathname === '/quiz' ? 'active' : ''} onClick={closeMenu}>Quiz</Link></li>
+        <li><Link to="/therapy" className={location.pathname === '/therapy' ? 'active' : ''} onClick={closeMenu}>Therapy</Link></li>
       </ul>
 
       <div className="navbar-right">
@@ -90,7 +99,7 @@ export default function Navbar() {
         </button>
 
         <div className="profile-upload">
-          <Link to="/profile">
+          <Link to="/profile" onClick={closeMenu}>
             <img
               src={profilePic}
               alt="Profile"

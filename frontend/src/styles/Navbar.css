@@ -156,3 +156,74 @@ body.dark .nav-links a.active {
   color: #ffffff;
   border-bottom: 2px solid #ffffff;
 }
+/* 📱 Hamburger button (mobile menu toggle) */
+.hamburger {
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: #000000;
+  display: none;
+  cursor: pointer;
+  margin-left: 1rem;
+  z-index: 1001;
+}
+
+body.dark .hamburger {
+  color: #ffffff;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 100px;
+    left: 0;
+    right: 0;
+    background: #ece1ee;
+    flex-direction: column;
+    align-items: center;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+    padding: 0;
+    z-index: 1000;
+  }
+
+  .nav-links.open {
+    max-height: 400px;
+    padding: 1rem 0;
+  }
+
+  .nav-links li {
+    padding: 1rem 0;
+    width: 100%;
+    text-align: center;
+    border-top: 1px solid #ccc;
+  }
+
+  .navbar-right {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 0.5rem;
+    z-index: 1002;
+  }
+
+  .navbar {
+    flex-wrap: wrap;
+  }
+}
+
+/* Dark mode overrides for mobile nav */
+body.dark .nav-links {
+  background: #1e1e1e;
+  border-top: 1px solid #444;
+}
+
+body.dark .nav-links li {
+  border-top: 1px solid #444;
+}
+
