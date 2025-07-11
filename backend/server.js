@@ -65,7 +65,10 @@ app.use((req, res, next) => {
   next();
 });
 
+// ... [keep the top part unchanged]
+
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // ✅ Handle preflight globally for all routes
 
 // Body parser
 app.use(express.json());
@@ -76,7 +79,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
   }
 }));
@@ -86,26 +89,21 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use('/uploads', express.static('uploads'));
 
-
-
-
 // Route imports
 const userRoutes = require("./routes/userRoutes");
 const moodLogRoutes = require("./routes/moodLogRoutes");
 const soundSessionRoutes = require("./routes/soundSessionRoutes");
 const quizResultRoutes = require("./routes/quizResultRoutes");
 const uploadRoutes = require("./routes/upload");
-const authRoutes = require("./routes/authRoutes"); // ✅ Google OAuth route
+const authRoutes = require("./routes/authRoutes");
 
-
-// Specific CORS middleware for user routes
+// ✅ Specific CORS middleware for user routes with updated preflight handling
 app.use("/api/users", (req, res, next) => {
   console.log(`🔐 User route accessed: ${req.method} ${req.url}`);
   console.log(`Origin: ${req.headers.origin}`);
-  
+
   const origin = req.headers.origin;
-  
-  // Only set CORS headers if origin is allowed
+
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -115,12 +113,12 @@ app.use("/api/users", (req, res, next) => {
   } else if (origin) {
     console.log(`❌ Origin not allowed: ${origin}`);
   }
-  
+
+  // ✅ Updated OPTIONS block to send headers before responding
   if (req.method === 'OPTIONS') {
-    console.log(`✅ Preflight for user route: ${req.url}`);
     return res.status(200).end();
   }
-  
+
   next();
 });
 
@@ -130,8 +128,7 @@ app.use("/api/moodlogs", moodLogRoutes);
 app.use("/api/soundsessions", soundSessionRoutes);
 app.use("/api/quizresults", quizResultRoutes);
 app.use("/api", uploadRoutes);
-app.use("/api/auth", authRoutes); // ✅ Google OAuth routes
-
+app.use("/api/auth", authRoutes);
 
 // Home route
 app.get('/', (req, res) => {
@@ -147,7 +144,7 @@ app.get('/api/cors-test', (req, res) => {
   });
 });
 
-// Test DB connection route
+// DB connection check
 app.get('/api/test-db', async (req, res) => {
   try {
     if (mongoose.connection.readyState === 1) {
@@ -170,7 +167,7 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
-// Test route to create a dummy sound session
+// Sound session test
 app.get('/api/test-sound-session', async (req, res) => {
   try {
     const SoundSession = require('./models/SoundSession');
@@ -194,7 +191,7 @@ app.get('/api/test-sound-session', async (req, res) => {
   }
 });
 
-// Connect to DB and start server
+// Start server
 const PORT = process.env.PORT || 8000;
 connectDB().then(() => {
   app.listen(PORT, () => {

@@ -5,7 +5,6 @@ import '../styles/Login.css';
 import googleLogo from '../assests/google.png';
 import facebookLogo from '../assests/facebook.png';
 
-// Import the API base URL from environment variables
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 console.log("🧪 Backend URL:", API_BASE_URL);
 
@@ -17,13 +16,14 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Attempting login with:', { email, password }); // Debugging line
+    console.log('Attempting login with:', { email, password });
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/users/login`, {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        `${API_BASE_URL}/api/users/login`,
+        { email, password },
+        { withCredentials: true } // ✅ Enables cookies if backend uses sessions
+      );
 
       console.log(res.data);
 
@@ -34,7 +34,10 @@ function Login() {
         localStorage.setItem('email', res.data.user.email);
 
         if (res.data.user.profileImage) {
-          localStorage.setItem('profilePic', `${API_BASE_URL}/${res.data.user.profileImage}`);
+          const imageUrl = res.data.user.profileImage.startsWith('http')
+            ? res.data.user.profileImage
+            : `${API_BASE_URL}/${res.data.user.profileImage}`;
+          localStorage.setItem('profilePic', imageUrl);
         }
 
         setMessage('Login successful!');
@@ -43,13 +46,19 @@ function Login() {
         setMessage('Invalid user data received from server.');
       }
     } catch (err) {
-      console.error('Login error:', err); // Debugging line
-      setMessage(err.response?.data?.message || 'Login failed');
+      console.error('Login error:', err);
+      if (err.response?.data?.message) {
+        setMessage(err.response.data.message);
+      } else if (err.message === 'Network Error') {
+        setMessage('Network error: check internet or CORS.');
+      } else {
+        setMessage('Login failed. Please try again.');
+      }
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/api/auth/google`;
+    window.location.href = `${API_BASE_URL}/api/auth/google`;
   };
 
   return (
