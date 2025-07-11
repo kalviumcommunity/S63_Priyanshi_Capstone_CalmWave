@@ -16,12 +16,33 @@ const app = express();
 // Enable CORS for frontend
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'https://deluxe-pony-f64836.netlify.app',
+  'https://deluxe-pony-f64836.netlify.app', // Explicit frontend URL
   'http://localhost:3000',
-  'http://localhost:5173'
+  'http://localhost:5173',
+  'http://localhost:5174'
 ];
 
+console.log('🔒 Allowed CORS origins:', allowedOrigins);
+
 const corsOptions = {
-  origin: true, // Temporarily allow all origins for debugging
+  origin: function (origin, callback) {
+    console.log(`🔍 CORS check for origin: ${origin || 'no origin'}`);
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      console.log('✅ Allowing request with no origin');
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      console.log(`✅ CORS allowed for origin: ${origin}`);
+      callback(null, true);
+    } else {
+      console.log(`❌ CORS blocked origin: ${origin}`);
+      console.log(`📋 Allowed origins:`, allowedOrigins);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: [
@@ -38,33 +59,16 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-// Emergency CORS fix - allow all origins temporarily
+// Request logging middleware
 app.use((req, res, next) => {
   console.log(`🌐 ${req.method} ${req.url} from ${req.headers.origin || 'unknown origin'}`);
-  
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization');
-  
-  if (req.method === 'OPTIONS') {
-    console.log(`✅ OPTIONS preflight handled for ${req.url}`);
-    res.sendStatus(200);
-  } else {
-    next();
-  }
+  next();
 });
 
 app.use(cors(corsOptions));
 
 // Body parser
 app.use(express.json());
-
-// Request logging middleware
-app.use((req, res, next) => {
-  console.log(`📨 ${req.method} ${req.url} - Origin: ${req.headers.origin || 'No origin'}`);
-  next();
-});
 
 // Session middleware (Google OAuth)
 app.use(session({
@@ -98,13 +102,19 @@ const authRoutes = require("./routes/authRoutes"); // ✅ Google OAuth route
 app.use("/api/users", (req, res, next) => {
   console.log(`🔐 User route accessed: ${req.method} ${req.url}`);
   console.log(`Origin: ${req.headers.origin}`);
-  console.log(`Headers:`, req.headers);
   
-  // Ensure CORS headers are set
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  const origin = req.headers.origin;
+  
+  // Only set CORS headers if origin is allowed
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+    console.log(`✅ CORS headers set for allowed origin: ${origin}`);
+  } else if (origin) {
+    console.log(`❌ Origin not allowed: ${origin}`);
+  }
   
   if (req.method === 'OPTIONS') {
     console.log(`✅ Preflight for user route: ${req.url}`);
