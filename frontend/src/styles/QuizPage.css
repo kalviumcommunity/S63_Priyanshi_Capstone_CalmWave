@@ -549,3 +549,63 @@ body {
     font-size: 1.5rem;
   }
 }
+
+/* === DARK MODE SUPPORT FOR QUIZ + FOOTER === */
+body.dark-mode .quiz-page,
+body.dark-mode .result-screen {
+  background: linear-gradient(145deg, #1e293b, #334155, #475569);
+  color: #f1f5f9;
+}
+
+body.dark-mode .question-box,
+body.dark-mode .result-box {
+  background: rgba(30, 41, 59, 0.85);
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .option-button {
+  background: rgba(51, 65, 85, 0.6);
+  color: #e2e8f0;
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+body.dark-mode .option-button.selected {
+  background: linear-gradient(to right, #4f46e5, #3b82f6);
+  color: #ffffff;
+}
+
+body.dark-mode .quiz-progress,
+body.dark-mode .result-level {
+  background: rgba(148, 163, 184, 0.2);
+  color: #f1f5f9;
+}
+
+body.dark-mode .result-msg {
+  background: rgba(148, 163, 184, 0.1);
+  color: #cbd5e1;
+  border-left-color: #3b82f6;
+}
+
+body.dark-mode .prev-button,
+body.dark-mode .next-button,
+body.dark-mode .result-box button,
+body.dark-mode .result-action-btn {
+  background: linear-gradient(to right, #475569, #1e40af);
+  color: #f8fafc;
+}
+
+body.dark-mode .prev-button:hover,
+body.dark-mode .next-button:hover,
+body.dark-mode .result-box button:hover,
+body.dark-mode .result-action-btn:hover {
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+}
+
+body.dark-mode .footer {
+  background-color: #0f172a;
+  color: #f8fafc;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+

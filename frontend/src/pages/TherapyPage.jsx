@@ -81,13 +81,6 @@ const TherapyPage = () => {
   // Effect for initialization and cleanup
   useEffect(() => {
     console.log('TherapyPage mounted');
-    
-    // Check if user is logged in
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login', { state: { message: 'Please log in to access therapy features' } });
-      return;
-    }
 
     if (state?.level) {
       const src = audioMap[state.level];
@@ -126,7 +119,8 @@ const TherapyPage = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        navigate('/login', { state: { message: 'Please log in to view your mood history' } });
+        setHistoryError('Please log in to view your mood history');
+        setIsLoadingHistory(false);
         return;
       }
       

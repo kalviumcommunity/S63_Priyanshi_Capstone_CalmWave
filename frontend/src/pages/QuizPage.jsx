@@ -42,16 +42,9 @@ const QuizPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login', { state: { message: 'Please log in to take the anxiety assessment' } });
-      return;
-    }
-    
     const quote = quotes[Math.floor(Math.random() * quotes.length)];
     setRandomQuote(quote);
-  }, [navigate]);
+  }, []);
 
   const handleAnswerClick = (option) => {
     const updatedAnswers = [...answers];

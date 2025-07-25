@@ -4,16 +4,14 @@ import '../styles/Navbar.css';
 import logo from '../assests/logo.png';
 import defaultProfile from '../assests/defaultProfile.png';
 import { getProfilePicture } from '../utils/profileUtils';
-import { useTheme } from '../utils/ThemeContext';
 
 export default function Navbar() {
   const location = useLocation();
-  const { darkMode, toggleTheme } = useTheme();
 
   const [userId, setUserId] = useState(localStorage.getItem('userId'));
   const [profilePic, setProfilePic] = useState(defaultProfile);
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // ✅ Responsive toggle
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId');
@@ -75,7 +73,7 @@ export default function Navbar() {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <nav className={`navbar ${darkMode ? 'dark' : ''}`}>
+    <nav className="navbar">
       <div className="navbar-left">
         <div className="logo-container">
           <img className="logo-img" src={logo} alt="CalmWave Logo" />
@@ -94,10 +92,6 @@ export default function Navbar() {
       </ul>
 
       <div className="navbar-right">
-        <button className="theme-toggle-btn" onClick={toggleTheme}>
-          {darkMode ? '🌞' : '🌙'}
-        </button>
-
         <div className="profile-upload">
           <Link to="/profile" onClick={closeMenu}>
             <img
