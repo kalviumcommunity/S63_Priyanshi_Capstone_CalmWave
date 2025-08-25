@@ -90,7 +90,7 @@ const QuizPage = () => {
       };
       
       // Send data to backend
-      await axios.post('http://localhost:8000/api/quizresults', quizData, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/quizresults`, quizData, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`

@@ -1,97 +1,96 @@
 .navbar {
-  background: linear-gradient(
-    to right,
-  #ece1ee 11%,
-  #B9C5F5 41%,
-  #387BC9 91%
-);
-    padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Flex container for logo, links, and login */
-  .navbar-content {
-    /* display: flex; */
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
-  
-  /* LOGO IMAGE + TEXT */
-  .logo-container {
-    display: flex;
-    align-items: center;
-    padding-bottom: 10px;
-    width: 100px;
-    height: 90px;
+  background: linear-gradient(to right, #ece1ee 11%, #B9C5F5 41%, #387BC9 91%);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* softer and more lifted */
+  position: relative;
+  z-index: 100;
+  backdrop-filter: blur(6px); /* optional for modern effect */
+}
 
+.logo-container {
+  display: flex;
+  align-items: center;
+  padding-bottom: 10px;
+  width: 100px;
+  height: 90px;
 }
 
 .logo-img {
-    
-    height: 120px;
-    width: 150px;
-  }
-  
-  .logo {
-    
-    font-size: 40px;
-    font-weight: 400;
-    color: #000000;
-    margin: 0;
-  }
-  
-  /* Center nav links */
-  .nav-links {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    list-style: none;
-    flex: 1;
-  }
-  
-  .nav-links li {
-    display: inline;
-  }
-  
-  .nav-links a {
-    text-decoration: none;
-    color: #000000;
-    font-family: 'Nunito Sans', sans-serif;
-    font-weight: 600;
-    font-size: 22px; 
-    transition: color 0.3s ease;
-  }
-  
-  .nav-links a:hover,
-  .nav-links a.active {
-    color: #000000;
-    border-bottom: 2px solid #000000;
-  }
-  
-  /* Login button on the right */
-  .profile-upload {
-    position: relative;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-  
-  .profile-pic {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    align-items:end ;
-    margin-top: 5px;
-    /* border: 2px solid #2E616B; */
-  }
-  
+  height: 120px;
+  width: 150px;
+}
 
- .theme-toggle-btn {
+.nav-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  list-style: none;
+  flex: 1;
+}
+
+.nav-links li {
+  display: inline;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #000000;
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  transition: background-color 0.3s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+/* 🌟 Hover effect */
+.nav-links a:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+  transform: scale(1.03);
+}
+
+/* ✅ Active tab effect (modern blue pill) */
+.nav-links a.active {
+  background: rgba(56, 123, 201, 0.30);  /* semi-transparent blue */
+  color: #fff;
+  transform: scale(1.08);
+  box-shadow: 0 4px 18px rgba(56, 123, 201, 0.18);
+  backdrop-filter: blur(6px);      /* <--- glassmorphic effect */
+  border: 1.5px solid rgba(255,255,255,0.3);
+  /* Optional gradient outline */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: 
+    background 0.3s, 
+    color 0.2s, 
+    box-shadow 0.3s, 
+    transform 0.2s;
+}
+
+
+
+/* Profile Upload */
+.profile-upload {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.profile-pic {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-top: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Toggle Theme (optional — remove if unused) */
+.theme-toggle-btn {
   width: 50px;
   height: 25px;
   background: #e2e8f0;
@@ -106,7 +105,7 @@
   font-size: 16px;
   margin-right: 1rem;
   margin-top: 5px;
-  margin-left: auto; /* Aligns the toggle button to the right */
+  margin-left: auto;
 }
 
 .theme-toggle-btn::before {
@@ -127,36 +126,7 @@
   background: #cbd5e0;
 }
 
-body.dark .theme-toggle-btn {
-  background: #4a5568;
-}
-
-body.dark .theme-toggle-btn::before {
-  transform: translate(25px, -50%);
-}
-
-body.dark .theme-toggle-btn:hover {
-  background: #2d3748;
-}
-
-/* =================== */
-/* 🌙 Dark Mode Styles */
-/* =================== */
-body.dark .navbar {
-  background: linear-gradient(to right, #2b2b2b 11%, #3c3c3c 41%, #1e1e1e 91%);
-  box-shadow: 0px 4px 6px rgba(255, 255, 255, 0.1);
-}
-
-body.dark .nav-links a {
-  color: #f0f0f0;
-}
-
-body.dark .nav-links a:hover,
-body.dark .nav-links a.active {
-  color: #ffffff;
-  border-bottom: 2px solid #ffffff;
-}
-/* 📱 Hamburger button (mobile menu toggle) */
+/* Hamburger Menu */
 .hamburger {
   font-size: 2rem;
   background: none;
@@ -168,11 +138,7 @@ body.dark .nav-links a.active {
   z-index: 1001;
 }
 
-body.dark .hamburger {
-  color: #ffffff;
-}
-
-/* Mobile styles */
+/* 📱 Mobile Styles */
 @media (max-width: 768px) {
   .hamburger {
     display: block;
@@ -216,14 +182,3 @@ body.dark .hamburger {
     flex-wrap: wrap;
   }
 }
-
-/* Dark mode overrides for mobile nav */
-body.dark .nav-links {
-  background: #1e1e1e;
-  border-top: 1px solid #444;
-}
-
-body.dark .nav-links li {
-  border-top: 1px solid #444;
-}
-

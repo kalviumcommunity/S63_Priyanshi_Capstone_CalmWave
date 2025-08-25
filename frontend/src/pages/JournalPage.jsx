@@ -1,0 +1,321 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import '../styles/JournalPage.css';
+
+const JournalPage = () => {
+  const [journalEntries, setJournalEntries] = useState([]);
+  const [newEntry, setNewEntry] = useState({
+    mood: '',
+    note: '',
+    date: new Date().toISOString().split('T')[0]
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+
+  const navigate = useNavigate();
+
+  const moodOptions = [
+    { value: 'Happy', emoji: '😊', color: '#FFD700' },
+    { value: 'Sad', emoji: '😢', color: '#4682B4' },
+    { value: 'Angry', emoji: '😠', color: '#DC143C' },
+    { value: 'Neutral', emoji: '😐', color: '#808080' },
+    { value: 'Anxious', emoji: '😰', color: '#FF6347' },
+    { value: 'Excited', emoji: '🤩', color: '#FF69B4' },
+    { value: 'Frustrated', emoji: '😤', color: '#FF4500' },
+    { value: 'Calm', emoji: '😌', color: '#98FB98' }
+  ];
+
+  useEffect(() => {
+    fetchJournalEntries();
+  }, []);
+
+  const fetchJournalEntries = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login', { state: { message: 'Please log in to access your journal' } });
+        return;
+      }
+
+      // Get user ID from token (you might need to decode it or get it from user context)
+      const userResponse = await axios.get('http://localhost:8000/api/users/profile', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      const userId = userResponse.data.user._id;
+
+      const response = await axios.get(`http://localhost:8000/api/moodlogs/user/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      setJournalEntries(response.data.sort((a, b) => new Date(b.date) - new Date(a.date)));
+    } catch (err) {
+      console.error('Error fetching journal entries:', err);
+      if (err.response?.status === 401) {
+        navigate('/login', { state: { message: 'Session expired. Please log in again.' } });
+      } else {
+        setError('Failed to load journal entries');
+      }
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewEntry(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const analyzeWithAI = async (text) => {
+    if (!text || text.trim().length === 0) return null;
+
+    try {
+      setIsAnalyzing(true);
+      const token = localStorage.getItem('token');
+      
+      const response = await axios.post('http://localhost:8000/api/ai/analyze-mood', 
+        { text: text.trim() },
+        { headers: { 'Authorization': `Bearer ${token}` } }
+      );
+
+      return response.data.data;
+    } catch (err) {
+      console.error('AI analysis failed:', err);
+      return null;
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!newEntry.mood || !newEntry.date) {
+      setError('Please select a mood and date');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setError(null);
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login', { state: { message: 'Please log in to save your journal entry' } });
+        return;
+      }
+
+      const response = await axios.post('http://localhost:8000/api/moodlogs', newEntry, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      setSuccess('Journal entry saved successfully!');
+      setNewEntry({
+        mood: '',
+        note: '',
+        date: new Date().toISOString().split('T')[0]
+      });
+      setShowForm(false);
+      
+      // Refresh the entries list
+      await fetchJournalEntries();
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(null), 3000);
+
+    } catch (err) {
+      console.error('Error saving journal entry:', err);
+      setError(err.response?.data?.message || 'Failed to save journal entry');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const getMoodEmoji = (mood) => {
+    const moodOption = moodOptions.find(option => option.value === mood);
+    return moodOption ? moodOption.emoji : '😐';
+  };
+
+  const getMoodColor = (mood) => {
+    const moodOption = moodOptions.find(option => option.value === mood);
+    return moodOption ? moodOption.color : '#808080';
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  return (
+    <>
+      <Navbar />
+      <div className="journal-page">
+        <div className="journal-container">
+          <div className="journal-header">
+            <h1>My Therapy Journal</h1>
+            <p>Track your mood and thoughts with AI-powered insights</p>
+            <button 
+              className="new-entry-btn"
+              onClick={() => setShowForm(!showForm)}
+            >
+              {showForm ? 'Cancel' : '+ New Entry'}
+            </button>
+          </div>
+
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="success-message">
+              {success}
+            </div>
+          )}
+
+          {showForm && (
+            <div className="journal-form-container">
+              <form onSubmit={handleSubmit} className="journal-form">
+                <h3>New Journal Entry</h3>
+                
+                <div className="form-group">
+                  <label htmlFor="date">Date:</label>
+                  <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    value={newEntry.date}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="mood">How are you feeling?</label>
+                  <div className="mood-options">
+                    {moodOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`mood-option ${newEntry.mood === option.value ? 'selected' : ''}`}
+                        onClick={() => setNewEntry(prev => ({ ...prev, mood: option.value }))}
+                        style={{ borderColor: option.color }}
+                      >
+                        <span className="mood-emoji">{option.emoji}</span>
+                        <span className="mood-label">{option.value}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="note">Journal Entry:</label>
+                  <textarea
+                    id="note"
+                    name="note"
+                    value={newEntry.note}
+                    onChange={handleInputChange}
+                    placeholder="Write about your day, thoughts, or feelings... (AI will analyze your mood from this text)"
+                    rows="6"
+                  />
+                  {newEntry.note && (
+                    <div className="ai-preview">
+                      <small>✨ AI will analyze this text to detect your mood automatically</small>
+                    </div>
+                  )}
+                </div>
+
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    className="cancel-btn"
+                    onClick={() => setShowForm(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="submit-btn"
+                    disabled={isSubmitting || isAnalyzing}
+                  >
+                    {isSubmitting ? 'Saving...' : isAnalyzing ? 'Analyzing...' : 'Save Entry'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          <div className="journal-entries">
+            <h2>Your Journal Entries</h2>
+            {journalEntries.length === 0 ? (
+              <div className="no-entries">
+                <p>No journal entries yet. Start by creating your first entry!</p>
+              </div>
+            ) : (
+              <div className="entries-list">
+                {journalEntries.map((entry) => (
+                  <div key={entry._id} className="journal-entry">
+                    <div className="entry-header">
+                      <div className="entry-date">
+                        {formatDate(entry.date)}
+                      </div>
+                      <div className="entry-moods">
+                        <div className="user-mood">
+                          <span className="mood-label">Your Mood:</span>
+                          <span 
+                            className="mood-badge"
+                            style={{ backgroundColor: getMoodColor(entry.mood) }}
+                          >
+                            {getMoodEmoji(entry.mood)} {entry.mood}
+                          </span>
+                        </div>
+                        {entry.aiDetectedMood && entry.aiDetectedMood !== 'Neutral' && (
+                          <div className="ai-mood">
+                            <span className="mood-label">AI Detected:</span>
+                            <span 
+                              className="mood-badge ai-badge"
+                              style={{ backgroundColor: getMoodColor(entry.aiDetectedMood) }}
+                            >
+                              🤖 {getMoodEmoji(entry.aiDetectedMood)} {entry.aiDetectedMood}
+                              {entry.aiConfidence && (
+                                <small className="confidence">
+                                  ({Math.round(entry.aiConfidence * 100)}%)
+                                </small>
+                              )}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {entry.note && (
+                      <div className="entry-content">
+                        <p>{entry.note}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+export default JournalPage;
