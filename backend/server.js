@@ -17,6 +17,7 @@ const app = express();
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'https://deluxe-pony-f64836.netlify.app',
   'https://deluxe-pony-f64836.netlify.app', // Explicit frontend URL
+  'https://admirable-granita-160f9f.netlify.app', // New Netlify site
   'http://localhost:3000',
   'http://localhost:5173',
   'http://localhost:5174'
