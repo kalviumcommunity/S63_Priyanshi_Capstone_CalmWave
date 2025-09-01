@@ -118,23 +118,23 @@ const TherapyPage = () => {
     
     try {
       const token = localStorage.getItem('token');
+      
       if (!token) {
-        setHistoryError('Please log in to view your mood history');
-        setIsLoadingHistory(false);
-        return;
+        // Load from local storage for anonymous users
+        const localMoods = JSON.parse(localStorage.getItem('moodLogs') || '[]');
+        const sortedMoods = localMoods.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setMoodHistory(sortedMoods);
+      } else {
+        const userId = JSON.parse(atob(token.split('.')[1])).id;
+        const response = await axios.get(`http://localhost:8000/api/moodlogs/user/${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        // Sort mood logs by date (newest first)
+        const sortedMoods = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setMoodHistory(sortedMoods);
       }
-      
-      const userId = JSON.parse(atob(token.split('.')[1])).id;
-      
-      const response = await axios.get(`http://localhost:8000/api/moodlogs/user/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      // Sort mood logs by date (newest first)
-      const sortedMoods = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
-      setMoodHistory(sortedMoods);
       
     } catch (err) {
       console.error('Error fetching mood history:', err);
@@ -153,27 +153,30 @@ const TherapyPage = () => {
     
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login', { state: { message: 'Please log in to track your mood' } });
-        return;
-      }
       
-      // Create mood log data - no need to include userId, the backend will get it from the token
+      // Create mood log data
       const moodData = {
         mood: currentMood,
         note: moodNote,
         date: new Date()
       };
       
-      // Send data to backend
-      const response = await axios.post('http://localhost:8000/api/moodlogs', moodData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      if (!token) {
+        // Save locally if not logged in
+        const existing = JSON.parse(localStorage.getItem('moodLogs') || '[]');
+        existing.push(moodData);
+        localStorage.setItem('moodLogs', JSON.stringify(existing));
+      } else {
+        // Send to backend if logged in
+        const response = await axios.post('http://localhost:8000/api/moodlogs', moodData, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        console.log('Mood log saved:', response.data);
+      }
       
-      console.log('Mood log saved:', response.data);
       setSuccessMessage('Your mood has been recorded!');
       
       // Just show success message without auto-redirecting
@@ -195,12 +198,6 @@ const TherapyPage = () => {
     
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        console.error('No token found, cannot save session');
-        return;
-      }
-      
-      console.log('Token found, preparing session data');
       
       const sessionData = {
         sessionType,
@@ -208,17 +205,22 @@ const TherapyPage = () => {
         duration // in seconds
       };
       
-      console.log('Session data prepared:', sessionData);
-      
-      console.log('Sending request to /api/soundsessions');
-      const response = await axios.post('http://localhost:8000/api/soundsessions', sessionData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      console.log('Sound session saved successfully:', response.data);
+      if (!token) {
+        // Save locally for anonymous users
+        const existing = JSON.parse(localStorage.getItem('soundSessions') || '[]');
+        existing.push({ ...sessionData, date: new Date() });
+        localStorage.setItem('soundSessions', JSON.stringify(existing));
+        console.log('Sound session saved locally (anonymous)');
+      } else {
+        console.log('Sending request to /api/soundsessions');
+        const response = await axios.post('http://localhost:8000/api/soundsessions', sessionData, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        console.log('Sound session saved successfully:', response.data);
+      }
     } catch (err) {
       console.error('Error saving sound session:', err);
       if (err.response) {
@@ -260,9 +262,15 @@ const TherapyPage = () => {
 
     <div className="therapy-main animate-fadeIn">
       <h2 className="therapy-title">Therapy Session</h2>
+      {!state?.level && (
+        <div className="notice-banner" style={{background:'#fff3cd', border:'1px solid #ffeeba', color:'#856404', padding:'0.75rem 1rem', borderRadius:'8px', margin:'0.5rem 0'}}>
+          To get your personalized audio, please take the anxiety quiz first.
+          <button className="button" style={{marginLeft:'0.75rem'}} onClick={() => navigate('/quiz')}>Take Quiz</button>
+        </div>
+      )}
       <div className="therapy-info">
-        <p><strong>Anxiety Level:</strong> {state?.level}</p>
-        <p><strong>Recommended frequency:</strong> {recommendedFrequency[state?.level]}</p>
+        <p><strong>Anxiety Level:</strong> {state?.level || 'Not set'}</p>
+        {state?.level && <p><strong>Relax & Listen</strong> {recommendedFrequency[state?.level]}</p>}
       </div>
       <div className="therapy-message">
         <p>{message}</p>

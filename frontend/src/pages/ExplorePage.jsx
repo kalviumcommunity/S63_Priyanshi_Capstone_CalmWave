@@ -24,7 +24,7 @@ function HomePage() {
             <p>
               Dive into a world of healing audio experiences — from deep alpha waves that relax your body, to custom binaural beats that promote focus and calm. Join thousands who have made CalmWave their daily ritual for wellness.
             </p>
-            <button className="get-started-btn" onClick={() => navigate('/login')}>
+            <button className="get-started-btn" onClick={() => navigate('/quiz')}>
               Get Started
             </button>
           </div>

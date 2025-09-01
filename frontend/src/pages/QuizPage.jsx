@@ -77,10 +77,6 @@ const QuizPage = () => {
       setError(null);
       
       const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login', { state: { message: 'Please log in to save your quiz results' } });
-        return;
-      }
       
       // Create quiz result data
       const quizData = {
@@ -89,13 +85,20 @@ const QuizPage = () => {
         date: new Date()
       };
       
-      // Send data to backend
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/quizresults`, quizData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      if (!token) {
+        // Save locally if not logged in
+        const existing = JSON.parse(localStorage.getItem('quizResults') || '[]');
+        existing.push(quizData);
+        localStorage.setItem('quizResults', JSON.stringify(existing));
+      } else {
+        // Send data to backend if logged in
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/quizresults`, quizData, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      }
       
       console.log('Quiz result saved successfully');
       
