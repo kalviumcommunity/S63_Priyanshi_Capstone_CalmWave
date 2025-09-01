@@ -37,31 +37,15 @@ const JournalPage = () => {
 
   const fetchJournalEntries = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login', { state: { message: 'Please log in to access your journal' } });
-        return;
-      }
-
-      // Get user ID from token (you might need to decode it or get it from user context)
-      const userResponse = await axios.get('http://localhost:8000/api/users/profile', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      const userId = userResponse.data.user._id;
-
-      const response = await axios.get(`http://localhost:8000/api/moodlogs/user/${userId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      setJournalEntries(response.data.sort((a, b) => new Date(b.date) - new Date(a.date)));
+      setError(null);
+      
+      // Get mood logs from local storage (no backend required)
+      const localMoods = JSON.parse(localStorage.getItem('moodLogs') || '[]');
+      const sortedMoods = localMoods.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setJournalEntries(sortedMoods);
     } catch (err) {
       console.error('Error fetching journal entries:', err);
-      if (err.response?.status === 401) {
-        navigate('/login', { state: { message: 'Session expired. Please log in again.' } });
-      } else {
-        setError('Failed to load journal entries');
-      }
+      setError('Failed to load journal entries');
     }
   };
 
@@ -78,11 +62,10 @@ const JournalPage = () => {
 
     try {
       setIsAnalyzing(true);
-      const token = localStorage.getItem('token');
       
       const response = await axios.post('http://localhost:8000/api/ai/analyze-mood', 
         { text: text.trim() },
-        { headers: { 'Authorization': `Bearer ${token}` } }
+        { headers: { 'Content-Type': 'application/json' } }
       );
 
       return response.data.data;
@@ -106,18 +89,19 @@ const JournalPage = () => {
       setIsSubmitting(true);
       setError(null);
       
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login', { state: { message: 'Please log in to save your journal entry' } });
-        return;
-      }
-
-      const response = await axios.post('http://localhost:8000/api/moodlogs', newEntry, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      // Create mood log with unique ID
+      const moodLog = {
+        id: Date.now(), // Use timestamp as unique ID
+        mood: newEntry.mood,
+        note: newEntry.note,
+        date: newEntry.date,
+        createdAt: new Date().toISOString()
+      };
+      
+      // Save to local storage
+      const existing = JSON.parse(localStorage.getItem('moodLogs') || '[]');
+      existing.push(moodLog);
+      localStorage.setItem('moodLogs', JSON.stringify(existing));
 
       setSuccess('Journal entry saved successfully!');
       setNewEntry({
@@ -135,7 +119,7 @@ const JournalPage = () => {
 
     } catch (err) {
       console.error('Error saving journal entry:', err);
-      setError(err.response?.data?.message || 'Failed to save journal entry');
+      setError('Failed to save journal entry');
     } finally {
       setIsSubmitting(false);
     }
@@ -268,7 +252,7 @@ const JournalPage = () => {
             ) : (
               <div className="entries-list">
                 {journalEntries.map((entry) => (
-                  <div key={entry._id} className="journal-entry">
+                  <div key={entry.id} className="journal-entry">
                     <div className="entry-header">
                       <div className="entry-date">
                         {formatDate(entry.date)}

@@ -38,6 +38,8 @@ const QuizPage = () => {
   const [randomQuote, setRandomQuote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [showPreviousResults, setShowPreviousResults] = useState(false);
+  const [previousResults, setPreviousResults] = useState([]);
 
   const navigate = useNavigate();
 
@@ -45,6 +47,28 @@ const QuizPage = () => {
     const quote = quotes[Math.floor(Math.random() * quotes.length)];
     setRandomQuote(quote);
   }, []);
+
+  useEffect(() => {
+    const storedResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
+    setPreviousResults(storedResults);
+  }, []);
+
+  // Function to get local quiz results
+  const getLocalQuizResults = () => {
+    try {
+      return JSON.parse(localStorage.getItem('quizResults') || '[]');
+    } catch (err) {
+      console.error('Error reading local quiz results:', err);
+      return [];
+    }
+  };
+
+  // Function to view previous results
+  const handleViewPreviousResults = () => {
+    const results = getLocalQuizResults();
+    setPreviousResults(results);
+    setShowPreviousResults(true);
+  };
 
   const handleAnswerClick = (option) => {
     const updatedAnswers = [...answers];
@@ -71,36 +95,26 @@ const QuizPage = () => {
     setScore(total);
     setLevel(levelText);
     
-    // Save quiz result to backend
+    // Save quiz result locally (no backend required)
     try {
       setIsSubmitting(true);
       setError(null);
       
-      const token = localStorage.getItem('token');
-      
       // Create quiz result data
       const quizData = {
+        id: Date.now(), // Use timestamp as unique ID
         score: total,
         level: levelText,
-        date: new Date()
+        date: new Date().toISOString(),
+        answers: answers // Store the actual answers for reference
       };
       
-      if (!token) {
-        // Save locally if not logged in
-        const existing = JSON.parse(localStorage.getItem('quizResults') || '[]');
-        existing.push(quizData);
-        localStorage.setItem('quizResults', JSON.stringify(existing));
-      } else {
-        // Send data to backend if logged in
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/quizresults`, quizData, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-      }
+      // Save to localStorage
+      const existing = JSON.parse(localStorage.getItem('quizResults') || '[]');
+      existing.push(quizData);
+      localStorage.setItem('quizResults', JSON.stringify(existing));
       
-      console.log('Quiz result saved successfully');
+      console.log('Quiz result saved locally');
       
     } catch (err) {
       console.error('Error saving quiz result:', err);
@@ -142,7 +156,15 @@ const QuizPage = () => {
             <div className="start-content">
               <h1>Let’s Find Out Where You Stand</h1>
               <p>{randomQuote}</p>
-              <button onClick={() => setShowStartScreen(false)}>Start</button>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px", alignItems: "center" }}>
+                <button onClick={() => setShowStartScreen(false)}>Start Quiz</button>
+                <button 
+                  onClick={handleViewPreviousResults}
+                  style={{ backgroundColor: "#6c757d", border: "none" }}
+                >
+                  View Previous Results ({previousResults.length})
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -183,6 +205,53 @@ const QuizPage = () => {
                 {isSubmitting ? "Saving..." : "Start Therapy"}
               </button>
             </div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (showPreviousResults) {
+    return (
+      <>
+        <Navbar />
+        <div className="previous-results-screen">
+          <div className="results-box">
+            <h1>📊 Your Quiz History</h1>
+            
+            {previousResults.length === 0 ? (
+              <div className="no-results">
+                <p>No previous quiz results found. Take your first quiz to get started!</p>
+                <button onClick={() => setShowPreviousResults(false)}>Take Quiz</button>
+              </div>
+            ) : (
+              <>
+                <div className="results-list">
+                  {previousResults.map((result, index) => (
+                    <div key={result.id || index} className="result-item">
+                      <div className="result-header">
+                        <span className="result-date">
+                          {new Date(result.date).toLocaleDateString()}
+                        </span>
+                        <span className="result-time">
+                          {new Date(result.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
+                      </div>
+                      <div className="result-details">
+                        <span className="result-score">Score: <strong>{result.score}</strong></span>
+                        <span className="result-level">Level: <strong>{result.level}</strong></span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="results-actions">
+                  <button onClick={() => setShowPreviousResults(false)}>Take New Quiz</button>
+                  <button onClick={() => setShowPreviousResults(false)}>Back to Start</button>
+                </div>
+              </>
+            )}
           </div>
         </div>
         <Footer />

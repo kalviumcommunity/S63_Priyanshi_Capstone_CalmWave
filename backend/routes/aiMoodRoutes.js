@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { verifyToken } = require('../middleware/auth');
 const { analyzeMood } = require('../services/aiMoodAnalysis');
 
 /**
  * POST /api/ai/analyze-mood
- * Analyze mood from journal text using AI
+ * Analyze mood from journal text using AI (Public - no authentication required)
  */
-router.post('/analyze-mood', verifyToken, async (req, res) => {
+router.post('/analyze-mood', async (req, res) => {
   try {
     const { text } = req.body;
 
@@ -27,7 +26,7 @@ router.post('/analyze-mood', verifyToken, async (req, res) => {
       });
     }
 
-    console.log(`🔍 Analyzing mood for user ${req.user.id}...`);
+    console.log(`🔍 Analyzing mood for anonymous user...`);
 
     // Analyze mood using AI service
     const analysis = await analyzeMood(text.trim());

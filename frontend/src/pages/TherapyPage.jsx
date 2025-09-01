@@ -117,34 +117,20 @@ const TherapyPage = () => {
     setHistoryError(null);
     
     try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        // Load from local storage for anonymous users
-        const localMoods = JSON.parse(localStorage.getItem('moodLogs') || '[]');
-        const sortedMoods = localMoods.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setMoodHistory(sortedMoods);
-      } else {
-        const userId = JSON.parse(atob(token.split('.')[1])).id;
-        const response = await axios.get(`http://localhost:8000/api/moodlogs/user/${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        // Sort mood logs by date (newest first)
-        const sortedMoods = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setMoodHistory(sortedMoods);
-      }
+      // Get mood logs from local storage (no backend required)
+      const localMoods = JSON.parse(localStorage.getItem('moodLogs') || '[]');
+      const sortedMoods = localMoods.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setMoodHistory(sortedMoods);
       
     } catch (err) {
       console.error('Error fetching mood history:', err);
-      setHistoryError(err.response?.data?.message || 'Failed to load your mood history. Please try again.');
+      setHistoryError('Failed to load your mood history. Please try again.');
     } finally {
       setIsLoadingHistory(false);
     }
   };
 
-  // Function to submit mood data to the backend
+  // Function to submit mood data to local storage
   const submitMoodData = async () => {
     if (!currentMood) return;
     
@@ -152,31 +138,21 @@ const TherapyPage = () => {
     setError(null);
     
     try {
-      const token = localStorage.getItem('token');
-      
       // Create mood log data
       const moodData = {
+        id: Date.now(), // Use timestamp as unique ID
         mood: currentMood,
         note: moodNote,
-        date: new Date()
+        date: new Date().toISOString(),
+        createdAt: new Date().toISOString()
       };
       
-      if (!token) {
-        // Save locally if not logged in
-        const existing = JSON.parse(localStorage.getItem('moodLogs') || '[]');
-        existing.push(moodData);
-        localStorage.setItem('moodLogs', JSON.stringify(existing));
-      } else {
-        // Send to backend if logged in
-        const response = await axios.post('http://localhost:8000/api/moodlogs', moodData, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        console.log('Mood log saved:', response.data);
-      }
+      // Save to local storage
+      const existing = JSON.parse(localStorage.getItem('moodLogs') || '[]');
+      existing.push(moodData);
+      localStorage.setItem('moodLogs', JSON.stringify(existing));
       
+      console.log('Mood log saved locally');
       setSuccessMessage('Your mood has been recorded!');
       
       // Just show success message without auto-redirecting
@@ -186,41 +162,33 @@ const TherapyPage = () => {
       
     } catch (err) {
       console.error('Error saving mood log:', err);
-      setError(err.response?.data?.message || 'Failed to save your mood. Please try again.');
+      setError('Failed to save your mood. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Function to save a sound session to the backend
+  // Function to save a sound session to local storage
   const saveSoundSession = async (sessionType, audioName, duration) => {
     console.log(`Attempting to save sound session: ${sessionType}, ${audioName}, ${duration}s`);
     
     try {
-      const token = localStorage.getItem('token');
-      
       const sessionData = {
+        id: Date.now(), // Use timestamp as unique ID
         sessionType,
         audioName,
-        duration // in seconds
+        duration, // in seconds
+        date: new Date().toISOString(),
+        createdAt: new Date().toISOString()
       };
       
-      if (!token) {
-        // Save locally for anonymous users
-        const existing = JSON.parse(localStorage.getItem('soundSessions') || '[]');
-        existing.push({ ...sessionData, date: new Date() });
-        localStorage.setItem('soundSessions', JSON.stringify(existing));
-        console.log('Sound session saved locally (anonymous)');
-      } else {
-        console.log('Sending request to /api/soundsessions');
-        const response = await axios.post('http://localhost:8000/api/soundsessions', sessionData, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        console.log('Sound session saved successfully:', response.data);
-      }
+      // Save to local storage
+      const existing = JSON.parse(localStorage.getItem('soundSessions') || '[]');
+      existing.push(sessionData);
+      localStorage.setItem('soundSessions', JSON.stringify(existing));
+      
+      console.log('Sound session saved locally');
+      
     } catch (err) {
       console.error('Error saving sound session:', err);
       if (err.response) {

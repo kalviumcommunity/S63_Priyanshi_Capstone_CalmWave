@@ -4,7 +4,7 @@ const moodLogSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', // 👈 Must match the model name of your user schema
-    required: true
+    required: false // Made optional for anonymous users
   },
   mood: {
     type: String,

@@ -14,62 +14,22 @@ require("./config/passport"); // ✅ Load Passport configuration
 const app = express();
 
 // Enable CORS for frontend
-const allowedOrigins = [
-  process.env.FRONTEND_URL || 'https://deluxe-pony-f64836.netlify.app',
-  'https://deluxe-pony-f64836.netlify.app', // Explicit frontend URL
-  'https://admirable-granita-160f9f.netlify.app', // New Netlify site
-  'http://localhost:3000',
-  'http://localhost:5173',
-  'http://localhost:5174'
-];
+const allowedOrigin = 'https://deluxe-pony-f64836.netlify.app';
 
-console.log('🔒 Allowed CORS origins:', allowedOrigins);
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    console.log(`🔍 CORS check for origin: ${origin || 'no origin'}`);
-    
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) {
-      console.log('✅ Allowing request with no origin');
-      return callback(null, true);
-    }
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      console.log(`✅ CORS allowed for origin: ${origin}`);
-      callback(null, true);
-    } else {
-      console.log(`❌ CORS blocked origin: ${origin}`);
-      console.log(`📋 Allowed origins:`, allowedOrigins);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+app.use(cors({
+  origin: allowedOrigin,
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
-    'X-Requested-With',
-    'Accept',
-    'Origin',
-    'Access-Control-Request-Method',
-    'Access-Control-Request-Headers'
-  ],
-  exposedHeaders: ['Authorization'],
-  preflightContinue: false,
-  optionsSuccessStatus: 200
-};
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
-// Request logging middleware
-app.use((req, res, next) => {
-  console.log(`🌐 ${req.method} ${req.url} from ${req.headers.origin || 'unknown origin'}`);
-  next();
-});
-
-// ... [keep the top part unchanged]
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // ✅ Handle preflight globally for all routes
+// Handle preflight OPTIONS requests
+app.options('*', cors({
+  origin: allowedOrigin,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 // Body parser
 app.use(express.json());
@@ -80,7 +40,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
     sameSite: 'lax',
   }
 }));
@@ -90,38 +50,23 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use('/uploads', express.static('uploads'));
 
+console.log('🛠 ROUTE DEBUG START');
+app._router.stack.forEach((r) => {
+  if (r.route && r.route.path) {
+    console.log('➡️ Route registered:', r.route.path);
+  }
+});
+console.log('🛠 ROUTE DEBUG END');
+
+
 // Route imports
 const userRoutes = require("./routes/userRoutes");
 const moodLogRoutes = require("./routes/moodLogRoutes");
 const soundSessionRoutes = require("./routes/soundSessionRoutes");
 const quizResultRoutes = require("./routes/quizResultRoutes");
 const uploadRoutes = require("./routes/upload");
-const authRoutes = require("./routes/authRoutes");
-
-// ✅ Specific CORS middleware for user routes with updated preflight handling
-app.use("/api/users", (req, res, next) => {
-  console.log(`🔐 User route accessed: ${req.method} ${req.url}`);
-  console.log(`Origin: ${req.headers.origin}`);
-
-  const origin = req.headers.origin;
-
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-    console.log(`✅ CORS headers set for allowed origin: ${origin}`);
-  } else if (origin) {
-    console.log(`❌ Origin not allowed: ${origin}`);
-  }
-
-  // ✅ Updated OPTIONS block to send headers before responding
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  next();
-});
+const authRoutes = require("./routes/authRoutes"); // ✅ Google OAuth route
+const aiMoodRoutes = require("./routes/aiMoodRoutes"); // AI mood analysis routes
 
 // Routes
 app.use("/api/users", userRoutes);
@@ -129,23 +74,16 @@ app.use("/api/moodlogs", moodLogRoutes);
 app.use("/api/soundsessions", soundSessionRoutes);
 app.use("/api/quizresults", quizResultRoutes);
 app.use("/api", uploadRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes); // ✅ Google OAuth routes
+app.use("/api/ai", aiMoodRoutes); // AI mood analysis routes
+
 
 // Home route
 app.get('/', (req, res) => {
   res.send('🎉 CalmWave backend is running!');
 });
 
-// CORS test route
-app.get('/api/cors-test', (req, res) => {
-  res.json({
-    message: 'CORS is working!',
-    origin: req.headers.origin,
-    timestamp: new Date().toISOString()
-  });
-});
-
-// DB connection check
+// Test DB connection route
 app.get('/api/test-db', async (req, res) => {
   try {
     if (mongoose.connection.readyState === 1) {
@@ -168,7 +106,7 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
-// Sound session test
+// Test route to create a dummy sound session
 app.get('/api/test-sound-session', async (req, res) => {
   try {
     const SoundSession = require('./models/SoundSession');
@@ -192,14 +130,10 @@ app.get('/api/test-sound-session', async (req, res) => {
   }
 });
 
-// Start server
+// Connect to DB and start server
 const PORT = process.env.PORT || 8000;
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
-    console.log(`🔗 Backend URL: ${process.env.BACKEND_URL}`);
-    console.log(`🔒 CORS enabled for origins:`, allowedOrigins);
-    console.log(`📝 Environment: ${process.env.NODE_ENV}`);
   });
 });

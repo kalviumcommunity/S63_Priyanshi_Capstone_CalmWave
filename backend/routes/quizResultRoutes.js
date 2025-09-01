@@ -1,34 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const QuizResult = require('../models/QuizResult');
-const { verifyToken } = require('../middleware/auth');
-const User         = require('../models/User');
 
-// GET all quiz results (Protected - only for admins in a real app)
-router.get('/', verifyToken, async (req, res) => {
+// GET all quiz results (Public - for demo purposes)
+router.get('/', async (req, res) => {
   try {
-    const results = await QuizResult.find().populate('userId', 'fullName email');
+    const results = await QuizResult.find().sort({ createdAt: -1 });
     res.json(results);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching quiz results' });
   }
 });
 
-// GET quiz results for the current user (Protected)
-router.get('/user', verifyToken, async (req, res) => {
+// GET quiz results for anonymous user (Public)
+router.get('/anonymous', async (req, res) => {
   try {
-    const userId = req.user.id;
-    const results = await QuizResult.find({ userId }).sort({ createdAt: -1 });
+    // Get quiz results without userId (anonymous users)
+    const results = await QuizResult.find({ userId: { $exists: false } }).sort({ createdAt: -1 });
     res.json(results);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching quiz results', error: err.message });
   }
 });
 
-// POST a new quiz result (Protected)
-router.post('/', verifyToken, async (req, res) => {
+// POST a new quiz result (Public - no authentication required)
+router.post('/', async (req, res) => {
   const { score, level, date } = req.body;
-  const userId = req.user.id;
 
   if (score === undefined || !level) {
     return res.status(400).json({ message: 'Score and level are required' });
@@ -36,23 +33,15 @@ router.post('/', verifyToken, async (req, res) => {
 
   try {
     const newResult = await QuizResult.create({
-      userId,
       score,
       level,
       date: date ? new Date(date) : Date.now()
+      // No userId - anonymous user
     });
-
-    // ← Now this will work, because User is defined!
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { $push: { quizResults: newResult._id } },
-      { new: true, runValidators: true }
-    );
 
     return res.status(201).json({ 
       message: 'Quiz result saved', 
-      quizResult: newResult, 
-      user: updatedUser 
+      quizResult: newResult
     });
   } catch (err) {
     console.error('Error saving quiz result:', err);
@@ -62,10 +51,10 @@ router.post('/', verifyToken, async (req, res) => {
     });
   }
 });
-// PUT - Update a quiz result by ID (Protected)
-router.put('/:id', verifyToken, async (req, res) => {
+
+// PUT - Update a quiz result by ID (Public)
+router.put('/:id', async (req, res) => {
   const { score, level, date } = req.body;
-  const userId = req.user.id; // Get userId from authenticated user
 
   // Basic validation
   if (score === undefined || !level) {
@@ -73,23 +62,15 @@ router.put('/:id', verifyToken, async (req, res) => {
   }
 
   try {
-    // First check if the quiz result belongs to the current user
-    const quizResult = await QuizResult.findById(req.params.id);
-    
-    if (!quizResult) {
-      return res.status(404).json({ message: 'Quiz result not found' });
-    }
-    
-    // Ensure users can only update their own quiz results
-    if (String(quizResult.userId) !== String(userId)) {
-      return res.status(403).json({ message: 'Not authorized to update this quiz result' });
-    }
-
     const updatedResult = await QuizResult.findByIdAndUpdate(
       req.params.id,
-      { score, level, date: date || quizResult.date },
+      { score, level, date: date || Date.now() },
       { new: true }
     );
+
+    if (!updatedResult) {
+      return res.status(404).json({ message: 'Quiz result not found' });
+    }
 
     res.json({ message: 'Quiz result updated', updatedResult });
   } catch (err) {
@@ -97,30 +78,19 @@ router.put('/:id', verifyToken, async (req, res) => {
   }
 });
 
-// DELETE - Remove a quiz result by ID (Protected)
-router.delete('/:id', verifyToken, async (req, res) => {
-  const userId = req.user.id;
-
+// DELETE - Remove a quiz result by ID (Public)
+router.delete('/:id', async (req, res) => {
   try {
-    const quizResult = await QuizResult.findById(req.params.id);
+    const deletedResult = await QuizResult.findByIdAndDelete(req.params.id);
 
-    if (!quizResult) {
+    if (!deletedResult) {
       return res.status(404).json({ message: 'Quiz result not found' });
     }
-
-    // Ensure only the owner can delete their result
-    if (String(quizResult.userId) !== String(userId)) {
-      return res.status(403).json({ message: 'Not authorized to delete this quiz result' });
-    }
-
-    await QuizResult.findByIdAndDelete(req.params.id);
 
     res.json({ message: 'Quiz result deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting quiz result', error: err.message });
   }
 });
-
-
 
 module.exports = router;

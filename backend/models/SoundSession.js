@@ -4,7 +4,7 @@ const soundSessionSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false // Made optional for anonymous users
   },
   sessionType: {
     type: String,

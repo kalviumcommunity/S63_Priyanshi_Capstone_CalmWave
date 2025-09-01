@@ -4,7 +4,7 @@ const quizResultSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', // Reference to the User model
-    required: true
+    required: false // Made optional for anonymous users
   },
   score: Number,
   level: String, // like "low", "medium", "high"
