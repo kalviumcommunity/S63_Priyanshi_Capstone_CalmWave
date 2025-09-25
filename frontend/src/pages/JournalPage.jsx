@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../styles/JournalPage.css';
@@ -57,25 +56,8 @@ const JournalPage = () => {
     }));
   };
 
-  const analyzeWithAI = async (text) => {
-    if (!text || text.trim().length === 0) return null;
-
-    try {
-      setIsAnalyzing(true);
-      
-      const response = await axios.post('http://localhost:8000/api/ai/analyze-mood', 
-        { text: text.trim() },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-
-      return response.data.data;
-    } catch (err) {
-      console.error('AI analysis failed:', err);
-      return null;
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
+  // Removed AI analysis - no backend AI route
+  const analyzeWithAI = async () => null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -150,7 +132,7 @@ const JournalPage = () => {
         <div className="journal-container">
           <div className="journal-header">
             <h1>My Therapy Journal</h1>
-            <p>Track your mood and thoughts with AI-powered insights</p>
+            <p>Track your mood and thoughts</p>
             <button 
               className="new-entry-btn"
               onClick={() => setShowForm(!showForm)}
@@ -213,14 +195,9 @@ const JournalPage = () => {
                     name="note"
                     value={newEntry.note}
                     onChange={handleInputChange}
-                    placeholder="Write about your day, thoughts, or feelings... (AI will analyze your mood from this text)"
+                    placeholder="Write about your day, thoughts, or feelings..."
                     rows="6"
                   />
-                  {newEntry.note && (
-                    <div className="ai-preview">
-                      <small>✨ AI will analyze this text to detect your mood automatically</small>
-                    </div>
-                  )}
                 </div>
 
                 <div className="form-actions">
@@ -267,22 +244,7 @@ const JournalPage = () => {
                             {getMoodEmoji(entry.mood)} {entry.mood}
                           </span>
                         </div>
-                        {entry.aiDetectedMood && entry.aiDetectedMood !== 'Neutral' && (
-                          <div className="ai-mood">
-                            <span className="mood-label">AI Detected:</span>
-                            <span 
-                              className="mood-badge ai-badge"
-                              style={{ backgroundColor: getMoodColor(entry.aiDetectedMood) }}
-                            >
-                              🤖 {getMoodEmoji(entry.aiDetectedMood)} {entry.aiDetectedMood}
-                              {entry.aiConfidence && (
-                                <small className="confidence">
-                                  ({Math.round(entry.aiConfidence * 100)}%)
-                                </small>
-                              )}
-                            </span>
-                          </div>
-                        )}
+
                       </div>
                     </div>
                     {entry.note && (

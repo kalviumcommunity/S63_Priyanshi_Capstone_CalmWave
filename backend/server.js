@@ -66,7 +66,7 @@ const soundSessionRoutes = require("./routes/soundSessionRoutes");
 const quizResultRoutes = require("./routes/quizResultRoutes");
 const uploadRoutes = require("./routes/upload");
 const authRoutes = require("./routes/authRoutes"); // ✅ Google OAuth route
-const aiMoodRoutes = require("./routes/aiMoodRoutes"); // AI mood analysis routes
+// Removed AI mood routes
 
 // Routes
 app.use("/api/users", userRoutes);
@@ -75,7 +75,7 @@ app.use("/api/soundsessions", soundSessionRoutes);
 app.use("/api/quizresults", quizResultRoutes);
 app.use("/api", uploadRoutes);
 app.use("/api/auth", authRoutes); // ✅ Google OAuth routes
-app.use("/api/ai", aiMoodRoutes); // AI mood analysis routes
+// Removed /api/ai routes
 
 
 // Home route
