@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Navbar from '../components/Navbar';
 import '../styles/Login.css';
 import googleLogo from '../assests/google.png';
 import facebookLogo from '../assests/facebook.png';
@@ -62,8 +63,10 @@ function Login() {
   };
 
   return (
-    <div className="login-wrapper">
-      <div className="login-container">
+    <>
+      <Navbar />
+      <div className="login-wrapper">
+        <div className="login-container">
         <h2>Access Account</h2>
         {message && <div className="message">{message}</div>}
         <form className="login-form" onSubmit={handleSubmit}>
@@ -122,7 +125,8 @@ function Login() {
           Need to create an account? <Link to="/signup">Sign Up</Link>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

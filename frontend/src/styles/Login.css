@@ -13,15 +13,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: calc(100vh - 80px);
   width: 100%;
+  background: #0B2724;
+  padding: 40px 20px;
 }
 
 
 .login-container {
   width: 420px;
   padding: 40px 24px 80px; /* Increased bottom padding */
-  background: transparent;
+  background: #F1F4EE;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(3px);
@@ -31,7 +33,7 @@ body {
 
 .login-container h2 {
   text-align: center;
-  color: #1a1a1a;
+  color: #0B2724;
   margin-bottom: 12px;
   font-weight: 800;
   font-size: 36px;
@@ -56,7 +58,7 @@ body {
 }
 
 .form-group label {
-  color: #1a1a1a;
+  color: #0B2724;
   margin-bottom: 6px;
   display: block;
   font-size: 15px;
@@ -65,7 +67,7 @@ body {
 .form-group input {
   width: 100%;
   padding: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(11, 39, 36, 0.2);
   border-radius: 8px;
   font-size: 15px;
   background: #ffffff;
@@ -73,7 +75,7 @@ body {
 }
 
 .form-group input:focus {
-  border-color: #387BC9;
+  border-color: #ADFF2F;
   outline: none;
 }
 
@@ -81,20 +83,21 @@ body {
   text-align: right;
   margin: 6px 0 18px;
   font-size: 14px;
-  color: #387BC9;
+  color: #ADFF2F;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .forgot-password:hover {
-  color: #1a1a1a;
+  color: #0B2724;
 }
 
 .login-button {
-  background: linear-gradient(to right, #387BC9, #5fa8f1);
-  color: white;
+  background: #ADFF2F;
+  color: #0B2724;
   padding: 12px;
   font-size: 16px;
+  font-weight: 600;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -104,14 +107,14 @@ body {
 
 .login-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(56, 123, 201, 0.3);
+  box-shadow: 0 8px 16px rgba(173, 255, 47, 0.3);
 }
 
 .or-divider {
   display: flex;
   align-items: center;
   margin: 24px 0;
-  color: #666;
+  color: rgba(11, 39, 36, 0.6);
   font-size: 14px;
 }
 
@@ -123,7 +126,7 @@ body {
 .or-divider::after {
   content: "";
   flex: 1;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid rgba(11, 39, 36, 0.2);
 }
 
 .social-signup {
@@ -175,14 +178,14 @@ body {
 }
 
 .signup-link a {
-  color: #387BC9;
+  color: #ADFF2F;
   font-weight: 600;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .signup-link a:hover {
-  color: #1a1a1a;
+  color: #0B2724;
 }
 
 /* Animations */

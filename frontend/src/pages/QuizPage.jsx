@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import quizImage from "../assests/image.png";
 import "../styles/QuizPage.css";
 
 const QuizPage = () => {
@@ -16,37 +16,18 @@ const QuizPage = () => {
     { question: "7. Feeling afraid as if something awful might happen", options: ["Not at all", "Several days", "More than half the days", "Nearly every day"] },
   ];
 
-  const quotes = [
-    "Don’t worry, this quiz won’t bite. But it might expose your overthinking😉.",
-    "If overthinking were a sport, we’d all be gold medalists😅.",
-    "Is it anxiety or just caffeine? Let’s find out🫣.",
-    "Every emotion is a message. Let’s see what yours is saying today💌.",
-    "We’re not saying you’re anxious, but let’s just check — for funsies🎲.",
-    "Let’s find out what your mind’s trying to tell you. No pressure🧠.",
-    "Thought spiral in progress? No worries — we’ve got a parachute💙.",
-    "You don’t need to feel okay to start. You just need to start🌤️.",
-    "You’re stronger than you think. Let’s explore your peace🌿.",
-    "Your brain’s been doing cartwheels again, huh? Let’s help it stick the landing🤸‍♂️.",
-  ];
-
   const [showStartScreen, setShowStartScreen] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [showResultScreen, setShowResultScreen] = useState(false);
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState("");
-  const [randomQuote, setRandomQuote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [showPreviousResults, setShowPreviousResults] = useState(false);
   const [previousResults, setPreviousResults] = useState([]);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const quote = quotes[Math.floor(Math.random() * quotes.length)];
-    setRandomQuote(quote);
-  }, []);
 
   useEffect(() => {
     const storedResults = JSON.parse(localStorage.getItem('quizResults') || '[]');
@@ -147,71 +128,7 @@ const QuizPage = () => {
     navigate('/therapy', { state: { level } }); // 🚀 Pass anxiety level to therapy page
   };
 
-  if (showStartScreen) {
-    return (
-      <>
-        <Navbar />
-        <div className="start-bg">
-          <div className="start-overlay">
-            <div className="start-content">
-              <h1>Let’s Find Out Where You Stand</h1>
-              <p>{randomQuote}</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "16px", alignItems: "center" }}>
-                <button onClick={() => setShowStartScreen(false)}>Start Quiz</button>
-                <button 
-                  onClick={handleViewPreviousResults}
-                  style={{ backgroundColor: "#6c757d", border: "none" }}
-                >
-                  View Previous Results ({previousResults.length})
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
-
-  if (showResultScreen) {
-    return (
-      <>
-        <Navbar />
-        <div className="result-screen">
-          <div className="result-box">
-            <h1>🎉 Hurray! You Completed the Quiz</h1>
-            
-            {error && (
-              <div style={{ color: 'red', marginBottom: '1rem', padding: '0.5rem', backgroundColor: 'rgba(255,0,0,0.1)', borderRadius: '4px' }}>
-                {error}
-              </div>
-            )}
-            
-            <p className="result-score">Your Score: <strong>{score}</strong></p>
-            <p className="result-level">Anxiety Level: <strong>{level}</strong></p>
-            <p className="result-msg">Remember, this is just a self-assessment. You're doing great just by being here 💙</p>
-            <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginTop: "24px" }}>
-              <button 
-                onClick={() => window.location.reload()}
-                disabled={isSubmitting}
-              >
-                Retake Quiz
-              </button>
-              <button 
-                className="result-action-btn" 
-                onClick={handleStartTherapy}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Saving..." : "Start Therapy"}
-              </button>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
-
+  // Check previous results FIRST
   if (showPreviousResults) {
     return (
       <>
@@ -223,7 +140,10 @@ const QuizPage = () => {
             {previousResults.length === 0 ? (
               <div className="no-results">
                 <p>No previous quiz results found. Take your first quiz to get started!</p>
-                <button onClick={() => setShowPreviousResults(false)}>Take Quiz</button>
+                <button onClick={() => {
+                  setShowPreviousResults(false);
+                  setShowStartScreen(true);
+                }}>Take Quiz</button>
               </div>
             ) : (
               <>
@@ -247,11 +167,162 @@ const QuizPage = () => {
                 </div>
                 
                 <div className="results-actions">
-                  <button onClick={() => setShowPreviousResults(false)}>Take New Quiz</button>
-                  <button onClick={() => setShowPreviousResults(false)}>Back to Start</button>
+                  <button onClick={() => {
+                    setShowPreviousResults(false);
+                    setShowStartScreen(false);
+                    setCurrentQuestion(0);
+                    setAnswers([]);
+                    setShowResultScreen(false);
+                  }}>Take New Quiz</button>
+                  <button onClick={() => {
+                    setShowPreviousResults(false);
+                    setShowStartScreen(true);
+                  }}>Back to Start</button>
                 </div>
               </>
             )}
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (showStartScreen) {
+    return (
+      <>
+        <Navbar />
+        <div className="quiz-landing-container">
+          <div className="quiz-landing-card">
+            <div className="quiz-landing-left">
+              <h1 className="quiz-landing-title">Quizzes</h1>
+              <h2 className="quiz-landing-subtitle">Let's Find Out Where You Stand</h2>
+              <p className="quiz-landing-quote">Every emotion is a message. Let's see what yours is saying today💌.</p>
+              <div className="quiz-landing-buttons">
+                <button 
+                  className="quiz-btn-start"
+                  onClick={() => {
+                    setShowStartScreen(false);
+                    setShowPreviousResults(false);
+                    setShowResultScreen(false);
+                    setCurrentQuestion(0);
+                    setAnswers([]);
+                  }}
+                >
+                  Start Quiz
+                </button>
+                <button 
+                  className="quiz-btn-results"
+                  onClick={handleViewPreviousResults}
+                >
+                  View Previous Results ({previousResults.length})
+                </button>
+              </div>
+            </div>
+            
+            <div className="quiz-landing-right">
+              <div className="quiz-image-container">
+                <div className="quiz-hero-image">
+                  <img src={quizImage} alt="Quiz illustration" style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '2rem'}} />
+                </div>
+                <div className="floating-option option-a">
+                  <span className="option-badge">A</span>
+                  <span>Feeling anxious?</span>
+                </div>
+                <div className="floating-option option-b">
+                  <span className="option-badge">B</span>
+                  <span>Need to relax?</span>
+                </div>
+                <div className="floating-option option-c">
+                  <span className="option-badge">C</span>
+                  <span>How's your mood?</span>
+                </div>
+                <div className="floating-option option-d">
+                  <span className="option-badge">D</span>
+                  <span>Ready to reflect?</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (showResultScreen) {
+    return (
+      <>
+        <Navbar />
+        <div className="quiz-result-screen">
+          <div className="result-content-wrapper">
+            <div className="result-main-card">
+              <div className="result-header-section">
+                <div className="celebration-icon">🎉</div>
+                <h1 className="result-main-title">Quiz Completed!</h1>
+                <p className="result-subtitle">Here's your mental wellness assessment</p>
+              </div>
+              
+              {error && (
+                <div className="result-error-message">
+                  {error}
+                </div>
+              )}
+              
+              <div className="result-stats-container">
+                <div className="result-stat-box score-box">
+                  <div className="stat-icon">📊</div>
+                  <div className="stat-content">
+                    <div className="stat-label">Your Score</div>
+                    <div className="stat-value">{score}</div>
+                    <div className="stat-max">out of {questions.length * 3}</div>
+                  </div>
+                </div>
+                
+                <div className="result-stat-box level-box">
+                  <div className="stat-icon">🎯</div>
+                  <div className="stat-content">
+                    <div className="stat-label">Anxiety Level</div>
+                    <div className="stat-value-text">{level}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="result-insight-card">
+                <div className="insight-header">
+                  <span className="insight-icon">💙</span>
+                  <h3>A Message for You</h3>
+                </div>
+                <p className="insight-text">
+                  Remember, this is just a self-assessment. You're doing great just by being here and taking steps to understand yourself better. Mental wellness is a journey, not a destination.
+                </p>
+              </div>
+              
+              <div className="result-action-buttons">
+                <button 
+                  className="result-btn btn-outlined"
+                  onClick={() => window.location.reload()}
+                  disabled={isSubmitting}
+                >
+                  <span className="btn-icon">🔄</span>
+                  Retake Quiz
+                </button>
+                <button 
+                  className="result-btn btn-primary" 
+                  onClick={handleStartTherapy}
+                  disabled={isSubmitting}
+                >
+                  <span className="btn-icon">🌿</span>
+                  {isSubmitting ? "Saving..." : "Start Your Journey"}
+                </button>
+              </div>
+            </div>
+            
+            <div className="result-floating-elements">
+              <div className="floating-shape shape-1"></div>
+              <div className="floating-shape shape-2"></div>
+              <div className="floating-shape shape-3"></div>
+            </div>
           </div>
         </div>
         <Footer />
@@ -263,32 +334,129 @@ const QuizPage = () => {
     <>
       <Navbar />
       <div className="quiz-page">
-        <h1>Anxiety Assessment</h1>
-        <p className="quiz-progress">Question {currentQuestion + 1} of {questions.length}</p>
-        <div className="question-box">
-          <p>{questions[currentQuestion].question}</p>
-          <div className="options">
-            {questions[currentQuestion].options.map((option, index) => (
-              <button
-                key={index}
-                className={`option-button ${answers[currentQuestion] === option ? "selected" : ""}`}
-                onClick={() => handleAnswerClick(option)}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-          <div className="quiz-buttons">
-            <button
-              className="prev-button"
-              onClick={handlePrevious}
-              disabled={currentQuestion === 0}
-            >
-              Previous
-            </button>
-            <button className="next-button" onClick={handleNext}>
-              {currentQuestion === questions.length - 1 ? "Submit" : "Next"}
-            </button>
+        <div className="quiz-assessment-container">
+          <div className="quiz-assessment-card">
+            <div className="quiz-content-wrapper">
+              <div className="quiz-main-section">
+                <div className="quiz-header">
+                  <h2>Question {currentQuestion + 1} of {questions.length}</h2>
+                  <button className="submit-button" onClick={() => {
+                    if (currentQuestion === questions.length - 1) {
+                      calculateScore();
+                    } else {
+                      handleNext();
+                    }
+                  }}>
+                    Submit
+                  </button>
+                </div>
+                
+                <p className="question-text">{questions[currentQuestion].question}</p>
+                
+                <div className="quiz-options-grid">
+                  {questions[currentQuestion].options.map((option, index) => (
+                    <button
+                      key={index}
+                      className={`quiz-option-card ${answers[currentQuestion] === option ? "selected" : ""}`}
+                      onClick={() => handleAnswerClick(option)}
+                    >
+                      <span className="option-label">{String.fromCharCode(65 + index)}.</span>
+                      <span className="option-text">{option}</span>
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="quiz-navigation">
+                  <button
+                    className="nav-btn prev-btn"
+                    onClick={handlePrevious}
+                    disabled={currentQuestion === 0}
+                  >
+                    Prev
+                  </button>
+                  
+                  <div className="question-numbers">
+                    {questions.map((_, index) => (
+                      <button
+                        key={index}
+                        className={`question-num ${currentQuestion === index ? "active" : ""} ${answers[index] ? "answered" : ""}`}
+                        onClick={() => setCurrentQuestion(index)}
+                      >
+                        {index + 1}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <button
+                    className="nav-btn next-btn"
+                    onClick={handleNext}
+                    disabled={currentQuestion === questions.length - 1}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+              
+              <div className="quiz-progress-sidebar">
+                <div className="progress-circle">
+                  <svg width="120" height="120" viewBox="0 0 120 120">
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="54"
+                      fill="none"
+                      stroke="#e5e5e5"
+                      strokeWidth="8"
+                    />
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="54"
+                      fill="none"
+                      stroke="#2d3436"
+                      strokeWidth="8"
+                      strokeDasharray={`${(answers.filter(a => a).length / questions.length) * 339.292} 339.292`}
+                      strokeLinecap="round"
+                      transform="rotate(-90 60 60)"
+                    />
+                  </svg>
+                  <div className="progress-text">
+                    <span className="progress-number">{answers.filter(a => a).length}/{questions.length}</span>
+                  </div>
+                </div>
+                <p className="progress-label">Question {currentQuestion + 1} of {questions.length}</p>
+                <p className="progress-question">{questions[currentQuestion].question}</p>
+                
+                <div className="sidebar-options">
+                  {questions[currentQuestion].options.map((option, index) => (
+                    <div
+                      key={index}
+                      className={`sidebar-option ${answers[currentQuestion] === option ? "selected" : ""}`}
+                    >
+                      <span className="sidebar-label">{String.fromCharCode(65 + index)}</span>
+                      <span className="sidebar-text">{option}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="sidebar-navigation">
+                  <button
+                    className="sidebar-nav-btn"
+                    onClick={handlePrevious}
+                    disabled={currentQuestion === 0}
+                  >
+                    Prev
+                  </button>
+                  <button
+                    className="sidebar-nav-btn next"
+                    onClick={handleNext}
+                    disabled={currentQuestion === questions.length - 1}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

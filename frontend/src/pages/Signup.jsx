@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Navbar from '../components/Navbar';
 import '../styles/Signup.css';
 import { validatePassword, validateEmail } from '../utils/validationUtils';
 import googleLogo from '../assests/google.png';
@@ -90,10 +91,13 @@ function Signup() {
   };
 
   return (
-    <div className="signup-container">
-      <h2>Create Account</h2>
-      <p>Join us for a more relaxing experience</p>
-      {message && <div className="message">{message}</div>}
+    <>
+      <Navbar />
+      <div className="signup-wrapper">
+        <div className="signup-container">
+        <h2>Create Account</h2>
+        <p>Join us for a more relaxing experience</p>
+        {message && <div className="message">{message}</div>}
 
       <form className="signup-form" onSubmit={handleSubmit}>
         <div className="form-group">
@@ -180,8 +184,10 @@ function Signup() {
 
       <div className="login-link">
         Already registered? <Link to="/login">Login</Link>
+        </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

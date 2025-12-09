@@ -20,9 +20,9 @@ Users take a quick mood-based quiz, receive curated soundscapes, track emotional
 ## 🛠 Tech Stack  
 - **Frontend**: React, Vite, Tailwind CSS, Framer Motion  
 - **Backend**: Node.js, Express.js  
-- **Database**: MongoDB or PostgreSQL  
-- **Authentication**: Firebase Auth / Custom Auth  
-- **Audio**: Tone.js / Howler.js  
+- **Database**: MongoDB  
+- **Authentication**: Custom Auth
+- **Audio**: Pre-recorded files /mp3
 
 
 

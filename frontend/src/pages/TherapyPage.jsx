@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/TherapyPage.css";
-import quotes from "../utils/quotes"; // add this line
+import therapyBgImage from '../assests/image2.png';
 
 
 // Import Chart.js components
@@ -37,28 +36,14 @@ const binauralBeatsMap = {
   "Gamma Waves (30-100 Hz)": "/audios/gamma-binaural.mp3",
 };
 
-const messages = {
-  "Minimal Anxiety": "You're doing great. Take a moment to relax and breathe with these calming sounds.",
-  "Mild Anxiety": "Let's help your mind unwind with some gentle Indian rhythms.",
-  "Moderate Anxiety": "You're not alone. These peaceful tones are here to help you rest your thoughts.",
-  "Severe Anxiety": "You're safe now. Let the healing sounds guide your mind to calmness.",
-};
-
-const recommendedFrequency = {
-  "Minimal Anxiety": "1-2 times per week",
-  "Mild Anxiety": "2-3 times per week",
-  "Moderate Anxiety": "3-4 times per week",
-  "Severe Anxiety": "Daily sessions recommended",
-};
-
 const TherapyPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const [message, setMessage] = useState("");
   const [currentView, setCurrentView] = useState("main"); // main, additional, mood, history
   const [binauralPlaying, setBinauralPlaying] = useState(false);
   const [selectedBinauralBeat, setSelectedBinauralBeat] = useState("Alpha Waves (8-12 Hz)");
   const [breathingActive, setBreathingActive] = useState(false);
+  const [breathingTime, setBreathingTime] = useState(299); // 4 min 59 sec
   const [currentMood, setCurrentMood] = useState(null);
   const [moodNote, setMoodNote] = useState("");
   const [selectedAdditionalAudio, setSelectedAdditionalAudio] = useState(null);
@@ -69,7 +54,8 @@ const TherapyPage = () => {
   const [moodHistory, setMoodHistory] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [historyError, setHistoryError] = useState(null);
-  const [quote, setQuote] = useState("");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [duration, setDuration] = useState(0);
 
 
 
@@ -84,9 +70,6 @@ const TherapyPage = () => {
 
     if (state?.level) {
       const src = audioMap[state.level];
-      setMessage(messages[state.level]);
-      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-      setQuote(randomQuote);
       
       // We don't automatically play the audio, but we prepare the reference
       // The audio will be played when the user clicks the play button
@@ -103,12 +86,49 @@ const TherapyPage = () => {
     };
   }, [state, navigate]);
   
+  // Update progress bar continuously when playing
+  useEffect(() => {
+    let interval;
+    if (isPlaying && audioRef.current?.element) {
+      interval = setInterval(() => {
+        const audio = audioRef.current.element;
+        if (audio) {
+          if (!duration && audio.duration) {
+            setDuration(audio.duration);
+          }
+          // Debug log
+          if (Math.floor(audio.currentTime) % 1 === 0) {
+            console.log('Audio progress:', formatTime(audio.currentTime), '/', formatTime(audio.duration));
+          }
+        }
+      }, 100);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isPlaying, duration]);
+  
+  // Breathing exercise timer
+  useEffect(() => {
+    let interval;
+    if (breathingActive && breathingTime > 0) {
+      interval = setInterval(() => {
+        setBreathingTime((prev) => prev - 1);
+      }, 1000);
+    } else if (breathingTime === 0 && breathingActive) {
+      setBreathingActive(false);
+      setBreathingTime(299);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [breathingActive, breathingTime]);
+  
   // Fetch mood history when the history view is shown
   useEffect(() => {
     if (currentView === 'history') {
       fetchMoodHistory();
     }
-    // eslint-disable-next-line
   }, [currentView]);
   
   // Function to fetch mood history data
@@ -225,122 +245,233 @@ const TherapyPage = () => {
     console.log('All audio stopped and state reset in TherapyPage');
   };
 
+  // Format time in mm:ss
+  const formatTime = (seconds) => {
+    if (!seconds || isNaN(seconds)) return "00:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getBreathingMins = (seconds) => {
+    return Math.floor(seconds / 60).toString().padStart(2, '0');
+  };
+
+  const getBreathingSecs = (seconds) => {
+    return (seconds % 60).toString().padStart(2, '0');
+  };
+
+  const handleBreathingStart = () => {
+    setBreathingTime(299);
+    setBreathingActive(true);
+  };
+
+  const handleBreathingStop = () => {
+    setBreathingActive(false);
+    setBreathingTime(299);
+  };
+
   // --- MAIN VIEW ---
   const renderMainView = () => (
+    <div className="therapy-page-fullscreen" style={{ backgroundImage: `url(${therapyBgImage})` }}>
+      {/* Hero Section */}
+      <div className="therapy-hero-section-full">
+        <div className="therapy-content-grid">
+          
+          {/* Left Content */}
+          <div className="therapy-content-left">
+            {/* Top Badge */}
+            <div className="therapy-badge">
+              <div className="badge-icon">🧘</div>
+              <div className="badge-content">
+                <div className="badge-title">Your Wellness Journey</div>
+                <div className="badge-link">Find Your Peace</div>
+              </div>
+            </div>
 
-    <div className="therapy-main animate-fadeIn">
-      <h2 className="therapy-title">Therapy Session</h2>
-      {!state?.level && (
-        <div className="notice-banner" style={{background:'#fff3cd', border:'1px solid #ffeeba', color:'#856404', padding:'0.75rem 1rem', borderRadius:'8px', margin:'0.5rem 0'}}>
-          To get your personalized audio, please take the anxiety quiz first.
-          <button className="button" style={{marginLeft:'0.75rem'}} onClick={() => navigate('/quiz')}>Take Quiz</button>
+            {/* Main Heading */}
+            <h1 className="therapy-hero-heading">
+              Therapy<br/>Session
+            </h1>
+
+            {/* Description */}
+            <p className="therapy-hero-description">
+              Experience Personalized Audio Therapy & Relaxation Techniques Designed For Your Mental Well-being.
+            </p>
+
+            {/* Stats Bar */}
+            <div className="therapy-stats-bar">
+              <div className="stat-group">
+                <span className="stat-emoji">🎵</span>
+                <span className="stat-label">Personalized Audio <strong>Therapy</strong></span>
+              </div>
+              <span className="stat-separator">/</span>
+              <div className="stat-group">
+                <span className="stat-emoji">⭐</span>
+                <span className="stat-label"><strong>Proven</strong> Techniques</span>
+              </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="therapy-hero-buttons">
+              <button 
+                className="therapy-btn-primary"
+                onClick={() => {
+                  if (isPlaying) {
+                    audioRef.current?.element?.pause();
+                    setIsPlaying(false);
+                  } else {
+                    if (audioRef.current?.element) {
+                      audioRef.current.element.play();
+                      setIsPlaying(true);
+                    } else if (audioRef.current?.src) {
+                      const audio = playAudio(audioRef.current.src, {
+                        loop: true,
+                        onPlay: () => {
+                          setIsPlaying(true);
+                          if (audio.duration) setDuration(audio.duration);
+                        },
+                        onError: () => alert("Could not play audio")
+                      });
+                      audioRef.current.element = audio;
+                      audio.addEventListener('loadedmetadata', () => setDuration(audio.duration));
+                    }
+                  }
+                }}
+                disabled={!state?.level}
+              >
+                {isPlaying ? 'Pause Therapy' : 'Start Therapy'} — {state?.level ? 'Ready' : "Take Quiz"}
+              </button>
+              
+              <button 
+                className="therapy-btn-secondary"
+                onClick={() => navigate('/quiz')}
+              >
+                {state?.level ? 'Retake Assessment' : 'Take Quiz'}
+              </button>
+            </div>
+          </div>
+
+          {/* Right Content - Floating Elements */}
+          <div className="therapy-content-right">
+          </div>
+
         </div>
-      )}
-      <div className="therapy-info">
-        <p><strong>Anxiety Level:</strong> {state?.level || 'Not set'}</p>
-        {state?.level && <p><strong>Relax & Listen</strong> {recommendedFrequency[state?.level]}</p>}
       </div>
-      <div className="therapy-message">
-        <p>{message}</p>
-          <div className="daily-quote" style={{ marginTop: "1rem", fontStyle: "italic", color: "#444" }}>
-    🧘 Relaxation Tip: “{quote}”
 
-  </div>
+      {/* Audio Section */}
+      <div className="therapy-audio-full">
+        <div className="audio-content-wrapper">
+          
+          {/* Glassmorphic Audio Player Card */}
+          <div className="glass-audio-card">
+            {/* Bottom Control Bar Only */}
+            <div className="glass-bottom-controls">
+              <button className="glass-btn-skip" disabled={!state?.level}>
+                <span>⏮</span>
+              </button>
+              
+              <button 
+                className="glass-btn-pause"
+                onClick={() => {
+                  if (isPlaying) {
+                    audioRef.current?.element?.pause();
+                    setIsPlaying(false);
+                  } else {
+                    if (audioRef.current?.element) {
+                      audioRef.current.element.play();
+                      setIsPlaying(true);
+                    } else if (audioRef.current?.src) {
+                      const audio = playAudio(audioRef.current.src, {
+                        loop: true,
+                        onPlay: () => {
+                          setIsPlaying(true);
+                          if (audio.duration) setDuration(audio.duration);
+                        },
+                        onError: () => alert("Could not play audio")
+                      });
+                      audioRef.current.element = audio;
+                      audio.addEventListener('loadedmetadata', () => setDuration(audio.duration));
+                    }
+                  }
+                }}
+                disabled={!state?.level}
+              >
+                <span>{isPlaying ? '⏸' : '▶'}</span>
+              </button>
+              
+              <button className="glass-btn-skip" disabled={!state?.level}>
+                <span>⏭</span>
+              </button>
+
+              {/* Track Info Section */}
+              <div className="glass-track-section">
+                <div className="glass-logo-box">
+                  <span className="logo-text">GIVE<br/>TIME</span>
+                </div>
+                <div className="glass-track-text">
+                  <div className="track-name">{state?.level ? `${state.level} Therapy` : 'Therapy Session'}</div>
+                  <div className="track-subtitle">Audiobook • CalmWave</div>
+                </div>
+              </div>
+
+              <button className="glass-btn-action" disabled={!state?.level}>
+                <span>⏭</span>
+              </button>
+              
+              <button className="glass-btn-action" disabled={!state?.level}>
+                <span>⋯</span>
+              </button>
+              
+              <button className="glass-btn-action" disabled={!state?.level}>
+                <span>🔗</span>
+              </button>
+              
+              <button className="glass-btn-action" disabled={!state?.level}>
+                <span>☰</span>
+              </button>
+              
+              <button className="glass-btn-action" disabled={!state?.level}>
+                <span>🔊</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
       </div>
-      <div className="section-card" style={{textAlign: "center"}}>
-        <button 
-          className="button" 
-          onClick={() => {
-            console.log("Play button clicked for recommended audio");
-            if (audioRef.current) {
-              // Use our audio context to play the audio
-              const audio = playAudio(audioRef.current.src, {
-                loop: true,
-                onPlay: () => {
-                  console.log("Playing recommended audio successfully");
-                },
-                onError: (error) => {
-                  console.error("Error playing recommended audio:", error);
-                  alert("Could not play the recommended audio. Please check if the audio file exists.");
-                }
-              });
-              
-              // Store the audio element in our ref for later use
-              audioRef.current.element = audio;
-            } else {
-              console.log("audioRef.current is null or undefined");
-            }
-          }}
-        >
-          ▶ Play Recommended Audio
-        </button>
-        <button 
-          className="button" 
-          onClick={() => {
-            console.log("Pause button clicked for recommended audio");
-            if (audioRef.current && audioRef.current.element) {
-              // Use our audio context to pause the audio
-              pauseAudio(audioRef.current.element, (audio) => {
-                console.log("Audio paused");
-                
-                // Calculate session duration and save if played for at least 10 seconds
-                const duration = getSessionDuration(audio);
-                console.log("Session duration:", duration, "seconds");
-                
-                if (duration >= 10) {
-                  console.log("Duration >= 10 seconds, saving session");
-                  saveSoundSession('Recommended', state?.level || 'Unknown', duration);
-                } else {
-                  console.log("Duration < 10 seconds, not saving session");
-                }
-              });
-              
-              // Clear the element reference
-              audioRef.current.element = null;
-            } else {
-              console.log("No audio is currently playing");
-            }
-          }} 
-          style={{marginLeft: "1rem"}}
-        >
-          ⏸ Pause
-        </button>
-        <button 
-          className="button stop-button" 
-          onClick={() => {
-            if (audioRef.current && audioRef.current.element) {
-              // Calculate session duration and save if played for at least 10 seconds
-              const duration = getSessionDuration(audioRef.current.element);
-              if (duration >= 10) {
-                saveSoundSession('Recommended', state?.level || 'Unknown', duration);
-              }
-              
-              // Use our audio context to stop the audio
-              pauseAudio(audioRef.current.element);
-              if (audioRef.current.element) {
-                audioRef.current.element.currentTime = 0;
-              }
-              
-              // Clear the element reference
-              audioRef.current.element = null;
-            }
-          }} 
-          style={{marginLeft: "1rem"}}
-        >
-          ⏹ Stop
-        </button>
+
+      {/* Bottom Cards */}
+      <div className="therapy-cards-section">
+        <div className="cards-grid">
+          
+          <div className="bottom-card" onClick={() => setCurrentView("additional")}>
+            <div className="card-emoji">🎵</div>
+            <h3>Additional Sounds</h3>
+            <p>Explore binaural beats, nature sounds, and meditation music</p>
+          </div>
+
+          <div className="bottom-card" onClick={() => setCurrentView("mood")}>
+            <div className="card-emoji">📝</div>
+            <h3>Mood Tracking</h3>
+            <p>Log and monitor your daily emotional wellness journey</p>
+          </div>
+
+          <div className="bottom-card" onClick={() => setCurrentView("history")}>
+            <div className="card-emoji">📊</div>
+            <h3>Progress History</h3>
+            <p>View detailed mood trends and therapy session history</p>
+          </div>
+
+        </div>
       </div>
-      <div className="button-group">
-        <button className="button primary-button" onClick={() => setCurrentView("additional")}>
-          Additional Options
-        </button>
-        <button className="button secondary-button" onClick={() => setCurrentView("mood")}>
-          Mood Tracker
-        </button>
-        <button className="button secondary-button" onClick={() => setCurrentView("history")}>
-          Mood History
-        </button>
+
+      {/* Footer */}
+      <div className="therapy-footer">
+        <div className="footer-content">
+          <div className="footer-text">Trusted by wellness communities worldwide</div>
+        </div>
       </div>
+
     </div>
   );
 
@@ -350,7 +481,14 @@ const TherapyPage = () => {
       <h2 className="therapy-title">Additional Therapy Tools</h2>
       {/* Binaural Beats */}
       <div className="section-card">
-        <h3>🎵 Binaural Beats</h3>
+        <div className="binaural-header">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" strokeWidth="2" className="binaural-music-icon">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+          <h3>🎵 Binaural Beats</h3>
+        </div>
         <select
           value={selectedBinauralBeat}
           onChange={(e) => setSelectedBinauralBeat(e.target.value)}
@@ -401,20 +539,47 @@ const TherapyPage = () => {
         </button>
       </div>
       {/* Breathing Exercise */}
-      <div className="section-card">
-        <h3>🧘 Breathing Exercise</h3>
-        {!breathingActive ? (
-          <button className="button" onClick={() => setBreathingActive(true)}>
-            Start Exercise
-          </button>
-        ) : (
-          <>
-            <div className="breathing-circle"></div>
-            <button className="button" onClick={() => setBreathingActive(false)}>
-              Stop Exercise
+      <div className="section-card breathing-exercise-card">
+        <h3 className="breathing-title">
+          Try a quick breathing <span className="breathing-italic">exercise</span><br />
+          <span className="breathing-italic">to ease</span> your stress.
+        </h3>
+        <div className="breathing-center">
+          <div className={`breathing-circle-container ${breathingActive ? 'breathing-active' : ''}`}>
+            <div className="breathing-ring breathing-ring-1"></div>
+            <div className="breathing-ring breathing-ring-2"></div>
+            <div className="breathing-ring breathing-ring-3"></div>
+            <div className="breathing-ring breathing-ring-4"></div>
+            <div className="breathing-core">
+              <span className="breathing-leaf">🌱</span>
+            </div>
+          </div>
+        </div>
+        <div className="breathing-controls">
+          <div className="breathing-control">
+            <span className="breathing-label">Click to</span>
+            <button 
+              className="breathing-start-btn" 
+              onClick={() => {
+                if (breathingActive) {
+                  handleBreathingStop();
+                } else {
+                  handleBreathingStart();
+                }
+              }}
+            >
+              {breathingActive ? 'Stop' : 'Start'}
             </button>
-          </>
-        )}
+          </div>
+          <div className="breathing-control">
+            <span className="breathing-label">Mins</span>
+            <span className="breathing-value">{getBreathingMins(breathingTime)}</span>
+          </div>
+          <div className="breathing-control">
+            <span className="breathing-label">Secs</span>
+            <span className="breathing-value">{getBreathingSecs(breathingTime)}</span>
+          </div>
+        </div>
       </div>
       {/* Additional Music */}
       <div className="section-card">
@@ -762,14 +927,12 @@ const TherapyPage = () => {
 
   // --- MAIN RENDER ---
   return (
-    <div className="therapy-page">
+    <div className="w-full min-h-screen">
       <Navbar />
-      <div className="therapy-container">
-        {currentView === "main" && renderMainView()}
-        {currentView === "additional" && renderAdditionalView()}
-        {currentView === "mood" && renderMoodView()}
-        {currentView === "history" && renderMoodHistoryView()}
-      </div>
+      {currentView === "main" && renderMainView()}
+      {currentView === "additional" && renderAdditionalView()}
+      {currentView === "mood" && renderMoodView()}
+      {currentView === "history" && renderMoodHistoryView()}
       <Footer />
     </div>
   );

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 import '../styles/Profile.css';
 import { updateProfilePicture, getProfilePicture } from '../utils/profileUtils';
 import { validatePassword } from '../utils/validationUtils';
@@ -17,12 +18,60 @@ export default function ProfileNew() {
     confirmPassword: ''
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
+
+  const fetchUserData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        // Token expired or invalid - clear storage and redirect to login
+        localStorage.clear();
+        setErrorMsg('Your session has expired. Please log in again.');
+        setTimeout(() => navigate('/login'), 2000);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+
+      const data = await response.json();
+      setUserData(prevData => ({
+        ...prevData,
+        fullName: data.fullName,
+        email: data.email
+      }));
+
+      // Prioritize Google profile image if available
+      if (data.googleProfileImage) {
+        setProfilePic(data.googleProfileImage);
+        updateProfilePicture(data.googleProfileImage);
+      } else if (data.profileImage) {
+        const fullPath = `http://localhost:8000/${data.profileImage}`;
+        setProfilePic(fullPath);
+        updateProfilePicture(fullPath);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      if (error.message.includes('Failed to fetch')) {
+        setErrorMsg('Network error. Please check your connection.');
+      } else {
+        setErrorMsg('Failed to load your profile data. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId, token, navigate]);
 
   useEffect(() => {
     // Fetch user data when component mounts
@@ -44,44 +93,7 @@ export default function ProfileNew() {
     return () => {
       window.removeEventListener('profilePicUpdated', handleProfilePicUpdate);
     };
-  }, [userId, token]);
-
-  const fetchUserData = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch user data');
-      }
-
-      const data = await response.json();
-      setUserData({
-        ...userData,
-        fullName: data.fullName,
-        email: data.email
-      });
-
-      // Prioritize Google profile image if available
-      if (data.googleProfileImage) {
-        setProfilePic(data.googleProfileImage);
-        updateProfilePicture(data.googleProfileImage);
-      } else if (data.profileImage) {
-        const fullPath = `http://localhost:8000/${data.profileImage}`;
-        setProfilePic(fullPath);
-        updateProfilePicture(fullPath);
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      setErrorMsg('Failed to load your profile data. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [userId, token, fetchUserData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -333,7 +345,7 @@ export default function ProfileNew() {
         try {
           const data = await response.json();
           setErrorMsg(data.message || 'Failed to delete account');
-        } catch (jsonError) {
+        } catch {
           setErrorMsg('Failed to delete account. Please try again.');
         }
       }
@@ -349,7 +361,6 @@ export default function ProfileNew() {
       }
     } finally {
       setIsLoading(false);
-      setShowDeleteConfirm(false);
     }
   };
 
@@ -357,25 +368,53 @@ export default function ProfileNew() {
     navigate('/home');
   };
 
-  // If user is not logged in, redirect to login
+  // If user is not logged in, show friendly message with login/signup options
   if (!userId || userId === 'null') {
     return (
-      <div className="profile-page">
-        <div className="message-box">
-          <h2>Please create an account to access this feature</h2>
-          <button onClick={() => navigate('/signup')} className="action-button">
-            Go to Signup
-          </button>
+      <>
+        <Navbar />
+        <div className="profile-page">
+          <div className="auth-prompt-container">
+            <div className="auth-prompt-box">
+              <div className="auth-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" strokeWidth="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <h2>Welcome to CalmWave!</h2>
+              <p>Create an account to unlock personalized features, track your progress, and customize your wellness journey.</p>
+              
+              <div className="auth-prompt-buttons">
+                <button onClick={() => navigate('/signup')} className="primary-auth-btn">
+                  Create Account
+                </button>
+                <button onClick={() => navigate('/login')} className="secondary-auth-btn">
+                  Already have an account? Log In
+                </button>
+              </div>
+              
+              <div className="auth-divider">
+                <span>or</span>
+              </div>
+              
+              <button onClick={() => navigate('/')} className="browse-btn">
+                Continue Browsing
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="profile-page">
-      <h1 className="welcome-text animate-fade">
-        {isEditing ? 'Edit Your Profile' : 'Your Profile'}
-      </h1>
+    <>
+      <Navbar />
+      <div className="profile-page">
+        <h1 className="welcome-text animate-fade">
+          {isEditing ? 'Edit Your Profile' : 'Your Profile'}
+        </h1>
 
       {successMsg && <div className="success-message">{successMsg}</div>}
       {errorMsg && <div className="error-message">{errorMsg}</div>}
@@ -529,6 +568,7 @@ export default function ProfileNew() {
         requireTypedConfirmation={true}
         confirmationWord="DELETE"
       />
-    </div>
+      </div>
+    </>
   );
 }

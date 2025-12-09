@@ -1,34 +1,39 @@
 .navbar {
-  background: linear-gradient(to right, #ece1ee 11%, #B9C5F5 41%, #387BC9 91%);
-  padding: 1rem 2rem;
+  background: #F1F4EE;
+  padding: 0.75rem 2.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* softer and more lifted */
-  position: relative;
+  box-shadow: 0 1px 3px rgba(11, 39, 36, 0.1);
+  position: sticky;
+  top: 0;
   z-index: 100;
-  backdrop-filter: blur(6px); /* optional for modern effect */
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
 .logo-container {
   display: flex;
   align-items: center;
-  padding-bottom: 10px;
-  width: 100px;
-  height: 90px;
 }
 
 .logo-img {
-  height: 120px;
-  width: 150px;
+  height: 60px;
+  width: auto;
 }
 
 .nav-links {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 2.5rem;
   list-style: none;
   flex: 1;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-links li {
@@ -37,93 +42,122 @@
 
 .nav-links a {
   text-decoration: none;
-  color: #000000;
-  font-family: 'Nunito Sans', sans-serif;
-  font-weight: 600;
-  font-size: 20px;
-  padding: 8px 16px;
-  border-radius: 24px;
-  transition: background-color 0.3s ease, transform 0.2s ease, color 0.2s ease;
+  color: #0B2724;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 0.95rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
-/* 🌟 Hover effect */
 .nav-links a:hover {
-  background-color: rgba(0, 0, 0, 0.08);
-  transform: scale(1.03);
+  background-color: rgba(173, 255, 47, 0.15);
+  color: #0B2724;
 }
 
-/* ✅ Active tab effect (modern blue pill) */
 .nav-links a.active {
-  background: rgba(56, 123, 201, 0.30);  /* semi-transparent blue */
-  color: #fff;
-  transform: scale(1.08);
-  box-shadow: 0 4px 18px rgba(56, 123, 201, 0.18);
-  backdrop-filter: blur(6px);      /* <--- glassmorphic effect */
-  border: 1.5px solid rgba(255,255,255,0.3);
-  /* Optional gradient outline */
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  transition: 
-    background 0.3s, 
-    color 0.2s, 
-    box-shadow 0.3s, 
-    transform 0.2s;
+  background: transparent;
+  color: #0B2724;
+  font-weight: 600;
+  position: relative;
+}
+
+.nav-links a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #ADFF2F;
 }
 
 
 
-/* Profile Upload */
-.profile-upload {
-  position: relative;
-  cursor: pointer;
+.navbar-right {
   display: flex;
   align-items: center;
+  gap: 1rem;
+}
+
+.profile-upload {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .profile-pic {
-  width: 80px;
-  height: 80px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   object-fit: cover;
-  margin-top: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  border: 2px solid #ADFF2F;
+  transition: all 0.3s ease;
 }
 
-/* Toggle Theme (optional — remove if unused) */
-.theme-toggle-btn {
-  width: 50px;
-  height: 25px;
-  background: #e2e8f0;
-  border-radius: 25px;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+.profile-pic:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(173, 255, 47, 0.4);
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.nav-login-btn {
+  color: #0B2724;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.nav-login-btn:hover {
+  background-color: rgba(173, 255, 47, 0.15);
+}
+
+.nav-signup-btn {
+  background: #ADFF2F;
+  color: #0B2724;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 24px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.nav-signup-btn:hover {
+  background: #9FE62A;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(173, 255, 47, 0.3);
+}
+
+.profile-icon-link {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(173, 255, 47, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  margin-right: 1rem;
-  margin-top: 5px;
-  margin-left: auto;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
-.theme-toggle-btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 2px;
-  width: 21px;
-  height: 21px;
-  background: white;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transform: translateY(-50%);
+.profile-icon-link:hover {
+  background: rgba(173, 255, 47, 0.25);
+  transform: translateY(-2px);
 }
 
-.theme-toggle-btn:hover {
-  background: #cbd5e0;
+.profile-icon-link svg {
+  color: #0B2724;
 }
 
 /* Hamburger Menu */
@@ -131,7 +165,7 @@
   font-size: 2rem;
   background: none;
   border: none;
-  color: #000000;
+  color: #183c3c;
   display: none;
   cursor: pointer;
   margin-left: 1rem;
@@ -149,7 +183,7 @@
     top: 100px;
     left: 0;
     right: 0;
-    background: #ece1ee;
+    background: #f1faee;
     flex-direction: column;
     align-items: center;
     max-height: 0;
@@ -176,6 +210,17 @@
     align-items: center;
     margin-top: 0.5rem;
     z-index: 1002;
+  }
+  
+  .auth-buttons {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+  
+  .nav-login-btn,
+  .nav-signup-btn {
+    padding: 6px 16px;
+    font-size: 0.85rem;
   }
 
   .navbar {

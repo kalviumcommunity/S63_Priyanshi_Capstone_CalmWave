@@ -1,260 +1,243 @@
-// src/components/Home.jsx
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import React, { useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
-import { updateProfilePicture } from '../utils/profileUtils';
-import { API_BASE_URL, fetchData, getFullResourceUrl } from '../utils/app';
-// import Home1 from '../assests/Home1.png'
-import Home2 from '../assests/Home2.jpg'
-import Home3 from '../assests/Home3.jpg'
-import Home4 from '../assests/Home4.jpg'
-import Home5 from '../assests/Home5.jpg'
-import Home6 from '../assests/Home6.jpg'
-import Home7 from '../assests/Home7.jpg'
-import Home8 from '../assests/Home8.jpg'
-import Home9 from '../assests/Home9.jpg'
 
-const Home = () => {
-  const location = useLocation();
+import HomeBg from '../assests/Home.jpeg';
+import Home5 from '../assests/Home5.jpg';
+import Home6 from '../assests/Home6.jpg';
+import Home7 from '../assests/Home7.jpg';
+import Home2 from '../assests/Home2.jpg';
+import Home3 from '../assests/Home3.jpg';
+import Home4 from '../assests/Home4.jpg';
+
+function Home() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log('Home - useEffect triggered, search:', location.search);
-    
-    // Check for session ID from Google OAuth callback
-    const queryParams = new URLSearchParams(location.search);
-    const sessionId = queryParams.get('session');
-    
-    if (sessionId) {
-      console.log('Home - Session ID found, retrieving auth data');
-      
-      // Function to securely retrieve auth data
-      const fetchAuthData = async () => {
-        try {
-          const response = await fetch(`${API_BASE_URL}/auth/session/${sessionId}`);
-          
-          if (!response.ok) {
-            console.error('Failed to retrieve auth session:', response.status);
-            return;
-          }
-          
-          const authData = await response.json();
-          console.log('Home - Auth data retrieved:', { 
-            userId: authData.userId,
-            hasToken: !!authData.token,
-            fullName: authData.fullName,
-            hasProfilePic: !!authData.profilePic
-          });
-          
-          // Save auth data to localStorage
-          localStorage.setItem('token', authData.token);
-          localStorage.setItem('userId', authData.userId);
-          
-          if (authData.fullName) {
-            localStorage.setItem('fullName', authData.fullName);
-          }
-          
-          if (authData.email) {
-            localStorage.setItem('email', authData.email);
-          }
-          
-          // Save profile picture if available
-          if (authData.profilePic) {
-            console.log('Home - Saving profile pic from auth data');
-            updateProfilePicture(authData.profilePic);
-          } else {
-            console.log('Home - No profile pic in auth data, fetching from API');
-            // Fetch user profile data to get profile picture
-            fetchUserProfile(authData.userId, authData.token);
-          }
-        } catch (error) {
-          console.error('Error retrieving auth data:', error);
-        }
-      };
-      
-      fetchAuthData();
-      
-      // Remove query parameters from URL
-      navigate('/home', { replace: true });
-    }
-  }, [location, navigate]);
-  
-  // Function to fetch user profile data
-  const fetchUserProfile = async (userId, token) => {
-    console.log('Home - fetchUserProfile called');
-    try {
-      console.log('Home - Fetching user profile for ID:', userId);
-      const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        console.log('Home - User data received:', userData);
-        
-        // Prioritize Google profile image if available
-        if (userData.googleProfileImage) {
-          console.log('Home - Using Google profile image:', userData.googleProfileImage);
-          updateProfilePicture(userData.googleProfileImage);
-        } else if (userData.profileImage) {
-          const profilePicUrl = getFullResourceUrl(userData.profileImage);
-          console.log('Home - Using uploaded profile image:', profilePicUrl);
-          updateProfilePicture(profilePicUrl);
-        } else {
-          console.log('Home - No profile image found in user data');
-        }
-      } else {
-        console.log('Home - Failed to fetch user profile, status:', response.status);
-      }
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-    }
-  };
-
   return (
-    <div className="fade-in">
-    <Navbar/>
-      {/* Hero Section */}
-      <section className="hero-section">
-  <div className="hero-overlay">
-    <div className="hero-content">
-      <h1 className="hero-title">Welcome to Your CalmWave Journey</h1>
-      <p className="hero-subtext">
-        Discover the power of sound therapy to reduce anxiety and enhance your relaxation.
-        Our tailored sessions are designed to meet your unique needs and help you achieve tranquility.
-      </p>
-      <Link to="/quiz">
-        <button className="custom-button">Start Relaxation</button>
-      </Link>
-    </div>
-  </div>
-</section>
+    <div className="home-page-wrapper">
+      <Navbar />
+      
+      {/* HERO SECTION */}
+      <section className="home-hero-section">
+        {/* Background Image Container */}
+        <div className="home-hero-bg-container">
+          <div className="home-hero-bg">
+            <img src={HomeBg} alt="Meditation background" className="home-bg-image" />
+            <div className="home-hero-overlay"></div>
+          </div>
+        </div>
 
+        {/* Hero Content */}
+        <div className="home-hero-content">
+          {/* Main Content Area */}
+          <div className="home-main-content">
+            <h1 className="home-main-heading">
+              Health Is Wealth<br />
+              Trust in <em>Our Care</em>
+            </h1>
 
+            <p className="home-description">
+              Empower your health, empower your life. Invest in your<br />
+              health for a prosperous future. Healthy habits happy life.
+            </p>
 
-      {/* Anxiety Quiz */}
-
-          <section className="assessment-section">
-  <div className="assessment-content">
-    <div className="assessment-text">
-      <h2>
-        Discover Your Unique Path to Calmness with Our Anxiety Assessment
-      </h2>
-      <p>
-        Take a moment to assess your anxiety levels with our quick quiz. This personalized approach will help you find the most effective relaxation techniques tailored just for you.
-      </p>
-    </div>
-    <div className="assessment-image-glass">
-      <img src={Home2} alt="Anxiety Assessment" className="assessment-img" />
-    </div>
-  </div>
-</section>
-
-
-
-
-      {/* Sound Therapy */}
-      <section className="section white-bg">
-        <h2 className="section-title">Personalized Sound Therapy Just for You</h2>
-        <p className="section-subtext">Find your frequency. Feel the calm. Our sound sessions are tailored to your needs.</p>
-        <img src={Home3} alt="Sound Therapy" className="section-img" />
-      </section>
-
-      {/* Mood Tracking */}
-      <section className="gradient-bg section">
-        <h2 className="section-title">Track Your Mood and Progress</h2>
-        <p className="section-subtext">Visualize your emotional journey with intuitive graphs and mood logs.</p>
-        <div className="card-container">
-        <div className="flip-card">
-  <div className="flip-card-inner">
-    <div className="flip-card-front">
-      <img src={Home4} alt="Visualize Mood" className="card-img" />
-    </div>
-    <div className="flip-card-back">
-      <p className="card-title">Visualize Your Emotions</p>
-      <p className="card-description">
-        Track your daily feelings and spot patterns over time. Our interactive mood visualizations help you better understand your emotional journey and make positive changes.
-      </p>
-    </div>
-  </div>
-</div>
-<div className="flip-card">
-            <div className="flip-card-inner">
-              <div className="flip-card-front">
-                <img src={Home5} alt="Progress Graph" className="card-img" />
-              </div>
-              <div className="flip-card-back">
-                <p className="card-title">Graph Your Progress</p>
-                <p className="card-description">Watch your emotional journey unfold! Our progress graphs show how far you’ve come, helping you celebrate wins and understand your personal growth.</p>
-              </div>
-            </div>
+            <button 
+              className="home-get-started-btn"
+              onClick={() => navigate('/therapy')}
+            >
+              Get Started →
+            </button>
           </div>
 
-          <div className="flip-card">
-            <div className="flip-card-inner">
-              <div className="flip-card-front">
-                <img src={Home6} alt="Join Support" className="card-img" />
+          {/* Side Cards */}
+          <div className="home-side-cards">
+            <div className="home-card home-card-1">
+              <h3>Anxiety Assessment</h3>
+              <button 
+                className="home-card-arrow"
+                onClick={() => navigate('/quiz')}
+              >
+                →
+              </button>
+            </div>
+
+            <div className="home-card home-card-2">
+              <h3>Mood Tracking</h3>
+              <div className="home-stats-visual">
+                <div className="home-gauge">
+                  <svg viewBox="0 0 100 50" className="home-gauge-svg">
+                    <path
+                      d="M 10 45 A 40 40 0 0 1 90 45"
+                      fill="none"
+                      stroke="#e0e0e0"
+                      strokeWidth="8"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M 10 45 A 40 40 0 0 1 70 15"
+                      fill="none"
+                      stroke="#1a3a2e"
+                      strokeWidth="8"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="home-gauge-value">75%</div>
+                </div>
+                <p className="home-stats-label">Performance metrics</p>
               </div>
-              <div className="flip-card-back">
-                <p className="card-title">Join Supportive Circles</p>
-                <p className="card-description">You’re not alone.Join our supportive call to connect with others, share your experiences, and feel heard in a safe, welcoming space.</p>
-              </div>
+              <button 
+                className="home-card-arrow"
+                onClick={() => navigate('/journal')}
+              >
+                →
+              </button>
+            </div>
+
+            <div className="home-card home-card-3"y>
+              <p className="home-card-tag">Thearpy</p>
+              <h3>Sound therapy<br/>Session</h3>
+              <button 
+                className="home-card-arrow"
+                onClick={() => navigate('/therapy')}
+              >
+                →
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Knowledge Section */}
-      <section className="section white-bg">
-        <h2 className="section-title">Empower Yourself with Knowledge</h2>
-        <p className="section-subtext">Learn techniques from trusted experts and improve your mental fitness daily.</p>
-        <div className="card-container">
+      {/* CALMWAVE HELPS YOU SECTION */}
+      <section className="home-helps-section">
+        <div className="home-helps-container">
+          <p className="home-helps-label">CalmWave helps you</p>
+          
+          <h2 className="home-helps-title">
+            Helping People and Doing Good<br />
+            <em>Work in Society</em>
+          </h2>
 
-          <div className="flip-card">
-            <div className="flip-card-inner">
-              <div className="flip-card-front">
-                <img src={Home7} alt="Expert Insights" className="card-img" />
-              </div>
-              <div className="flip-card-back">
-                <p className="card-title">Expert-backed Techniques</p>
-                <p className="card-description">Feel confident using tools that work. Our expert-backed techniques are simple, effective, and created to support your emotional well-being every step of the way.</p>
-              </div>
+          <div className="home-helps-content">
+            {/* Left Side - Images Grid */}
+            <div className="home-helps-images">
+              <img src={Home5} alt="Person sitting" className="home-helps-img home-helps-img-1" />
+              <img src={Home6} alt="People helping" className="home-helps-img home-helps-img-2" />
+              <img src={Home7} alt="Support and care" className="home-helps-img home-helps-img-3" />
             </div>
-          </div>
 
-          <div className="flip-card">
-            <div className="flip-card-inner">
-              <div className="flip-card-front">
-                <img src={Home8} alt="Guided Programs" className="card-img" />
-              </div>
-              <div className="flip-card-back">
-                <p className="card-title">Guided Programs</p>
-                <p className="card-description">Take the guesswork out of growth. Our guided programs walk you through each step with expert-designed activities and reflections tailored to your needs.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flip-card">
-            <div className="flip-card-inner">
-              <div className="flip-card-front">
-                <img src={Home9} alt="Interactive Tools" className="card-img" />
-              </div>
-              <div className="flip-card-back">
-                <p className="card-title">Interactive Tools & Articles</p>
-                <p className="card-description">Dive into a library of helpful articles and hands-on tools designed to make self-growth feel simple, engaging, and even fun.</p>
-              </div>
+            {/* Right Side - Benefits List */}
+            <div className="home-helps-benefits">
+              <h3 className="home-helps-benefits-title">
+                Helping <em>Society</em> People
+              </h3>
+              
+              <ul className="home-helps-list">
+                <li className="home-helps-item">
+                  <div className="home-helps-icon">✓</div>
+                  <span>Reduce anxiety and find inner peace</span>
+                </li>
+                <li className="home-helps-item">
+                  <div className="home-helps-icon">✓</div>
+                  <span>Improve mental wellness through sound therapy</span>
+                </li>
+                <li className="home-helps-item">
+                  <div className="home-helps-icon">✓</div>
+                  <span>Track your emotional journey and growth</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
-      <Footer/>
+      {/* WELLNESS JOURNEYS SECTION */}
+      <section className="home-journeys-section">
+        <div className="home-journeys-container">
+          <h2 className="home-journeys-title">
+            Wellness <em>Journeys</em> Stories
+          </h2>
+
+          <div className="home-journeys-cards">
+            {/* Card 1 - Relaxation Techniques */}
+            <div className="home-journey-card">
+              <div className="home-journey-image-wrapper">
+                <img src={Home2} alt="Relaxation Techniques" className="home-journey-image" />
+              </div>
+              <div className="home-journey-content">
+                <h3 className="home-journey-card-title">Relaxation Techniques</h3>
+                <div className="home-journey-meta">
+                  <span className="home-journey-author">CalmWave Guide</span>
+                  <span className="home-journey-separator">|</span>
+                  <span className="home-journey-type">Therapy</span>
+                </div>
+                <button 
+                  className="home-journey-play-btn"
+                  onClick={() => navigate('/therapy')}
+                >
+                  →
+                </button>
+              </div>
+            </div>
+
+            {/* Card 2 - Track Progress */}
+            <div className="home-journey-card">
+              <div className="home-journey-image-wrapper">
+                <img src={Home3} alt="Track Progress" className="home-journey-image" />
+              </div>
+              <div className="home-journey-content">
+                <h3 className="home-journey-card-title">Track Progress</h3>
+                <div className="home-journey-meta">
+                  <span className="home-journey-author">Daily Insights</span>
+                  <span className="home-journey-separator">|</span>
+                  <span className="home-journey-type">Analytics</span>
+                </div>
+                <button 
+                  className="home-journey-play-btn"
+                  onClick={() => navigate('/journal')}
+                >
+                  →
+                </button>
+              </div>
+            </div>
+
+            {/* Card 3 - Mood Trends */}
+            <div className="home-journey-card">
+              <div className="home-journey-image-wrapper">
+                <img src={Home4} alt="Mood Trends" className="home-journey-image" />
+              </div>
+              <div className="home-journey-content">
+                <h3 className="home-journey-card-title">Mood Trends</h3>
+                <div className="home-journey-meta">
+                  <span className="home-journey-author">Mental Wellness</span>
+                  <span className="home-journey-separator">|</span>
+                  <span className="home-journey-type">Tracking</span>
+                </div>
+                <button 
+                  className="home-journey-play-btn"
+                  onClick={() => navigate('/journal')}
+                >
+                  →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Pagination */}
+          <div className="home-journeys-pagination">
+            <button className="home-pagination-arrow">←</button>
+            <button className="home-pagination-dot">1</button>
+            <button className="home-pagination-dot home-pagination-active">2</button>
+            <button className="home-pagination-dot">3</button>
+            <button className="home-pagination-arrow">→</button>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
   );
-};
+}
 
 export default Home;
