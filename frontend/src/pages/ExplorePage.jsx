@@ -19,6 +19,16 @@ function ExplorePage() {
   const navigate = useNavigate();
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const handleAudioClick = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      // Redirect to login if not authenticated
+      navigate('/login');
+    } else {
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   return (
     <div className="home-root">
       <Navbar />
@@ -65,7 +75,7 @@ function ExplorePage() {
             {/* Play Button */}
             <button 
               className="explore-play-btn"
-              onClick={() => setIsPlaying(!isPlaying)}
+              onClick={handleAudioClick}
               aria-label={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
@@ -95,13 +105,13 @@ function ExplorePage() {
 
             {/* Volume & More Options */}
             <div className="explore-audio-controls">
-              <button className="explore-control-btn" aria-label="Volume">
+              <button className="explore-control-btn" aria-label="Volume" onClick={handleAudioClick}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                   <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                 </svg>
               </button>
-              <button className="explore-control-btn" aria-label="More options">
+              <button className="explore-control-btn" aria-label="More options" onClick={handleAudioClick}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="1" fill="currentColor"></circle>
                   <circle cx="12" cy="5" r="1" fill="currentColor"></circle>

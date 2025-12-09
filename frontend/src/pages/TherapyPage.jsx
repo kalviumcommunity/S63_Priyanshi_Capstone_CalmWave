@@ -359,6 +359,13 @@ const TherapyPage = () => {
         </div>
       </div>
 
+      {/* Listening Instructions */}
+      <div className="therapy-instructions-section">
+        <p className="therapy-instructions-text">
+          🎧 Find a quiet environment • Close your eyes • Be in the moment • Let the sounds guide you
+        </p>
+      </div>
+
       {/* Audio Section */}
       <div className="therapy-audio-full">
         <div className="audio-content-wrapper">

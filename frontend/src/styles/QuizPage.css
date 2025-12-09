@@ -1124,7 +1124,7 @@ body {
   border-radius: 2rem;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 0 15px rgba(0, 150, 255, 0.1);
   text-align: center;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 300;
   position: relative;
   z-index: 3;
@@ -1161,7 +1161,7 @@ body {
 }
 
 .start-content p.quote {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.5rem;
   font-style: italic;
   line-height: 1.6;
@@ -1251,7 +1251,7 @@ body {
   font-size: 1.2rem;
   color: #1e293b;
   margin-bottom: 2rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 600;
   position: relative;
   display: inline-block;
@@ -1311,7 +1311,7 @@ body {
   position: relative;
   overflow: hidden;
   text-align: left;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .option-button::before {
