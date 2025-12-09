@@ -5,6 +5,7 @@ import '../styles/Profile.css';
 import { updateProfilePicture, getProfilePicture } from '../utils/profileUtils';
 import { validatePassword } from '../utils/validationUtils';
 import ConfirmModal from '../components/ConfirmModal';
+import { API_BASE_URL } from '../utils/app';
 
 export default function ProfileNew() {
   const [profilePic, setProfilePic] = useState('');
@@ -27,7 +28,7 @@ export default function ProfileNew() {
   const fetchUserData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -57,7 +58,7 @@ export default function ProfileNew() {
         setProfilePic(data.googleProfileImage);
         updateProfilePicture(data.googleProfileImage);
       } else if (data.profileImage) {
-        const fullPath = `http://localhost:8000/${data.profileImage}`;
+        const fullPath = `${API_BASE_URL}/${data.profileImage}`;
         setProfilePic(fullPath);
         updateProfilePicture(fullPath);
       }
@@ -123,7 +124,7 @@ export default function ProfileNew() {
     formData.append('userId', userId);
 
     try {
-      const res = await fetch('http://localhost:8000/api/upload-profile', {
+      const res = await fetch(`${API_BASE_URL}/api/upload-profile`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -133,7 +134,7 @@ export default function ProfileNew() {
 
       const data = await res.json();
       if (res.ok && data.filePath) {
-        const fullPath = `http://localhost:8000/${data.filePath}`;
+        const fullPath = `${API_BASE_URL}/${data.filePath}`;
         setProfilePic(fullPath);
         // Update profile picture in localStorage and notify components
         updateProfilePicture(fullPath);
@@ -193,7 +194,7 @@ export default function ProfileNew() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout
         
-        const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -283,7 +284,7 @@ export default function ProfileNew() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout
       
-      const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

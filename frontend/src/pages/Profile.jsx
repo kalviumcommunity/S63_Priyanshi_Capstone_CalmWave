@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Profile.css';
+import { API_BASE_URL } from '../utils/app';
 
 export default function Profile() {
   const [profilePic, setProfilePic] = useState('');
@@ -19,14 +20,14 @@ export default function Profile() {
     formData.append('userId', userId);
 
     try {
-      const res = await fetch('http://localhost:8000/api/upload-profile', {
+      const res = await fetch(`${API_BASE_URL}/api/upload-profile`, {
         method: 'POST',
         body: formData,
       });
 
       const data = await res.json();
       if (res.ok && data.filePath) {
-        const fullPath = `http://localhost:8000/${data.filePath}`;
+        const fullPath = `${API_BASE_URL}/${data.filePath}`;
         setProfilePic(fullPath);
         localStorage.setItem('profilePic', fullPath);
         setSuccessMsg('🎉 Profile uploaded successfully!');

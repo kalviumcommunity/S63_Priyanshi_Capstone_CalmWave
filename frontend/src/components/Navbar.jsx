@@ -4,6 +4,7 @@ import '../styles/Navbar.css';
 import logo from '../assests/logo.png';
 import defaultProfile from '../assests/defaultProfile.png';
 import { getProfilePicture } from '../utils/profileUtils';
+import { API_BASE_URL } from '../utils/app';
 
 export default function Navbar() {
   const location = useLocation();
@@ -47,7 +48,7 @@ export default function Navbar() {
     formData.append('userId', userId);
 
     try {
-      const res = await fetch('http://localhost:8000/api/upload-profile', {
+      const res = await fetch(`${API_BASE_URL}/api/upload-profile`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -57,7 +58,7 @@ export default function Navbar() {
 
       const data = await res.json();
       if (res.ok && data.filePath) {
-        const fullPath = `http://localhost:8000/${data.filePath}`;
+        const fullPath = `${API_BASE_URL}/${data.filePath}`;
         localStorage.setItem('profilePic', fullPath);
         setProfilePic(fullPath);
         window.dispatchEvent(new Event('profilePicUpdated'));
