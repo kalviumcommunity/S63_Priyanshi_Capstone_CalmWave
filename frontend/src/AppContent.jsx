@@ -1,39 +1,67 @@
-import React, { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+// ============================================
+// APPCONTENT.JSX - Route Configuration Component
+// ============================================
+// This component defines all application routes and handles
+// audio cleanup when navigating between pages
 
-import ExplorePage from './pages/ExplorePage';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import ForgotPassword from './pages/ForgotPassword';
-import Home from './pages/Home';
-import Quiz from './pages/QuizPage';
-import ProfileNew from './pages/ProfileNew';
-import Therapy from './pages/TherapyPage';
+import React, { useEffect } from 'react'; // React and useEffect hook
+import { Routes, Route, useLocation } from 'react-router-dom'; // React Router components and hooks
 
-// Import our audio context
+// ============================================
+// PAGE COMPONENT IMPORTS
+// ============================================
+// Import all page-level components that will be rendered for different routes
+import ExplorePage from './pages/ExplorePage'; // Landing/welcome page
+import Login from './pages/Login'; // Login page for authentication
+import Signup from './pages/Signup'; // User registration page
+import ForgotPassword from './pages/ForgotPassword'; // Password recovery page
+import Home from './pages/Home'; // Main home page (after login)
+import Quiz from './pages/QuizPage'; // Anxiety assessment quiz
+import ProfileNew from './pages/ProfileNew'; // User profile and dashboard
+import Therapy from './pages/TherapyPage'; // Sound therapy sessions page
+
+// Import audio utility for cleanup on route changes
 import { stopAllAudio } from './utils/audioContext';
 
+// ============================================
+// APPCONTENT COMPONENT - Route Manager
+// ============================================
 const AppContent = () => {
+  // Get current location object (contains pathname, search, hash, etc.)
+  // This hook re-renders component when route changes
   const location = useLocation();
   
-  // Stop all audio when the route changes
+  // ============================================
+  // AUDIO CLEANUP ON ROUTE CHANGE
+  // ============================================
+  // useEffect runs whenever location changes (user navigates to different page)
   useEffect(() => {
-    console.log('Route changed, stopping all audio');
-    stopAllAudio();
-  }, [location]);
+    console.log('Route changed, stopping all audio'); // Log for debugging
+    stopAllAudio(); // Stop any playing audio from previous page
+  }, [location]); // Dependency array - runs when location changes
   
+  // ============================================
+  // ROUTE DEFINITIONS
+  // ============================================
+  // Define which component renders for each URL path
   return (
     <Routes>
+      {/* Landing page - shown at root URL */}
       <Route path="/" element={<ExplorePage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path='/home' element={<Home/>}/>
-      <Route path="/quiz" element={<Quiz />} />
-      <Route path="/profile" element={<ProfileNew />} />
-      <Route path="/therapy" element={<Therapy />} />
+      
+      {/* Authentication routes */}
+      <Route path="/login" element={<Login />} /> {/* User login */}
+      <Route path="/signup" element={<Signup />} /> {/* New user registration */}
+      <Route path="/forgot-password" element={<ForgotPassword />} /> {/* Password recovery */}
+      
+      {/* Main application routes (typically accessed after login) */}
+      <Route path='/home' element={<Home/>}/> {/* Home dashboard */}
+      <Route path="/quiz" element={<Quiz />} /> {/* Anxiety assessment quiz */}
+      <Route path="/profile" element={<ProfileNew />} /> {/* User profile page */}
+      <Route path="/therapy" element={<Therapy />} /> {/* Sound therapy page */}
     </Routes>
   );
 };
 
+// Export AppContent component as default export
 export default AppContent;
