@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../styles/JournalPage.css';
@@ -12,12 +11,9 @@ const JournalPage = () => {
     date: new Date().toISOString().split('T')[0]
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [showForm, setShowForm] = useState(false);
-
-  const navigate = useNavigate();
 
   const moodOptions = [
     { value: 'Happy', emoji: '😊', color: '#FFD700' },
@@ -55,9 +51,6 @@ const JournalPage = () => {
       [name]: value
     }));
   };
-
-  // Removed AI analysis - no backend AI route
-  const analyzeWithAI = async () => null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -211,9 +204,9 @@ const JournalPage = () => {
                   <button
                     type="submit"
                     className="submit-btn"
-                    disabled={isSubmitting || isAnalyzing}
+                    disabled={isSubmitting}
                   >
-                    {isSubmitting ? 'Saving...' : isAnalyzing ? 'Analyzing...' : 'Save Entry'}
+                    {isSubmitting ? 'Saving...' : 'Save Entry'}
                   </button>
                 </div>
               </form>

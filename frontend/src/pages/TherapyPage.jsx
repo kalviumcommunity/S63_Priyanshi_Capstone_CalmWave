@@ -291,7 +291,7 @@ const TherapyPage = () => {
 
             {/* Main Heading */}
             <h1 className="therapy-hero-heading">
-              Therapy<br/>Session
+              𝐓𝐡𝐞𝐫𝐚𝐩𝐲 𝐒𝐞𝐬𝐬𝐢𝐨𝐧<br/>
             </h1>
 
             {/* Description */}
@@ -302,12 +302,12 @@ const TherapyPage = () => {
             {/* Stats Bar */}
             <div className="therapy-stats-bar">
               <div className="stat-group">
-                <span className="stat-emoji">🎵</span>
+                <span className="stat-emoji"></span>
                 <span className="stat-label">Personalized Audio <strong>Therapy</strong></span>
               </div>
               <span className="stat-separator">/</span>
               <div className="stat-group">
-                <span className="stat-emoji">⭐</span>
+                <span className="stat-emoji"></span>
                 <span className="stat-label"><strong>Proven</strong> Techniques</span>
               </div>
             </div>

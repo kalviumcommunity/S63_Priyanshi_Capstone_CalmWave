@@ -21,7 +21,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(11, 39, 36, 0.25);
+  /* background: rgba(11, 39, 36, 0.25); */
   z-index: 1;
 }
 
@@ -44,7 +44,7 @@
 
 /* Left Content */
 .therapy-content-left {
-  color: #F1F4EE;
+  color: #0B2724;
   position: relative;
   z-index: 3;
 }
@@ -59,6 +59,7 @@
   margin-bottom: 2rem;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(173, 255, 47, 0.3);
+  margin-top: 1px;
 }
 
 .badge-icon {
@@ -82,7 +83,7 @@
 .badge-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #F1F4EE;
+  color: #0B2724;
 }
 
 .badge-link {
@@ -93,11 +94,12 @@
 
 .therapy-hero-heading {
   font-size: 6.5rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 0.95;
   margin: 0 0 1.5rem 0;
-  color: #F1F4EE;
+  color: #181818;
   letter-spacing: -3px;
+
 }
 
 /* Listening Instructions Section */
@@ -127,7 +129,7 @@
 .therapy-hero-description {
   font-size: 1.2rem;
   line-height: 1.6;
-  color: rgba(26, 26, 26, 0.85);
+  color: #0B2724;
   margin-bottom: 2rem;
   max-width: 500px;
 }
@@ -157,8 +159,9 @@
 
 .stat-separator {
   font-size: 1.5rem;
-  color: rgba(11, 39, 36, 0.4);
-  margin: 0 0.5rem;
+  color: #0B2724;
+  margin: 1 2rem;
+  margin-top: -10px;
 }
 
 .therapy-hero-buttons {
@@ -169,7 +172,7 @@
 
 .therapy-btn-primary {
   background: #ADFF2F;
-  color: #0B2724;
+  color: #000000;
   border: none;
   padding: 1.1rem 2.2rem;
   border-radius: 50px;
@@ -178,13 +181,13 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: 'Inter', sans-serif;
-  box-shadow: 0 4px 15px rgba(173, 255, 47, 0.3);
+  box-shadow: 0 4px 15px #0B2724;
 }
 
 .therapy-btn-primary:hover:not(:disabled) {
   background: #9FE62A;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(173, 255, 47, 0.4);
+  box-shadow: 0 6px 20px #0B2724;
 }
 
 .therapy-btn-primary:disabled {
@@ -193,9 +196,9 @@
 }
 
 .therapy-btn-secondary {
-  background: transparent;
+  background: #0B2724;
   color: #F1F4EE;
-  border: 2px solid #F1F4EE;
+  border: none;
   padding: 1.1rem 2.2rem;
   border-radius: 50px;
   font-size: 1rem;
@@ -206,8 +209,8 @@
 }
 
 .therapy-btn-secondary:hover {
-  background: #F1F4EE;
-  color: #0B2724;
+  background: #154d46;
+  color: #F1F4EE;
 }
 
 /* Right Content - Floating Elements */
@@ -303,7 +306,7 @@
 .glass-btn-skip {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.9);
+  color: #0B2724;
   font-size: 1.3rem;
   cursor: pointer;
   padding: 0;
@@ -441,39 +444,65 @@
 }
 
 .bottom-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  /* Glass background */
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  /* Glass border */
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 22px;
+
+  /* Soft white smoke tone */
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+
   padding: 2.5rem 2rem;
   text-align: center;
   cursor: pointer;
+
   transition: all 0.35s ease;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
 }
 
 .bottom-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.12);
-  border-color: rgba(95, 184, 148, 0.3);
+  transform: translateY(-10px) scale(1.02);
+
+  background: rgba(255, 255, 255, 0.25);
+
+  box-shadow:
+    0 15px 45px rgba(0, 0, 0, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+
+.bottom-card h3 {
+  color: #0B2724;
+  font-weight: 700;
+}
+
+.bottom-card p {
+  color: rgba(11, 39, 36, 0.75);
 }
 
 .card-emoji {
   font-size: 3.5rem;
   margin-bottom: 1.2rem;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
 }
-
-.bottom-card h3 {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 0.6rem 0;
-}
-
-.bottom-card p {
-  font-size: 1rem;
-  color: #666;
-  margin: 0;
-  line-height: 1.5;
+.bottom-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.35),
+    transparent,
+    rgba(255, 255, 255, 0.15)
+  );
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 /* Footer */
@@ -481,9 +510,9 @@
   position: relative;
   z-index: 2;
   background: transparent;
-  padding: 2rem 2% 3rem 2%;
+  padding: 2rem 2% 1rem 2%;
   width: 100%;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: none;
 }
 
 .footer-content {

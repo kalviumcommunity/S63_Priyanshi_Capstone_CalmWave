@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useMotionValue, useTransform, animate, useReducedMotion } from 'framer-motion';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import quizImage from "../assests/image.png";
+import quizImage from "../assests/image1.png";
 import "../styles/QuizPage.css";
 
 const QuizPage = () => {
@@ -251,83 +252,15 @@ const QuizPage = () => {
   }
 
   if (showResultScreen) {
-    return (
-      <>
-        <Navbar />
-        <div className="quiz-result-screen">
-          <div className="result-content-wrapper">
-            <div className="result-main-card">
-              <div className="result-header-section">
-                <div className="celebration-icon">🎉</div>
-                <h1 className="result-main-title">Quiz Completed!</h1>
-                <p className="result-subtitle">Here's your mental wellness assessment</p>
-              </div>
-              
-              {error && (
-                <div className="result-error-message">
-                  {error}
-                </div>
-              )}
-              
-              <div className="result-stats-container">
-                <div className="result-stat-box score-box">
-                  <div className="stat-icon">📊</div>
-                  <div className="stat-content">
-                    <div className="stat-label">Your Score</div>
-                    <div className="stat-value">{score}</div>
-                    <div className="stat-max">out of {questions.length * 3}</div>
-                  </div>
-                </div>
-                
-                <div className="result-stat-box level-box">
-                  <div className="stat-icon">🎯</div>
-                  <div className="stat-content">
-                    <div className="stat-label">Anxiety Level</div>
-                    <div className="stat-value-text">{level}</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="result-insight-card">
-                <div className="insight-header">
-                  <span className="insight-icon">💙</span>
-                  <h3>A Message for You</h3>
-                </div>
-                <p className="insight-text">
-                  Remember, this is just a self-assessment. You're doing great just by being here and taking steps to understand yourself better. Mental wellness is a journey, not a destination.
-                </p>
-              </div>
-              
-              <div className="result-action-buttons">
-                <button 
-                  className="result-btn btn-outlined"
-                  onClick={() => window.location.reload()}
-                  disabled={isSubmitting}
-                >
-                  <span className="btn-icon">🔄</span>
-                  Retake Quiz
-                </button>
-                <button 
-                  className="result-btn btn-primary" 
-                  onClick={handleStartTherapy}
-                  disabled={isSubmitting}
-                >
-                  <span className="btn-icon">🌿</span>
-                  {isSubmitting ? "Saving..." : "Start Your Journey"}
-                </button>
-              </div>
-            </div>
-            
-            <div className="result-floating-elements">
-              <div className="floating-shape shape-1"></div>
-              <div className="floating-shape shape-2"></div>
-              <div className="floating-shape shape-3"></div>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
+    return <EnhancedResultScreen 
+      score={score} 
+      level={level} 
+      error={error}
+      isSubmitting={isSubmitting}
+      questionsLength={questions.length}
+      onRetake={() => window.location.reload()}
+      onStartJourney={handleStartTherapy}
+    />;
   }
 
   return (
@@ -458,6 +391,426 @@ const QuizPage = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+// ========================================
+// ENHANCED RESULT SCREEN COMPONENT
+// Premium Wellness Experience with Framer Motion
+// ========================================
+
+const EnhancedResultScreen = ({ 
+  score, 
+  level, 
+  error, 
+  isSubmitting, 
+  questionsLength,
+  onRetake, 
+  onStartJourney 
+}) => {
+  const shouldReduceMotion = useReducedMotion();
+  const [showParticles, setShowParticles] = useState(true);
+  const scoreCount = useMotionValue(0);
+  const displayScore = useTransform(scoreCount, Math.round);
+
+  // Animate score count-up on mount
+  useEffect(() => {
+    const controls = animate(scoreCount, score, {
+      duration: shouldReduceMotion ? 0 : 2,
+      ease: "easeOut"
+    });
+    
+    // Auto-hide celebration particles after 2 seconds
+    const timer = setTimeout(() => {
+      setShowParticles(false);
+    }, 2000);
+
+    return () => {
+      controls.stop();
+      clearTimeout(timer);
+    };
+  }, [score, scoreCount, shouldReduceMotion]);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0 : 0.8,
+        ease: [0.25, 0.1, 0.25, 1],
+        staggerChildren: shouldReduceMotion ? 0 : 0.15,
+        delayChildren: shouldReduceMotion ? 0 : 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0 : 0.6,
+        ease: [0.25, 0.1, 0.25, 1]
+      }
+    }
+  };
+
+  const particleVariants = {
+    hidden: { opacity: 0, scale: 0 },
+    visible: (i) => ({
+      opacity: [0, 1, 0],
+      scale: [0, 1, 0.8],
+      y: [0, -100, -200],
+      x: [(i - 2) * 20, (i - 2) * 40, (i - 2) * 60],
+      transition: {
+        duration: 2,
+        ease: "easeOut",
+        times: [0, 0.3, 1]
+      }
+    }),
+    exit: { opacity: 0, transition: { duration: 0.3 } }
+  };
+
+  return (
+    <>
+      <Navbar />
+      <div className="quiz-result-screen">
+        {/* Animated background blobs */}
+        <motion.div 
+          className="result-bg-blob blob-1"
+          animate={{
+            x: [0, 30, 0],
+            y: [0, -30, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="result-bg-blob blob-2"
+          animate={{
+            x: [0, -40, 0],
+            y: [0, 40, 0],
+            scale: [1, 1.15, 1],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        />
+
+        <div className="result-content-wrapper">
+          <motion.div 
+            className="result-main-card"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {/* Header Section with Particles */}
+            <motion.div 
+              className="result-header-section"
+              variants={itemVariants}
+            >
+              <div className="celebration-container">
+                {/* Celebration Icon with Pulse */}
+                <motion.div 
+                  className="celebration-icon"
+                  animate={{
+                    scale: shouldReduceMotion ? 1 : [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    repeat: 2,
+                    ease: "easeInOut"
+                  }}
+                >
+                  🎉
+                </motion.div>
+
+                {/* Floating Celebration Particles */}
+                {showParticles && !shouldReduceMotion && (
+                  <div className="celebration-particles">
+                    {[...Array(5)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="particle"
+                        custom={i}
+                        variants={particleVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                      >
+                        {['✨', '💫', '⭐', '🌟', '💖'][i]}
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Subtle Glow Effect */}
+                <motion.div 
+                  className="celebration-glow"
+                  animate={{
+                    opacity: [0.3, 0.6, 0.3],
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: showParticles ? 1 : 0,
+                    ease: "easeInOut"
+                  }}
+                />
+              </div>
+
+              <motion.h1 
+                className="result-main-title"
+                variants={itemVariants}
+              >
+                Quiz Completed!
+              </motion.h1>
+              <motion.p 
+                className="result-subtitle"
+                variants={itemVariants}
+              >
+                Here's your mental wellness assessment
+              </motion.p>
+            </motion.div>
+
+            {/* Error Message */}
+            {error && (
+              <motion.div 
+                className="result-error-message"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                {error}
+              </motion.div>
+            )}
+
+            {/* Stats Container */}
+            <motion.div 
+              className="result-stats-container"
+              variants={itemVariants}
+            >
+              {/* Score Box with Count-up and Glow */}
+              <motion.div 
+                className="result-stat-box score-box"
+                whileHover={shouldReduceMotion ? {} : { 
+                  y: -8, 
+                  boxShadow: "0 20px 50px rgba(95, 184, 148, 0.25)" 
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.div 
+                  className="stat-icon"
+                  animate={{
+                    rotate: shouldReduceMotion ? 0 : [0, 10, -10, 0]
+                  }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                >
+                  📊
+                </motion.div>
+                <div className="stat-content">
+                  <div className="stat-label">Your Score</div>
+                  <motion.div 
+                    className="stat-value"
+                    animate={{
+                      scale: shouldReduceMotion ? 1 : [1, 1.1, 1]
+                    }}
+                    transition={{ duration: 0.5, delay: 2 }}
+                  >
+                    <motion.span>{displayScore}</motion.span>
+                  </motion.div>
+                  <div className="stat-max">out of {questionsLength * 3}</div>
+                </div>
+                
+                {/* Score Card Glow Pulse */}
+                <motion.div 
+                  className="stat-glow"
+                  animate={{
+                    opacity: [0, 0.5, 0],
+                    scale: [0.8, 1.2, 0.8]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              </motion.div>
+
+              {/* Level Box with Breathing Effect */}
+              <motion.div 
+                className="result-stat-box level-box"
+                animate={{
+                  boxShadow: shouldReduceMotion ? undefined : [
+                    "0 10px 30px rgba(255, 183, 77, 0.15)",
+                    "0 15px 40px rgba(255, 183, 77, 0.25)",
+                    "0 10px 30px rgba(255, 183, 77, 0.15)"
+                  ]
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                whileHover={shouldReduceMotion ? {} : { 
+                  y: -8,
+                  boxShadow: "0 20px 50px rgba(255, 183, 77, 0.3)" 
+                }}
+              >
+                <motion.div 
+                  className="stat-icon"
+                  animate={{
+                    rotate: shouldReduceMotion ? 0 : [0, 360]
+                  }}
+                  transition={{ 
+                    duration: 1.5, 
+                    delay: 0.8,
+                    ease: "easeInOut" 
+                  }}
+                >
+                  🎯
+                </motion.div>
+                <div className="stat-content">
+                  <div className="stat-label">Anxiety Level</div>
+                  <motion.div 
+                    className="stat-value-text"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1, duration: 0.6 }}
+                  >
+                    {level}
+                  </motion.div>
+                </div>
+
+                {/* Gradient Background Shift */}
+                <motion.div 
+                  className="level-gradient-overlay"
+                  animate={{
+                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                  }}
+                  transition={{
+                    duration: 10,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                />
+              </motion.div>
+            </motion.div>
+
+            {/* Insight Card with Shimmer */}
+            <motion.div 
+              className="result-insight-card"
+              variants={itemVariants}
+            >
+              <div className="insight-header">
+                <motion.span 
+                  className="insight-icon"
+                  animate={{
+                    scale: shouldReduceMotion ? 1 : [1, 1.2, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  💙
+                </motion.span>
+                <h3>A Message for You</h3>
+              </div>
+              <p className="insight-text">
+                Remember, this is just a self-assessment. You're doing great just by being here and taking steps to understand yourself better. Mental wellness is a journey, not a destination.
+              </p>
+
+              {/* Shimmer Effect */}
+              <motion.div 
+                className="insight-shimmer"
+                animate={{
+                  x: ['-100%', '200%']
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  repeatDelay: 2
+                }}
+              />
+            </motion.div>
+
+            {/* Action Buttons with Micro-interactions */}
+            <motion.div 
+              className="result-action-buttons"
+              variants={itemVariants}
+            >
+              <motion.button 
+                className="result-btn btn-outlined"
+                onClick={onRetake}
+                disabled={isSubmitting}
+                whileHover={shouldReduceMotion ? {} : { 
+                  y: -4,
+                  boxShadow: "0 12px 30px rgba(95, 184, 148, 0.25)"
+                }}
+                whileTap={shouldReduceMotion ? {} : { 
+                  scale: 0.97,
+                  y: 0
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.span 
+                  className="btn-icon"
+                  whileHover={{ rotate: 180 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  🔄
+                </motion.span>
+                Retake Quiz
+              </motion.button>
+
+              <motion.button 
+                className="result-btn btn-primary"
+                onClick={onStartJourney}
+                disabled={isSubmitting}
+                whileHover={shouldReduceMotion ? {} : { 
+                  y: -4,
+                  boxShadow: "0 15px 40px rgba(95, 184, 148, 0.4)"
+                }}
+                whileTap={shouldReduceMotion ? {} : { 
+                  scale: 0.97,
+                  y: 0
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.span 
+                  className="btn-icon"
+                  animate={{
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  🌿
+                </motion.span>
+                {isSubmitting ? "Saving..." : "Start Your Journey"}
+              </motion.button>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
       <Footer />

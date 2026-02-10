@@ -65,7 +65,7 @@ function ExplorePage() {
           {/* Get Started Button */}
           <button 
             className="explore-get-started-btn"
-            onClick={() => navigate('/home')}
+            onClick={() => navigate('/profile')}
           >
             Get Started
           </button>
@@ -181,49 +181,64 @@ function ExplorePage() {
       <section className="self-assessment-section">
         <h2 className="self-assessment-title">Know About Your Mental Health</h2>
         
-        <div className="assessment-grid">
-          <div className="assessment-card">
-            <div className="assessment-image">
+        <div className="assessment-container">
+          {/* Row 1: Quiz - Content Left, Image Right */}
+          <div className="assessment-row">
+            <div className="assessment-content-block">
+              <h3 className="assessment-heading">Quiz Time</h3>
+              <p className="assessment-description">
+                Discover insights about your mental wellness through our guided assessment. 
+                Get personalized recommendations based on your responses.
+              </p>
+              <button 
+                className="assessment-cta-btn"
+                onClick={() => navigate('/quiz')}
+              >
+                Take Quiz
+              </button>
+            </div>
+            <div className="assessment-image-block">
               <img src={image6} alt="Take Quiz" />
             </div>
-            <div className="assessment-content">
-              <h3 className="assessment-name">Take Quiz</h3>
-              <button className="assessment-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2" fill="none"></path>
-                </svg>
-              </button>
-            </div>
           </div>
-          
-          <div className="assessment-card">
-            <div className="assessment-image">
+
+          {/* Row 2: Music Therapy - Image Left, Content Right */}
+          <div className="assessment-row">
+            <div className="assessment-image-block">
               <img src={image4} alt="Personalised Sound Therapy" />
             </div>
-            <div className="assessment-content">
-              <h3 className="assessment-name">Personalised Sound Therapy</h3>
-              <button className="assessment-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2" fill="none"></path>
-                </svg>
+            <div className="assessment-content-block">
+              <h3 className="assessment-heading">Music Therapy</h3>
+              <p className="assessment-description">
+                Experience personalized sound therapy designed to reduce stress and anxiety. 
+                Choose from calming soundscapes tailored to your mood.
+              </p>
+              <button 
+                className="assessment-cta-btn"
+                onClick={() => navigate('/therapy')}
+              >
+                Start Session
               </button>
             </div>
           </div>
-          
-          <div className="assessment-card">
-            <div className="assessment-image">
-              <img src={image7} alt="Mood Tracking" />
-            </div>
-            <div className="assessment-content">
-              <h3 className="assessment-name">Mood Tracking</h3>
-              <button className="assessment-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2" fill="none"></path>
-                </svg>
+
+          {/* Row 3: Mood Tracking - Content Left, Image Right */}
+          <div className="assessment-row">
+            <div className="assessment-content-block">
+              <h3 className="assessment-heading">Mood Tracking</h3>
+              <p className="assessment-description">
+                Track your emotions daily and notice patterns in your mental wellness journey. 
+                Visualize your progress over time.
+              </p>
+              <button 
+                className="assessment-cta-btn"
+                onClick={() => navigate('/therapy')}
+              >
+                Track Mood
               </button>
+            </div>
+            <div className="assessment-image-block">
+              <img src={image7} alt="Mood Tracking" />
             </div>
           </div>
         </div>

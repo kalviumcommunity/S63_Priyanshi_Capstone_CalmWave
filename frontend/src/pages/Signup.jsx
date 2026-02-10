@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import '../styles/Signup.css';
 import { validatePassword, validateEmail } from '../utils/validationUtils';
 import googleLogo from '../assests/google.png';
-import facebookLogo from '../assests/facebook.png';
+import signupImage from '../assests/image9.png';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -94,98 +94,100 @@ function Signup() {
     <>
       <Navbar />
       <div className="signup-wrapper">
-        <div className="signup-container">
-        <h2>Create Account</h2>
-        <p>Join us for a more relaxing experience</p>
-        {message && <div className="message">{message}</div>}
+        <div className="signup-split-card">
+          {/* LEFT PANEL - Form Side */}
+          <div className="signup-left-panel">
+            <div className="signup-container">
+              <h2>Create Account</h2>
+              <p>Join us for a more relaxing experience</p>
+              {message && <div className="message">{message}</div>}
 
-      <form className="signup-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="fullName">Enter your full name</label>
-          <input
-            type="text"
-            id="fullName"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            placeholder="Enter your full name"
-            required
-          />
+              <form className="signup-form" onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label htmlFor="fullName">Enter your full name</label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="email">Your email address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Your email address"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="password">Create a password</label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Create a password"
+                    required
+                    minLength="6"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="confirmPassword">Re-enter your password</label>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Re-enter your password"
+                    required
+                  />
+                </div>
+
+                <div className="checkbox-inline">
+                  <input type="checkbox" id="terms" name="terms" required />
+                  <label htmlFor="terms">I agree with terms and conditions</label>
+                </div>
+
+                <button type="submit" className="signup-button">Create Account</button>
+              </form>
+
+              <div className="or-divider">
+                <span>Or</span>
+              </div>
+
+              <button className="social-button google" onClick={handleGoogleSignup}>
+                <img src={googleLogo} alt="Google Logo" className="social-logo" />
+                Continue with Google
+              </button>
+
+
+              <div className="login-link">
+                Already registered? <Link to="/login">Login</Link>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT PANEL - Image Side */}
+          <div className="signup-right-panel">
+            <div className="signup-image-container">
+              <img src={signupImage} alt="CalmWave Wellness" />
+              <div className="signup-image-overlay"></div>
+            </div>
+          </div>
         </div>
-
-        <div className="form-group">
-          <label htmlFor="email">Your email address</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Your email address"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password">Create a password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Create a password"
-            required
-            minLength="6"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="confirmPassword">Re-enter your password</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            placeholder="Re-enter your password"
-            required
-          />
-        </div>
-
-        <div className="checkbox-inline">
-          <input type="checkbox" id="terms" name="terms" required />
-          <label htmlFor="terms">I agree with terms and conditions</label>
-        </div>
-
-        <button type="submit" className="signup-button">Create Account</button>
-      </form>
-
-      <div className="or-divider">
-        <span>Or</span>
-      </div>
-
-      <button className="social-button google" onClick={handleGoogleSignup}>
-        <img src={googleLogo} alt="Google Logo" className="social-logo" />
-        Continue with Google
-      </button>
-      <button className="social-button facebook">
-        <img src={facebookLogo} alt="Facebook Logo" className="social-logo" />
-        Continue with Facebook
-      </button>
-      <button className="social-button apple">
-        <img
-          src="https://1000logos.net/wp-content/uploads/2016/10/Apple-Logo.png"
-          alt="Apple Logo"
-          className="social-logo"
-        />
-        Continue with Apple
-      </button>
-
-      <div className="login-link">
-        Already registered? <Link to="/login">Login</Link>
-        </div>
-      </div>
       </div>
     </>
   );

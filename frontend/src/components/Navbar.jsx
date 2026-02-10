@@ -15,54 +15,49 @@ export default function Navbar() {
   }, []);
 
   return (
-    <>
-      {/* BACKGROUND VIDEO */}
-      <div className="navbar-video-wrapper">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="navbar-video"
-        >
-          <source src="/videos/hero-bg.mp4" type="video/mp4" />
-        </video>
-      </div>
-
-      {/* NAVBAR */}
-      <nav className="glass-navbar">
-        <div className="navbar-left">
-          <img src={logo} alt="CalmWave" className="logo-img" />
-
-          <button
-            className="hamburger"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            ☰
-          </button>
+    <nav className="navbar">
+      <div className="navbar-container">
+        {/* Left: Brand */}
+        <div className="navbar-brand">
+          <Link to="/" className="brand-link">
+            <img src={logo} alt="" className="brand-icon" />
+            <span className="brand-name">CalmWave</span>
+          </Link>
         </div>
 
-        <ul className={`nav-links ${isMenuOpen ? "open" : ""}`}>
-          <li>
+        {/* Mobile Toggle */}
+        <button
+          className="navbar-toggle"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span className="toggle-line"></span>
+          <span className="toggle-line"></span>
+          <span className="toggle-line"></span>
+        </button>
+
+        {/* Center: Navigation */}
+        <ul className={`navbar-menu ${isMenuOpen ? "menu-open" : ""}`}>
             <Link
               to="/"
-              className={location.pathname === "/" ? "active" : ""}
+              className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
             >
               Explore
             </Link>
-          </li>
+          
           <li>
             <Link
               to="/home"
-              className={location.pathname === "/home" ? "active" : ""}
+              className={`nav-link ${location.pathname === "/home" ? "active" : ""}`}
             >
               Home
             </Link>
           </li>
+          
           <li>
             <Link
               to="/quiz"
-              className={location.pathname === "/quiz" ? "active" : ""}
+              className={`nav-link ${location.pathname === "/quiz" ? "active" : ""}`}
             >
               Quiz
             </Link>
@@ -70,24 +65,25 @@ export default function Navbar() {
           <li>
             <Link
               to="/therapy"
-              className={location.pathname === "/therapy" ? "active" : ""}
+              className={`nav-link ${location.pathname === "/therapy" ? "active" : ""}`}
             >
               Therapy
             </Link>
           </li>
         </ul>
 
-        <div className="navbar-right">
-          <Link to="/profile">
+        {/* Right: Profile */}
+        <div className="navbar-actions">
+          <Link to="/profile" className="profile-button" aria-label="Go to profile">
             <img
               src={profilePic}
-              alt="Profile"
-              className="profile-pic"
+              alt=""
+              className="profile-image"
               onError={(e) => (e.target.src = defaultProfile)}
             />
           </Link>
         </div>
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 }

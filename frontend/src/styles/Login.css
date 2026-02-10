@@ -1,34 +1,133 @@
+/* Global styles */
+* {
+  box-sizing: border-box;
+}
+
 body {
-  /* background: linear-gradient(to right, #FFFFFF 10%, #B9C5F5 40%, #387BC9 90%); */
-  
   margin: 0;
   padding: 0;
   font-family: 'Inter', sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
 }
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   SPLIT CARD LAYOUT - PREMIUM STRUCTURE
+   ======================================== */
+
+/* Login wrapper - full page background with CalmWave theme + background image */
 .login-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 64px);
   width: 100%;
-  background: #0B2724;
+  background-image: url('../assests/image8.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 40px 20px;
+  position: relative;
 }
 
+/* Dark overlay with blur effect */
+.login-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(11, 39, 36, 0.85) 0%, rgba(16, 77, 69, 0.85) 50%, rgba(11, 39, 36, 0.85) 100%);
+  backdrop-filter: blur(4px);
+  z-index: 1;
+}
 
+/* Split card container - Large centered card */
+.login-split-card {
+  display: flex;
+  max-width: 1200px;
+  width: 100%;
+  min-height: 700px;
+  background: #ffffff;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 1.2s ease-in-out;
+  position: relative;
+  z-index: 2;
+}
+
+/* Left Panel - Image Side (~55% width) */
+.login-left-panel {
+  flex: 0 0 55%;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-image-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.login-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Subtle overlay on image for depth */
+.login-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(11, 39, 36, 0.15) 0%,
+    rgba(95, 184, 148, 0.1) 100%
+  );
+  pointer-events: none;
+}
+
+/* Right Panel - Form Side (~45% width) */
+.login-right-panel {
+  flex: 0 0 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F1F4EE;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+
+/* ========================================
+   FORM CONTAINER - UNCHANGED FROM ORIGINAL
+   ======================================== */
+
+/* Login container */
 .login-container {
-  width: 420px;
-  padding: 40px 24px 80px; /* Increased bottom padding */
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 24px 80px;
   background: #F1F4EE;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  backdrop-filter: blur(3px);
-  animation: fadeInUp 1.2s ease-in-out;
-  min-height: 700px; /* Added this to increase height */
+  box-shadow: none;
+  backdrop-filter: none;
+  min-height: auto;
 }
 
 .login-container h2 {
@@ -101,7 +200,6 @@ body {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
@@ -146,6 +244,7 @@ body {
   font-weight: 600;
   font-size: 15px;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
+  cursor: pointer;
 }
 
 .social-button:hover {
@@ -175,6 +274,7 @@ body {
   text-align: center;
   margin-top: 24px;
   font-size: 15px;
+  color: #0B2724;
 }
 
 .signup-link a {
@@ -188,27 +288,106 @@ body {
   color: #0B2724;
 }
 
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+/* Message styling */
+.message {
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  background: rgba(173, 255, 47, 0.15);
+  color: #0B2724;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Tablet breakpoint */
+@media (max-width: 1024px) {
+  .login-split-card {
+    max-width: 900px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .login-left-panel {
+    flex: 0 0 50%;
+  }
+
+  .login-right-panel {
+    flex: 0 0 50%;
   }
 }
 
-/* Responsive tweaks */
-@media (max-width: 480px) {
+/* Mobile breakpoint - Stack layout, hide image panel */
+@media (max-width: 768px) {
+  .login-wrapper {
+    padding: 20px;
+    background-image: none;
+    background: #0B2724;
+  }
+
+  .login-wrapper::before {
+    display: none;
+  }
+
+  .login-split-card {
+    flex-direction: column;
+    max-width: 500px;
+    min-height: auto;
+    border-radius: 24px;
+  }
+
+  /* Hide left panel on mobile */
+  .login-left-panel {
+    display: none;
+  }
+
+  .login-right-panel {
+    flex: 1;
+    padding: 20px;
+  }
+
   .login-container {
-    width: 90%;
-    padding: 24px 16px;
+    padding: 30px 20px 60px;
+    box-shadow: none;
   }
 
   .login-container h2 {
     font-size: 28px;
+  }
+
+  .form-group input {
+    font-size: 14px;
+  }
+
+  .login-button {
+    font-size: 15px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .login-wrapper {
+    padding: 15px;
+    background-image: none;
+    background: #0B2724;
+  }
+
+  .login-wrapper::before {
+    display: none;
+  }
+
+  .login-split-card {
+    border-radius: 20px;
+  }
+
+  .login-container {
+    width: 100%;
+    padding: 24px 16px 50px;
+  }
+
+  .login-container h2 {
+    font-size: 26px;
   }
 
   .form-group input {

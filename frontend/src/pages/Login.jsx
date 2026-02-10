@@ -4,7 +4,8 @@ import axios from 'axios';
 import Navbar from '../components/Navbar';
 import '../styles/Login.css';
 import googleLogo from '../assests/google.png';
-import facebookLogo from '../assests/facebook.png';
+
+import loginImage from '../assests/image8.png';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 console.log("🧪 Backend URL:", API_BASE_URL);
@@ -66,65 +67,68 @@ function Login() {
     <>
       <Navbar />
       <div className="login-wrapper">
-        <div className="login-container">
-        <h2>Access Account</h2>
-        {message && <div className="message">{message}</div>}
-        <form className="login-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Your email address</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-            />
+        <div className="login-split-card">
+          {/* LEFT PANEL - Form Side */}
+          <div className="login-right-panel">
+            <div className="login-container">
+              <h2>Access Account</h2>
+              {message && <div className="message">{message}</div>}
+              <form className="login-form" onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label htmlFor="email">Your email address</label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="password">Enter your password</label>
+                  <input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+                <Link to="/forgot-password" className="forgot-password">
+                  Forgot your password?
+                </Link>
+                <button type="submit" className="login-button">
+                  Log In
+                </button>
+              </form>
+
+              <div className="or-divider">
+                <span>Or</span>
+              </div>
+
+              <button className="social-button google" onClick={handleGoogleLogin}>
+                <img src={googleLogo} alt="Google Logo" className="social-logo" />
+                Continue with Google
+              </button>
+              
+              
+
+              <div className="signup-link">
+                Need to create an account? <Link to="/signup">Sign Up</Link>
+              </div>
+            </div>
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Enter your password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
+
+          {/* RIGHT PANEL - Image Side */}
+          <div className="login-left-panel">
+            <div className="login-image-container">
+              <img src={loginImage} alt="CalmWave Wellness" />
+              <div className="login-image-overlay"></div>
+            </div>
           </div>
-          <Link to="/forgot-password" className="forgot-password">
-            Forgot your password?
-          </Link>
-          <button type="submit" className="login-button">
-            Log In
-          </button>
-        </form>
-
-        <div className="or-divider">
-          <span>Or</span>
         </div>
-
-        <button className="social-button google" onClick={handleGoogleLogin}>
-          <img src={googleLogo} alt="Google Logo" className="social-logo" />
-          Continue with Google
-        </button>
-        <button className="social-button facebook">
-          <img src={facebookLogo} alt="Facebook Logo" className="social-logo" />
-          Continue with Facebook
-        </button>
-        <button className="social-button apple">
-          <img
-            src="https://1000logos.net/wp-content/uploads/2016/10/Apple-Logo.png"
-            alt="Apple Logo"
-            className="social-logo"
-          />
-          Continue with Apple
-        </button>
-
-        <div className="signup-link">
-          Need to create an account? <Link to="/signup">Sign Up</Link>
-        </div>
-      </div>
       </div>
     </>
   );

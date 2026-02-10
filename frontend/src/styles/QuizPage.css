@@ -1778,6 +1778,177 @@ body {
   }
 }
 
+/* ========================================
+   PREMIUM ENHANCEMENT ANIMATIONS
+   ======================================== */
+
+/* Animated Background Blobs */
+.result-bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.blob-1 {
+  width: 500px;
+  height: 500px;
+  background: linear-gradient(135deg, #5FB894, #7EC8AA);
+  top: 10%;
+  right: 10%;
+}
+
+.blob-2 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #FFB74D, #FFA726);
+  bottom: 15%;
+  left: 5%;
+}
+
+/* Celebration Container */
+.celebration-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Celebration Particles */
+.celebration-particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  font-size: 2rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Celebration Glow Effect */
+.celebration-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(95, 184, 148, 0.4), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Score Card Glow Pulse */
+.stat-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(95, 184, 148, 0.3), transparent 70%);
+  border-radius: 1.75rem;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.result-stat-box {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-content {
+  position: relative;
+  z-index: 1;
+}
+
+.stat-icon {
+  position: relative;
+  z-index: 1;
+}
+
+/* Level Box Gradient Overlay */
+.level-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 183, 77, 0.1),
+    rgba(255, 167, 38, 0.1),
+    rgba(255, 183, 77, 0.1)
+  );
+  background-size: 200% 200%;
+  border-radius: 1.75rem;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Insight Card Shimmer Effect */
+.result-insight-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.insight-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.insight-header,
+.insight-text {
+  position: relative;
+  z-index: 2;
+}
+
+/* Button Enhanced Styles */
+.result-btn {
+  position: relative;
+  overflow: visible;
+}
+
+.btn-icon {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+/* Smooth transitions for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .result-bg-blob,
+  .celebration-glow,
+  .stat-glow,
+  .level-gradient-overlay,
+  .insight-shimmer {
+    animation: none !important;
+  }
+  
+  .particle {
+    display: none;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .quiz-result-screen {

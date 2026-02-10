@@ -21,26 +21,94 @@ body {
   }
 }
 
-/* Signup wrapper - full page background */
+/* ========================================
+   SPLIT CARD LAYOUT - PREMIUM STRUCTURE
+   ======================================== */
+
+/* Signup wrapper - full page background with CalmWave theme */
 .signup-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 64px);
   width: 100%;
-  background: #0B2724;
+  background: linear-gradient(135deg, #0B2724 0%, #104d45 50%, #0B2724 100%);
   padding: 40px 20px;
+  position: relative;
 }
+
+/* Split card container - Large centered card */
+.signup-split-card {
+  display: flex;
+  max-width: 1200px;
+  width: 100%;
+  min-height: 700px;
+  background: #ffffff;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 1.2s ease-in-out;
+}
+
+/* Left Panel - Form Side (~45% width) */
+.signup-left-panel {
+  flex: 0 0 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F1F4EE;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+
+/* Right Panel - Image Side (~55% width) */
+.signup-right-panel {
+  flex: 0 0 55%;
+  position: relative;
+  overflow: hidden;
+}
+
+.signup-image-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.signup-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Subtle overlay on image for depth */
+.signup-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(11, 39, 36, 0.15) 0%,
+    rgba(95, 184, 148, 0.1) 100%
+  );
+  pointer-events: none;
+}
+
+/* ========================================
+   FORM CONTAINER - UNCHANGED FROM ORIGINAL
+   ======================================== */
 
 /* Signup container */
 .signup-container {
-  width: 420px;
+  width: 100%;
+  max-width: 420px;
   padding: 40px 30px 60px;
   border-radius: 16px;
   background: #F1F4EE;
   backdrop-filter: blur(5px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  animation: fadeInUp 1.2s ease-in-out;
+  box-shadow: none;
 }
 
 /* Headings */
@@ -127,11 +195,10 @@ body {
 }
 
 .signup-button:hover {
-    background-color: #9FE62A;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(173, 255, 47, 0.5);
-  }
-
+  background-color: #9FE62A;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(173, 255, 47, 0.5);
+}
 
 /* Divider */
 .or-divider {
@@ -220,15 +287,51 @@ body {
   font-weight: 500;
 }
 
-/* Responsive tweaks */
-@media (max-width: 480px) {
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Tablet breakpoint */
+@media (max-width: 1024px) {
+  .signup-split-card {
+    max-width: 900px;
+  }
+
+  .signup-left-panel {
+    flex: 0 0 50%;
+  }
+
+  .signup-right-panel {
+    flex: 0 0 50%;
+  }
+}
+
+/* Mobile breakpoint - Stack layout, hide image panel */
+@media (max-width: 768px) {
   .signup-wrapper {
     padding: 20px;
   }
-  
+
+  .signup-split-card {
+    flex-direction: column;
+    max-width: 500px;
+    min-height: auto;
+    border-radius: 24px;
+  }
+
+  .signup-left-panel {
+    flex: 1;
+    padding: 20px;
+  }
+
+  /* Hide right panel on mobile */
+  .signup-right-panel {
+    display: none;
+  }
+
   .signup-container {
-    width: 100%;
     padding: 30px 20px 50px;
+    box-shadow: none;
   }
 
   .signup-container h2 {
@@ -242,5 +345,26 @@ body {
 
   .signup-button {
     font-size: 15px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .signup-wrapper {
+    padding: 15px;
+  }
+
+  .signup-split-card {
+    border-radius: 20px;
+  }
+
+  .signup-container {
+    width: 100%;
+    padding: 25px 15px 40px;
+  }
+
+  .signup-container h2 {
+    font-size: 28px;
+    line-height: 36px;
   }
 }

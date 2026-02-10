@@ -6,6 +6,7 @@ import { updateProfilePicture, getProfilePicture } from '../utils/profileUtils';
 import { validatePassword } from '../utils/validationUtils';
 import ConfirmModal from '../components/ConfirmModal';
 import { API_BASE_URL } from '../utils/app';
+import welcomeIllustration from '../assests/image8.png';
 
 export default function ProfileNew() {
   const [profilePic, setProfilePic] = useState('');
@@ -374,15 +375,9 @@ export default function ProfileNew() {
     return (
       <>
         <Navbar />
-        <div className="profile-page">
-          <div className="auth-prompt-container">
+        <div className="welcome-layout">
+          <div className="welcome-left-column">
             <div className="auth-prompt-box">
-              <div className="auth-icon">
-                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              </div>
               <h2>Welcome to CalmWave!</h2>
               <p>Create an account to unlock personalized features, track your progress, and customize your wellness journey.</p>
               
@@ -403,6 +398,10 @@ export default function ProfileNew() {
                 Continue Browsing
               </button>
             </div>
+          </div>
+          
+          <div className="welcome-right-column">
+            <img src={welcomeIllustration} alt="Welcome Illustration" className="welcome-illustration" />
           </div>
         </div>
       </>
