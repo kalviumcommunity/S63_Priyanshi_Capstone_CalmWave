@@ -65,7 +65,7 @@ function ExplorePage() {
           {/* Get Started Button */}
           <button 
             className="explore-get-started-btn"
-            onClick={() => navigate('/profile')}
+            onClick={() => navigate('/welcome-calmwave')}
           >
             Get Started
           </button>

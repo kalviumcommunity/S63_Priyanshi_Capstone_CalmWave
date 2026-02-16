@@ -18,6 +18,8 @@ import ForgotPassword from './pages/ForgotPassword'; // Password recovery page
 import Home from './pages/Home'; // Main home page (after login)
 import Quiz from './pages/QuizPage'; // Anxiety assessment quiz
 import ProfileNew from './pages/ProfileNew'; // User profile and dashboard
+import Profile from './pages/Profile'; // Image upload profile page
+import Welcome from './pages/Welcome'; // Dedicated Welcome Page
 import Therapy from './pages/TherapyPage'; // Sound therapy sessions page
 
 // Import audio utility for cleanup on route changes
@@ -57,7 +59,9 @@ const AppContent = () => {
       {/* Main application routes (typically accessed after login) */}
       <Route path='/home' element={<Home/>}/> {/* Home dashboard */}
       <Route path="/quiz" element={<Quiz />} /> {/* Anxiety assessment quiz */}
-      <Route path="/profile" element={<ProfileNew />} /> {/* User profile page */}
+      <Route path="/profile" element={<ProfileNew />} /> {/* Main Profile Page (Settings/Pwd) */}
+      <Route path="/profile-upload" element={<Profile />} /> {/* Image Upload Only */}
+      <Route path="/welcome-calmwave" element={<Welcome />} /> {/* Welcome Page */}
       <Route path="/therapy" element={<Therapy />} /> {/* Sound therapy page */}
     </Routes>
   );
