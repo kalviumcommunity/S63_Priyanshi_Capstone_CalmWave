@@ -484,453 +484,615 @@ const TherapyPage = () => {
 
   // --- ADDITIONAL OPTIONS VIEW ---
   const renderAdditionalView = () => (
-    <div className="therapy-additional animate-fadeIn">
-      <h2 className="therapy-title">Additional Therapy Tools</h2>
-      {/* Binaural Beats */}
-      <div className="section-card">
-        <div className="binaural-header">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ADFF2F" strokeWidth="2" className="binaural-music-icon">
-            <path d="M9 18V5l12-2v13"></path>
-            <circle cx="6" cy="18" r="3"></circle>
-            <circle cx="18" cy="16" r="3"></circle>
-          </svg>
-          <h3>🎵 Binaural Beats</h3>
-        </div>
-        <select
-          value={selectedBinauralBeat}
-          onChange={(e) => setSelectedBinauralBeat(e.target.value)}
-          className="select-dropdown"
-        >
-          {Object.keys(binauralBeatsMap).map(beat => (
-            <option key={beat} value={beat}>{beat}</option>
-          ))}
-        </select>
-        <button className="button" style={{marginTop: "1rem"}} onClick={() => {
-          if (!binauralPlaying) {
-            // Use our audio context to play the binaural beats
-            const audio = playAudio(binauralBeatsMap[selectedBinauralBeat], {
-              loop: true,
-              onPlay: () => {
-                setBinauralPlaying(true);
-                console.log(`Playing ${selectedBinauralBeat} successfully`);
-              },
-              onError: (error) => {
-                console.error(`Error playing ${selectedBinauralBeat}:`, error);
-                alert(`Could not play ${selectedBinauralBeat}. Please check if the audio file exists.`);
-              }
-            });
-            
-            // Store the audio element in our ref for later use
-            binauralRef.current = {
-              element: audio,
-              name: selectedBinauralBeat
-            };
-          } else {
-            if (binauralRef.current && binauralRef.current.element) {
-              // Use our audio context to pause the audio
-              pauseAudio(binauralRef.current.element, (audio) => {
-                // Calculate session duration and save if played for at least 10 seconds
-                const duration = getSessionDuration(audio);
-                if (duration >= 10) {
-                  saveSoundSession('Binaural', binauralRef.current.name, duration);
-                }
-              });
-              
-              // Clear the element reference
-              binauralRef.current = null;
-            }
-            setBinauralPlaying(false);
-          }
-        }}>
-          {binauralPlaying ? "Stop Binaural Beats" : "Play Binaural Beats"}
-        </button>
+    <div className="add-page">
+
+      {/* Animated ambient background particles */}
+      <div className="add-bg-particles" aria-hidden="true">
+        {[...Array(14)].map((_, i) => (
+          <span key={i} className="add-particle" style={{ '--i': i }} />
+        ))}
       </div>
-      {/* Breathing Exercise */}
-      <div className="section-card breathing-exercise-card">
-        <h3 className="breathing-title">
-          Try a quick breathing <span className="breathing-italic">exercise</span><br />
-          <span className="breathing-italic">to ease</span> your stress.
-        </h3>
-        <div className="breathing-center">
-          <div className={`breathing-circle-container ${breathingActive ? 'breathing-active' : ''}`}>
-            <div className="breathing-ring breathing-ring-1"></div>
-            <div className="breathing-ring breathing-ring-2"></div>
-            <div className="breathing-ring breathing-ring-3"></div>
-            <div className="breathing-ring breathing-ring-4"></div>
-            <div className="breathing-core">
-              <span className="breathing-leaf">🌱</span>
+
+      {/* Floating gradient orbs */}
+      <div className="add-orb add-orb-1" aria-hidden="true" />
+      <div className="add-orb add-orb-2" aria-hidden="true" />
+      <div className="add-orb add-orb-3" aria-hidden="true" />
+
+      {/* ── Page Header ── */}
+      <div className="add-header">
+        <div className="add-header-eyebrow">
+          <span className="add-eyebrow-dot" />
+          Therapy Tools
+        </div>
+        <h2 className="add-title">Additional Options</h2>
+        <p className="add-subtitle">Curated soundscapes & breathing techniques for your inner calm</p>
+      </div>
+
+      {/* ── Grid of Cards ── */}
+      <div className="add-cards-grid">
+
+        {/* ── Card 1: Binaural Beats ── */}
+        <div className="add-card add-card--binaural">
+          <div className="add-card-shine" aria-hidden="true" />
+          <div className="add-card-top">
+            <div className="add-card-icon-wrap add-card-icon-wrap--lime">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18V5l12-2v13"/>
+                <circle cx="6" cy="18" r="3"/>
+                <circle cx="18" cy="16" r="3"/>
+              </svg>
+            </div>
+            <div className="add-card-heading-group">
+              <h3 className="add-card-title">Binaural Beats</h3>
+              <p className="add-card-desc">Synchronise your brainwaves with precise frequencies</p>
             </div>
           </div>
-        </div>
-        <div className="breathing-controls">
-          <div className="breathing-control">
-            <span className="breathing-label">Click to</span>
-            <button 
-              className="breathing-start-btn" 
-              onClick={() => {
-                if (breathingActive) {
-                  handleBreathingStop();
-                } else {
-                  handleBreathingStart();
-                }
-              }}
-            >
-              {breathingActive ? 'Stop' : 'Start'}
-            </button>
+
+          {/* Frequency visualizer */}
+          <div className="add-freq-visualizer" aria-hidden="true">
+            {[...Array(18)].map((_, i) => (
+              <span
+                key={i}
+                className={`add-freq-bar ${binauralPlaying ? 'add-freq-bar--live' : ''}`}
+                style={{ '--i': i, '--base-h': `${8 + Math.abs(Math.sin(i * 0.65)) * 28}px` }}
+              />
+            ))}
           </div>
-          <div className="breathing-control">
-            <span className="breathing-label">Mins</span>
-            <span className="breathing-value">{getBreathingMins(breathingTime)}</span>
-          </div>
-          <div className="breathing-control">
-            <span className="breathing-label">Secs</span>
-            <span className="breathing-value">{getBreathingSecs(breathingTime)}</span>
-          </div>
-        </div>
-      </div>
-      {/* Additional Music */}
-      <div className="section-card">
-        <h3>🎶 Additional Music</h3>
-        <div className="audio-options">
-          {Object.keys(additionalAudios).map(audio => (
-            <button
-              key={audio}
-              className={`button ${selectedAdditionalAudio === audio ? 'active' : ''}`}
-              onClick={() => {
-                // If clicking the same button that's already playing, stop it
-                if (selectedAdditionalAudio === audio && additionalAudioPlaying) {
-                  if (additionalAudioRef.current && additionalAudioRef.current.element) {
-                    // Use our audio context to pause the audio
-                    pauseAudio(additionalAudioRef.current.element, (audioElement) => {
-                      // Calculate session duration and save if played for at least 10 seconds
-                      const duration = getSessionDuration(audioElement);
-                      if (duration >= 10) {
-                        saveSoundSession('Additional', selectedAdditionalAudio, duration);
-                      }
-                    });
-                  }
-                  
-                  // Clear the state
-                  setSelectedAdditionalAudio(null);
-                  setAdditionalAudioPlaying(false);
-                  additionalAudioRef.current = null;
-                  return;
-                }
-                
-                // Otherwise play the selected audio
-                setSelectedAdditionalAudio(audio);
-                
-                // Use our audio context to play the audio
-                const audioElement = playAudio(additionalAudios[audio], {
-                  loop: true,
-                  onPlay: () => {
-                    setAdditionalAudioPlaying(true);
-                    console.log(`Playing ${audio} successfully`);
-                  },
-                  onError: (error) => {
-                    console.error(`Error playing ${audio}:`, error);
-                    alert(`Could not play ${audio}. Please check if the audio file exists.`);
-                    setSelectedAdditionalAudio(null);
-                  }
-                });
-                
-                // Store the audio element in our ref for later use
-                additionalAudioRef.current = {
-                  element: audioElement,
-                  name: audio
-                };
-              }}
-            >
-              {audio}
-            </button>
-          ))}
-        </div>
-        
-        {additionalAudioPlaying && (
-          <button 
-            className="button stop-button" 
+
+          <select
+            value={selectedBinauralBeat}
+            onChange={(e) => setSelectedBinauralBeat(e.target.value)}
+            className="add-select"
+          >
+            {Object.keys(binauralBeatsMap).map(beat => (
+              <option key={beat} value={beat}>{beat}</option>
+            ))}
+          </select>
+
+          <button
+            className={`add-btn add-btn--primary ${binauralPlaying ? 'add-btn--active' : ''}`}
             onClick={() => {
-              if (additionalAudioRef.current && additionalAudioRef.current.element) {
-                // Use our audio context to pause the audio
-                pauseAudio(additionalAudioRef.current.element, (audioElement) => {
-                  // Calculate session duration and save if played for at least 10 seconds
-                  const duration = getSessionDuration(audioElement);
-                  if (duration >= 10) {
-                    saveSoundSession('Additional', selectedAdditionalAudio, duration);
-                  }
+              if (!binauralPlaying) {
+                const audio = playAudio(binauralBeatsMap[selectedBinauralBeat], {
+                  loop: true,
+                  onPlay: () => { setBinauralPlaying(true); },
+                  onError: () => alert(`Could not play ${selectedBinauralBeat}. Please check if the audio file exists.`)
                 });
-                
-                // Clear the state
-                setAdditionalAudioPlaying(false);
-                setSelectedAdditionalAudio(null);
-                additionalAudioRef.current = null;
+                binauralRef.current = { element: audio, name: selectedBinauralBeat };
+              } else {
+                if (binauralRef.current && binauralRef.current.element) {
+                  pauseAudio(binauralRef.current.element, (audio) => {
+                    const dur = getSessionDuration(audio);
+                    if (dur >= 10) saveSoundSession('Binaural', binauralRef.current.name, dur);
+                  });
+                  binauralRef.current = null;
+                }
+                setBinauralPlaying(false);
               }
             }}
-            style={{marginTop: "1rem"}}
           >
-            ⏹ Stop {selectedAdditionalAudio}
+            <span className="add-btn-icon">{binauralPlaying ? '⏸' : '▶'}</span>
+            {binauralPlaying ? 'Stop Binaural Beats' : 'Play Binaural Beats'}
+            {binauralPlaying && <span className="add-btn-pulse" aria-hidden="true" />}
           </button>
-        )}
-      </div>
-      <div className="button-group">
-        <button className="button" onClick={() => setCurrentView("main")}>
-          Back to Main
+        </div>
+
+        {/* ── Card 2: Breathing Exercise ── */}
+        <div className="add-card add-card--breathing">
+          <div className="add-card-shine" aria-hidden="true" />
+          <div className="add-card-top">
+            <div className="add-card-icon-wrap add-card-icon-wrap--soft">
+              🫁
+            </div>
+            <div className="add-card-heading-group">
+              <h3 className="add-card-title">
+                Breathing Exercise
+                <span className="add-coming-tag">Coming Soon</span>
+              </h3>
+              <p className="add-card-desc">4-7-8 guided breath to dissolve stress</p>
+            </div>
+          </div>
+
+          {/* Layered breathing orb */}
+          <div className="add-breath-scene">
+            <div className={`add-breath-orb-wrap ${breathingActive ? 'add-breath-orb-wrap--active' : ''}`}>
+              <div className="add-breath-ring add-breath-ring--1" />
+              <div className="add-breath-ring add-breath-ring--2" />
+              <div className="add-breath-ring add-breath-ring--3" />
+              <div className="add-breath-ring add-breath-ring--4" />
+              <div className="add-breath-core">
+                <span className="add-breath-emoji">🌱</span>
+              </div>
+              {breathingActive && (
+                <div className="add-breath-phase-label">
+                  {breathingTime % 19 < 4 ? 'Inhale' : breathingTime % 19 < 11 ? 'Hold' : 'Exhale'}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Timer + controls */}
+          <div className="add-breath-controls">
+            <div className="add-breath-stat">
+              <span className="add-breath-stat-num">{getBreathingMins(breathingTime)}</span>
+              <span className="add-breath-stat-lbl">min</span>
+            </div>
+
+            <button
+              className={`add-btn add-btn--breath ${breathingActive ? 'add-btn--breath-stop' : ''}`}
+              onClick={() => breathingActive ? handleBreathingStop() : handleBreathingStart()}
+            >
+              {breathingActive ? '⏹ Stop' : '▶ Start'}
+            </button>
+
+            <div className="add-breath-stat">
+              <span className="add-breath-stat-num">{getBreathingSecs(breathingTime)}</span>
+              <span className="add-breath-stat-lbl">sec</span>
+            </div>
+          </div>
+
+          <p className="add-breath-note">🔇 Audio guide coming soon — timer works now</p>
+        </div>
+
+        {/* ── Card 3: Additional Music ── */}
+        <div className="add-card add-card--music">
+          <div className="add-card-shine" aria-hidden="true" />
+          <div className="add-card-top">
+            <div className="add-card-icon-wrap add-card-icon-wrap--lime">
+              🎶
+            </div>
+            <div className="add-card-heading-group">
+              <h3 className="add-card-title">Additional Music</h3>
+              <p className="add-card-desc">Ambient soundscapes for every state of mind</p>
+            </div>
+          </div>
+
+          <div className="add-music-grid">
+            {Object.keys(additionalAudios).map((audio, idx) => {
+              const icons = ['🌿', '🧘', '🎯', '🌙'];
+              const isPlaying = selectedAdditionalAudio === audio && additionalAudioPlaying;
+              return (
+                <button
+                  key={audio}
+                  className={`add-music-chip ${selectedAdditionalAudio === audio ? 'add-music-chip--selected' : ''} ${isPlaying ? 'add-music-chip--playing' : ''}`}
+                  onClick={() => {
+                    if (selectedAdditionalAudio === audio && additionalAudioPlaying) {
+                      if (additionalAudioRef.current && additionalAudioRef.current.element) {
+                        pauseAudio(additionalAudioRef.current.element, (el) => {
+                          const dur = getSessionDuration(el);
+                          if (dur >= 10) saveSoundSession('Additional', selectedAdditionalAudio, dur);
+                        });
+                      }
+                      setSelectedAdditionalAudio(null);
+                      setAdditionalAudioPlaying(false);
+                      additionalAudioRef.current = null;
+                      return;
+                    }
+                    setSelectedAdditionalAudio(audio);
+                    const el = playAudio(additionalAudios[audio], {
+                      loop: true,
+                      onPlay: () => { setAdditionalAudioPlaying(true); },
+                      onError: () => { alert(`Could not play ${audio}. Please check if the audio file exists.`); setSelectedAdditionalAudio(null); }
+                    });
+                    additionalAudioRef.current = { element: el, name: audio };
+                  }}
+                >
+                  <span className="add-music-chip-icon">{icons[idx]}</span>
+                  <span className="add-music-chip-label">{audio}</span>
+                  {isPlaying && (
+                    <span className="add-music-chip-wave" aria-hidden="true">
+                      <span /><span /><span />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {additionalAudioPlaying && (
+            <button
+              className="add-btn add-btn--stop"
+              style={{ marginTop: '1.4rem' }}
+              onClick={() => {
+                if (additionalAudioRef.current && additionalAudioRef.current.element) {
+                  pauseAudio(additionalAudioRef.current.element, (el) => {
+                    const dur = getSessionDuration(el);
+                    if (dur >= 10) saveSoundSession('Additional', selectedAdditionalAudio, dur);
+                  });
+                  setAdditionalAudioPlaying(false);
+                  setSelectedAdditionalAudio(null);
+                  additionalAudioRef.current = null;
+                }
+              }}
+            >
+              ⏹ Stop {selectedAdditionalAudio}
+            </button>
+          )}
+        </div>
+
+      </div>{/* /add-cards-grid */}
+
+      {/* ── Back Button ── */}
+      <div className="add-footer">
+        <button className="add-btn add-btn--back" onClick={() => setCurrentView('main')}>
+          <span>←</span> Back to Main
         </button>
       </div>
+
     </div>
   );
 
   // --- MOOD TRACKER VIEW ---
+  const moodData = [
+    { key: "Happy",   emoji: "😊", label: "Happy",   color: "#ADFF2F", desc: "Feeling great today!" },
+    { key: "Neutral", emoji: "😐", label: "Neutral",  color: "#7dd3fc", desc: "Just going with the flow" },
+    { key: "Sad",     emoji: "😔", label: "Sad",      color: "#a78bfa", desc: "It's okay to feel this way" },
+    { key: "Anxious", emoji: "😰", label: "Anxious",  color: "#fb923c", desc: "Breathe — you got this" },
+    { key: "Tired",   emoji: "😴", label: "Tired",    color: "#94a3b8", desc: "Rest is productive too" },
+  ];
+
   const renderMoodView = () => (
-    <div className="mood-tracker animate-fadeIn">
-      <h2 className="therapy-title">Mood Tracker</h2>
-      
-      {successMessage && (
-        <div className="success-message" style={{ color: 'green', marginBottom: '1rem' }}>
-          {successMessage}
-        </div>
-      )}
-      
-      {error && (
-        <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>
-          {error}
-        </div>
-      )}
-      
-      <p>How are you feeling right now?</p>
-      <div className="mood-buttons">
-        {["Happy", "Neutral", "Sad", "Anxious", "Tired"].map(mood => (
-          <button
-            key={mood}
-            className={`mood-button ${currentMood === mood ? "active" : ""}`}
-            onClick={() => setCurrentMood(mood)}
-          >
-            {mood === "Happy" && "😊"}
-            {mood === "Neutral" && "😐"}
-            {mood === "Sad" && "😔"}
-            {mood === "Anxious" && "😰"}
-            {mood === "Tired" && "😴"}
-            {" "}{mood}
-          </button>
+    <div className="mt-page">
+
+      {/* Ambient orbs */}
+      <div className="mt-orb mt-orb-1" aria-hidden="true" />
+      <div className="mt-orb mt-orb-2" aria-hidden="true" />
+
+      {/* Floating particles */}
+      <div className="mt-particles" aria-hidden="true">
+        {[...Array(10)].map((_, i) => (
+          <span key={i} className="mt-particle" style={{ '--i': i }} />
         ))}
       </div>
-      
-      <div style={{ marginTop: '1rem' }}>
-  <label htmlFor="moodNote" style={{ display: 'block', marginBottom: '0.5rem' }}>
-    ✏ Journal Entry (optional):
-  </label>
-  <textarea
-    id="moodNote"
-    rows={4}
-    placeholder="Write about your feelings..."
-    value={moodNote}
-    onChange={(e) => setMoodNote(e.target.value)}
-    style={{
-      width: "100%",
-      padding: "0.5rem",
-      borderRadius: "8px",
-      border: "1px solid #ccc"
-    }}
-  />
-</div>
 
-      
-      <button
-        className="button mood-submit"
-        onClick={submitMoodData}
-        disabled={!currentMood || isSubmitting}
-        style={{marginTop: "1rem"}}
-      >
-        {isSubmitting ? "Saving..." : "Submit Mood"}
-      </button>
-      
-      <div className="button-group">
-        <button 
-          className="button secondary-button" 
-          onClick={() => {
-            setCurrentView("history");
-            fetchMoodHistory(); // Fetch updated mood history when navigating
-          }}
-          disabled={isSubmitting}
-        >
-          View Mood History
-        </button>
-        <button 
-          className="button" 
-          onClick={() => setCurrentView("main")}
-          disabled={isSubmitting}
-        >
-          Back to Main
-        </button>
+      {/* ── Header ── */}
+      <div className="mt-header">
+        <div className="mt-eyebrow">
+          <span className="mt-eyebrow-dot" />
+          Wellness Check-in
+        </div>
+        <h2 className="mt-title">Mood Tracker</h2>
+        <p className="mt-subtitle">A moment of honest reflection for your mental well-being</p>
       </div>
+
+      {/* ── Main Panel ── */}
+      <div className="mt-panel">
+        <div className="mt-panel-shine" aria-hidden="true" />
+
+        {/* Success / Error banners */}
+        {successMessage && (
+          <div className="mt-banner mt-banner--success">
+            <span className="mt-banner-icon">✓</span>
+            {successMessage}
+          </div>
+        )}
+        {error && (
+          <div className="mt-banner mt-banner--error">
+            <span className="mt-banner-icon">!</span>
+            {error}
+          </div>
+        )}
+
+        {/* ── Prompt ── */}
+        <div className="mt-prompt">
+          <span className="mt-prompt-line" />
+          <span className="mt-prompt-text">How are you feeling right now?</span>
+          <span className="mt-prompt-line" />
+        </div>
+
+        {/* ── Mood Cards ── */}
+        <div className="mt-mood-grid">
+          {moodData.map(({ key, emoji, label, color, desc }) => (
+            <button
+              key={key}
+              className={`mt-mood-card ${currentMood === key ? 'mt-mood-card--active' : ''}`}
+              style={{ '--mood-color': color }}
+              onClick={() => setCurrentMood(key)}
+            >
+              <div className="mt-mood-card-glow" aria-hidden="true" />
+              <span className="mt-mood-emoji">{emoji}</span>
+              <span className="mt-mood-label">{label}</span>
+              <span className="mt-mood-desc">{desc}</span>
+              {currentMood === key && <span className="mt-mood-check">✓</span>}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Selected mood confirmation ── */}
+        {currentMood && (
+          <div className="mt-selected-banner">
+            <span>{moodData.find(m => m.key === currentMood)?.emoji}</span>
+            <span>You feel <strong>{currentMood}</strong> — that's valid.</span>
+          </div>
+        )}
+
+        {/* ── Journal entry ── */}
+        <div className="mt-journal">
+          <label htmlFor="moodNote" className="mt-journal-label">
+            <span className="mt-journal-icon">✍️</span>
+            Journal Entry <span className="mt-optional">(optional)</span>
+          </label>
+          <textarea
+            id="moodNote"
+            className="mt-textarea"
+            rows={4}
+            placeholder="Write freely about your feelings, your day, your thoughts…"
+            value={moodNote}
+            onChange={(e) => setMoodNote(e.target.value)}
+          />
+        </div>
+
+        {/* ── Submit ── */}
+        <button
+          className={`mt-submit-btn ${!currentMood || isSubmitting ? 'mt-submit-btn--disabled' : ''}`}
+          onClick={submitMoodData}
+          disabled={!currentMood || isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <span className="mt-spinner" aria-hidden="true" />
+              Saving…
+            </>
+          ) : (
+            <>
+              <span>✦</span>
+              Record My Mood
+            </>
+          )}
+        </button>
+
+        {/* ── Nav buttons ── */}
+        <div className="mt-nav-row">
+          <button
+            className="mt-nav-btn mt-nav-btn--secondary"
+            onClick={() => { setCurrentView('history'); fetchMoodHistory(); }}
+            disabled={isSubmitting}
+          >
+            📊 View History
+          </button>
+          <button
+            className="mt-nav-btn mt-nav-btn--ghost"
+            onClick={() => setCurrentView('main')}
+            disabled={isSubmitting}
+          >
+            ← Back to Main
+          </button>
+        </div>
+
+      </div>{/* /mt-panel */}
     </div>
   );
   
   // --- MOOD HISTORY VIEW ---
   const renderMoodHistoryView = () => {
-    // Format dates for chart display
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      return `${date.getMonth() + 1}/${date.getDate()}`;
+    const moodColorMap = {
+      "Happy":   "#ADFF2F",
+      "Neutral": "#7dd3fc",
+      "Sad":     "#a78bfa",
+      "Anxious": "#fb923c",
+      "Tired":   "#94a3b8",
     };
-    
-    // Map mood values to numeric values for the chart
-    const getMoodValue = (mood) => {
-      const moodMap = {
-        "Happy": 5,
-        "Neutral": 3,
-        "Sad": 1,
-        "Anxious": 2,
-        "Tired": 2
-      };
-      return moodMap[mood] || 3;
+    const moodEmojiMap = {
+      "Happy": "😊", "Neutral": "😐", "Sad": "😔", "Anxious": "😰", "Tired": "😴"
     };
-    
-    // Get emoji for mood
-    const getMoodEmoji = (mood) => {
-      const emojiMap = {
-        "Happy": "😊",
-        "Neutral": "😐",
-        "Sad": "😔",
-        "Anxious": "😰",
-        "Tired": "😴"
-      };
-      return emojiMap[mood] || "";
-    };
-    
-    // Prepare data for the line chart
+    const getMoodValue = (mood) => ({ Happy:5, Neutral:3, Sad:1, Anxious:2, Tired:2 }[mood] || 3);
+    const formatDate = (ds) => { const d = new Date(ds); return `${d.getMonth()+1}/${d.getDate()}`; };
+
+    // Summary stats
+    const total = moodHistory.length;
+    const moodCounts = moodHistory.reduce((acc, e) => { acc[e.mood] = (acc[e.mood]||0)+1; return acc; }, {});
+    const topMood = Object.entries(moodCounts).sort((a,b)=>b[1]-a[1])[0]?.[0] || '—';
+    const avgVal = total > 0
+      ? (moodHistory.reduce((s,e) => s + getMoodValue(e.mood), 0) / total).toFixed(1)
+      : 0;
+    const avgLabel = avgVal >= 4.5 ? 'Happy' : avgVal >= 3.5 ? 'Good' : avgVal >= 2.5 ? 'Neutral' : avgVal >= 1.5 ? 'Low' : 'Sad';
+
+    // Themed chart data
     const chartData = {
-      labels: moodHistory.slice(0, 10).reverse().map(entry => formatDate(entry.date)),
-      datasets: [
-        {
-          label: 'Mood Trend',
-          data: moodHistory.slice(0, 10).reverse().map(entry => getMoodValue(entry.mood)),
-          borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          tension: 0.4,
-          fill: true
-        }
-      ]
+      labels: moodHistory.slice(0,10).reverse().map(e => formatDate(e.date)),
+      datasets: [{
+        label: 'Mood Score',
+        data: moodHistory.slice(0,10).reverse().map(e => getMoodValue(e.mood)),
+        borderColor: '#ADFF2F',
+        backgroundColor: 'rgba(173,255,47,0.08)',
+        pointBackgroundColor: '#ADFF2F',
+        pointBorderColor: '#0B2724',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        tension: 0.45,
+        fill: true,
+        borderWidth: 2,
+      }]
     };
-    
-    // Chart options
+
     const chartOptions = {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        legend: {
-          position: 'top',
-        },
+        legend: { display: false },
         tooltip: {
+          backgroundColor: 'rgba(11,39,36,0.95)',
+          borderColor: 'rgba(173,255,47,0.3)',
+          borderWidth: 1,
+          titleColor: '#ADFF2F',
+          bodyColor: '#F1F4EE',
           callbacks: {
-            label: function(context) {
-              const index = context.dataIndex;
-              const reversedIndex = moodHistory.length - 1 - index;
-              if (reversedIndex >= 0 && reversedIndex < moodHistory.length) {
-                const entry = moodHistory[reversedIndex];
-                return `${entry.mood} ${getMoodEmoji(entry.mood)}`;
-              }
-              return '';
+            label: (ctx) => {
+              const idx = moodHistory.length - 1 - ctx.dataIndex;
+              const entry = moodHistory[idx];
+              return entry ? ` ${entry.mood} ${moodEmojiMap[entry.mood] || ''}` : '';
             }
           }
         }
       },
       scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { color: 'rgba(241,244,238,0.4)', font: { size: 11 } }
+        },
         y: {
-          min: 0,
-          max: 6,
+          min: 0, max: 6,
+          grid: { color: 'rgba(173,255,47,0.07)' },
           ticks: {
+            color: 'rgba(241,244,238,0.4)', font: { size: 11 },
             stepSize: 1,
-            callback: function(value) {
-              if (value === 1) return "Sad 😔";
-              if (value === 2) return "Low 😰";
-              if (value === 3) return "Neutral 😐";
-              if (value === 4) return "Good 🙂";
-              if (value === 5) return "Happy 😊";
-              return "";
-            }
+            callback: (v) => ({ 1:'Sad',2:'Low',3:'Neutral',4:'Good',5:'Happy' }[v] || '')
           }
         }
       }
     };
-    
+
     return (
-      <div className="mood-history animate-fadeIn">
-        <h2 className="therapy-title">Mood History</h2>
-        
-        {historyError && (
-          <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>
-            {historyError}
+      <div className="mh-page">
+
+        {/* Ambient orbs */}
+        <div className="mh-orb mh-orb-1" aria-hidden="true" />
+        <div className="mh-orb mh-orb-2" aria-hidden="true" />
+
+        {/* Particles */}
+        <div className="mh-particles" aria-hidden="true">
+          {[...Array(10)].map((_,i) => (
+            <span key={i} className="mh-particle" style={{ '--i': i }} />
+          ))}
+        </div>
+
+        {/* ── Header ── */}
+        <div className="mh-header">
+          <div className="mh-eyebrow">
+            <span className="mh-eyebrow-dot" />
+            Your Journey
           </div>
-        )}
-        
-        {isLoadingHistory ? (
-          <div className="loading-indicator">
-            <p>Loading your mood history...</p>
-          </div>
-        ) : moodHistory.length === 0 ? (
-          <div className="empty-state">
-            <p>You haven't recorded any moods yet. Start tracking your mood to see your history here!</p>
-            <button 
-              className="button" 
-              onClick={() => setCurrentView("mood")}
-              style={{marginTop: "1rem"}}
-            >
-              Record Your Mood
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="section-card">
-              <h3>Mood Trend</h3>
-              <div className="chart-container">
+          <h2 className="mh-title">Mood History</h2>
+          <p className="mh-subtitle">A record of your emotional wellness over time</p>
+        </div>
+
+        {/* ── Body ── */}
+        <div className="mh-body">
+
+          {/* Error */}
+          {historyError && (
+            <div className="mh-banner mh-banner--error">
+              <span className="mh-banner-icon">!</span>
+              {historyError}
+            </div>
+          )}
+
+          {/* Loading */}
+          {isLoadingHistory ? (
+            <div className="mh-loading">
+              <div className="mh-spinner" />
+              <p>Loading your mood history…</p>
+            </div>
+          ) : moodHistory.length === 0 ? (
+
+            /* Empty state */
+            <div className="mh-empty">
+              <div className="mh-empty-icon">📋</div>
+              <h3 className="mh-empty-title">No entries yet</h3>
+              <p className="mh-empty-desc">Start tracking your mood to see your history here. Your first entry is just a tap away.</p>
+              <button className="mh-cta-btn" onClick={() => setCurrentView('mood')}>
+                ✦ Record Your First Mood
+              </button>
+            </div>
+
+          ) : (<>
+
+            {/* ── Stat Summary Row ── */}
+            <div className="mh-stats-row">
+              <div className="mh-stat-card" style={{ '--stat-color': '#ADFF2F' }}>
+                <div className="mh-stat-card-glow" />
+                <span className="mh-stat-value">{total}</span>
+                <span className="mh-stat-label">Total Entries</span>
+              </div>
+              <div className="mh-stat-card" style={{ '--stat-color': moodColorMap[topMood] || '#ADFF2F' }}>
+                <div className="mh-stat-card-glow" />
+                <span className="mh-stat-value">{moodEmojiMap[topMood] || '—'}</span>
+                <span className="mh-stat-label">Most Frequent</span>
+                <span className="mh-stat-sub">{topMood}</span>
+              </div>
+              <div className="mh-stat-card" style={{ '--stat-color': '#7dd3fc' }}>
+                <div className="mh-stat-card-glow" />
+                <span className="mh-stat-value">{avgVal}</span>
+                <span className="mh-stat-label">Avg Score</span>
+                <span className="mh-stat-sub">{avgLabel}</span>
+              </div>
+            </div>
+
+            {/* ── Chart Card ── */}
+            <div className="mh-card">
+              <div className="mh-card-shine" aria-hidden="true" />
+              <div className="mh-card-header">
+                <div className="mh-card-icon">📈</div>
+                <div>
+                  <h3 className="mh-card-title">Mood Trend</h3>
+                  <p className="mh-card-desc">Last 10 entries — higher = more positive</p>
+                </div>
+              </div>
+              <div className="mh-chart-wrap">
                 <Line data={chartData} options={chartOptions} />
               </div>
-              <p className="chart-description">
-                This chart shows your mood trends over time. Higher values represent more positive moods.
-              </p>
             </div>
-            
-            <div className="section-card">
-              <h3>Recent Mood Entries</h3>
-              <div className="mood-entries">
-                {moodHistory.slice(0, 5).map((entry, index) => (
-                  <div key={index} className="mood-entry">
-                    <div className="mood-entry-header">
-                      <span className="mood-emoji">{getMoodEmoji(entry.mood)}</span>
-                      <span className="mood-name">{entry.mood}</span>
-                      <span className="mood-date">
-                        {new Date(entry.date).toLocaleDateString()} at {new Date(entry.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                      </span>
+
+            {/* ── Recent Entries Card ── */}
+            <div className="mh-card">
+              <div className="mh-card-shine" aria-hidden="true" />
+              <div className="mh-card-header">
+                <div className="mh-card-icon">🗒️</div>
+                <div>
+                  <h3 className="mh-card-title">Recent Entries</h3>
+                  <p className="mh-card-desc">Your last {Math.min(5, moodHistory.length)} check-ins</p>
+                </div>
+              </div>
+              <div className="mh-entries">
+                {moodHistory.slice(0, 5).map((entry, i) => (
+                  <div
+                    key={i}
+                    className="mh-entry"
+                    style={{
+                      '--entry-color': moodColorMap[entry.mood] || '#ADFF2F',
+                      '--entry-delay': `${i * 0.07}s`
+                    }}
+                  >
+                    <div className="mh-entry-left">
+                      <span className="mh-entry-emoji">{moodEmojiMap[entry.mood] || '🙂'}</span>
                     </div>
-                    {entry.note && (
-                      <div className="mood-note">
-                        <p>{entry.note}</p>
+                    <div className="mh-entry-body">
+                      <div className="mh-entry-row">
+                        <span className="mh-entry-mood">{entry.mood}</span>
+                        <span className="mh-entry-date">
+                          {new Date(entry.date).toLocaleDateString(undefined, { month:'short', day:'numeric' })}
+                          {' · '}
+                          {new Date(entry.date).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}
+                        </span>
                       </div>
-                    )}
+                      {entry.note && (
+                        <p className="mh-entry-note">"{entry.note}"</p>
+                      )}
+                    </div>
+                    <div className="mh-entry-accent" aria-hidden="true" />
                   </div>
                 ))}
               </div>
             </div>
-            
-            <div className="button-group">
-              <button 
-                className="button" 
-                onClick={() => setCurrentView("mood")}
-              >
-                Record New Mood
-              </button>
-              <button 
-                className="button" 
-                onClick={() => setCurrentView("main")}
-              >
-                Back to Main
-              </button>
-            </div>
-          </>
-        )}
+
+          </>)}
+
+          {/* ── Nav buttons (always visible) ── */}
+          <div className="mh-nav-row">
+            <button className="mh-nav-btn mh-nav-btn--primary" onClick={() => setCurrentView('mood')}>
+              ✦ Record New Mood
+            </button>
+            <button className="mh-nav-btn mh-nav-btn--ghost" onClick={() => setCurrentView('main')}>
+              ← Back to Main
+            </button>
+          </div>
+
+        </div>{/* /mh-body */}
       </div>
     );
   };
+
 
   // --- MAIN RENDER ---
   return (

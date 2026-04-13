@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { useMotionValue, useTransform, animate, useReducedMotion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate, useReducedMotion } from 'framer-motion';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import quizImage from "../assests/image1.png";
